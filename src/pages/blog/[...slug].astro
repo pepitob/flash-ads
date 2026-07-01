@@ -1,0 +1,104 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AnswerBlock from "../../components/AnswerBlock.astro";
+import CTA from "../../components/CTA.astro";
+import { articleSchema, breadcrumbSchema } from "../../lib/schema";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { data } = post;
+const path = `/blog/${post.id}`;
+
+const fmt = (d: Date) => d.toLocaleDateString("fr-CH", { year: "numeric", month: "long", day: "numeric" });
+const pubISO = data.pubDate.toISOString().slice(0, 10);
+const updISO = (data.updatedDate ?? data.pubDate).toISOString().slice(0, 10);
+
+const jsonLd = [
+  articleSchema({
+    title: data.title,
+    description: data.description,
+    url: path,
+    datePublished: data.pubDate,
+    dateModified: data.updatedDate ?? data.pubDate,
+    image: data.image,
+  }),
+  breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Blog", url: "/blog" },
+    { name: "Article", url: path },
+  ]),
+];
+---
+
+<BaseLayout title={`${data.title} | Flash Ads`} description={data.description} path={path} type="article" image={data.image} jsonLd={jsonLd}>
+  <article class="post">
+    <div class="wrap narrow">
+      <nav class="crumbs mono" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> <span aria-hidden="true">/</span> <a href="/blog">Blog</a> <span aria-hidden="true">/</span> <span>{data.category}</span>
+      </nav>
+
+      <span class="eyebrow">{data.category}</span>
+      <h1 class="display">{data.title}</h1>
+
+      <div class="post-meta mono">
+        <time datetime={pubISO}>Publié le {fmt(data.pubDate)}</time>
+        {data.updatedDate && <time datetime={updISO}>· Mis à jour le {fmt(data.updatedDate)}</time>}
+      </div>
+
+      {data.answer && (
+        <AnswerBlock>
+          <p set:html={data.answer} />
+        </AnswerBlock>
+      )}
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {data.relatedService && (
+        <aside class="related">
+          <p class="mono lbl">Pour aller plus loin</p>
+          <a href={data.relatedService} class="btn btn-ghost">Découvrir le service <span class="arrow" aria-hidden="true">→</span></a>
+        </aside>
+      )}
+    </div>
+  </article>
+
+  <CTA />
+</BaseLayout>
+
+<style>
+  .post { padding: 64px 0 20px; }
+  .narrow { max-width: 760px; }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 20px; }
+  .crumbs a { text-decoration: none; color: var(--muted); }
+  .crumbs a:hover { color: var(--flash-deep); }
+  .post h1 { font-size: clamp(30px, 4vw, 46px); font-weight: 600; margin: 16px 0 14px; }
+  .post-meta { font-size: 12px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+  .prose { margin-top: 28px; font-size: 17px; line-height: 1.75; }
+  .prose :global(h2) { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: -.01em; margin: 40px 0 14px; }
+  .prose :global(h3) { font-family: var(--font-display); font-size: 20px; font-weight: 600; margin: 30px 0 10px; }
+  .prose :global(p) { margin: 14px 0; color: var(--ink); }
+  .prose :global(ul), .prose :global(ol) { margin: 14px 0 14px 22px; display: flex; flex-direction: column; gap: 8px; }
+  .prose :global(li) { font-size: 17px; }
+  .prose :global(a) { color: var(--flash-deep); text-decoration: underline; text-underline-offset: 3px; }
+  .prose :global(strong) { font-weight: 600; }
+  .prose :global(blockquote) { border-left: 3px solid var(--flash-deep); padding-left: 18px; margin: 20px 0; color: var(--muted); font-style: italic; }
+  .prose :global(code) { font-family: var(--font-mono); font-size: .9em; background: var(--canvas); padding: 2px 6px; border-radius: 6px; }
+
+  .related { margin-top: 48px; padding-top: 28px; border-top: 1px solid var(--hairline); }
+  .related .lbl { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+</style>

@@ -1,0 +1,16 @@
+---
+/** Carte de service — grille d'aperçu (home, listes). Icône via slot. */
+interface Props {
+  title: string;
+  href: string;
+  linkLabel?: string;
+}
+const { title, href, linkLabel = "En savoir plus" } = Astro.props;
+---
+
+<div class="card reveal">
+  <div class="ico"><slot name="icon" /></div>
+  <h3>{title}</h3>
+  <p><slot /></p>
+  <a href={href} class="lnk">{linkLabel} <span class="arrow" aria-hidden="true">→</span></a>
+</div>

@@ -1,0 +1,55 @@
+---
+/**
+ * Wordmark Flash Ads — mark officiel du design system.
+ * Éclair nu (gradient vertical bleu → rose, jamais violet) +
+ * « Flash » (gras) + « Ads » (regular, slate). Variante claire pour fonds sombres.
+ */
+interface Props {
+  href?: string | null;
+  /** Variante pour fonds sombres (footer/CTA dark). */
+  light?: boolean;
+  /** Hauteur de l'éclair en px. */
+  height?: number;
+}
+const { href = "/", light = false, height = 26 } = Astro.props;
+const Tag = href ? "a" : "div";
+const gradId = `faGrad-${Math.random().toString(36).slice(2, 8)}`;
+const stops = light
+  ? ["#5B9CFF", "#6AA0FF", "#FF6BB0", "#FF5AA6"]
+  : ["#2563FF", "#2E6BFF", "#FF2E8B", "#FF1E84"];
+---
+
+<Tag
+  class:list={["brand", { light }]}
+  style={`--brand-h:${height}px`}
+  {...href ? { href, "aria-label": "Flash Ads — accueil" } : {}}
+>
+  <svg class="bolt" viewBox="0 0 86 110" aria-hidden="true">
+    <defs>
+      <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color={stops[0]} />
+        <stop offset="0.4" stop-color={stops[1]} />
+        <stop offset="0.6" stop-color={stops[2]} />
+        <stop offset="1" stop-color={stops[3]} />
+      </linearGradient>
+    </defs>
+    <path d="M52 4 L8 62 L34 62 L26 106 L78 40 L48 40 Z" fill={`url(#${gradId})`} />
+  </svg>
+  <span class="word">Flash<span class="ads"> Ads</span></span>
+</Tag>
+
+<style>
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--brand-h, 26px) * 0.38);
+    font-family: var(--font-display);
+    text-decoration: none;
+    line-height: 1;
+  }
+  .bolt { height: var(--brand-h, 26px); width: auto; display: block; }
+  .word { font-size: calc(var(--brand-h, 26px) * 0.72); font-weight: 700; letter-spacing: -.02em; color: var(--ink); }
+  .word .ads { font-weight: 400; color: var(--fa-slate); }
+  .brand.light .word { color: #fff; }
+  .brand.light .word .ads { color: var(--fa-slate-light); }
+</style>

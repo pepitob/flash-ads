@@ -1,0 +1,46 @@
+---
+/**
+ * Bloc preuve sociale — témoignages clients (+ avertissement placeholder).
+ * Données dans src/data/temoignages.ts. ⚠️ Remplacer par du réel avant publication.
+ */
+import { testimonials, proofPlaceholder } from "../data/temoignages";
+---
+
+<div class="tm-grid">
+  {
+    testimonials.map((t) => (
+      <figure class="tm reveal">
+        <div class="tm-stars" aria-hidden="true">★★★★★</div>
+        <blockquote>« {t.quote} »</blockquote>
+        <figcaption>
+          <span class="tm-author">{t.author}</span>
+          <span class="tm-meta mono">{t.company} · {t.location}</span>
+        </figcaption>
+      </figure>
+    ))
+  }
+</div>
+{proofPlaceholder && (
+  <p class="tm-warn mono">⚠️ PLACEHOLDER — remplacer par de vrais témoignages clients (avec accord). Voir src/data/temoignages.ts.</p>
+)}
+
+<style>
+  .tm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .tm {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--r);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .tm-stars { color: #f5a623; font-size: 15px; letter-spacing: 2px; }
+  .tm blockquote { font-size: 17px; line-height: 1.6; color: var(--ink); }
+  .tm figcaption { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+  .tm-author { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
+  .tm-meta { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .tm-warn { font-size: 11px; color: var(--muted); margin-top: 16px; text-align: center; }
+
+  @media (max-width: 760px) { .tm-grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,37 @@
+---
+/**
+ * Badge Google Partner officiel (snippet fourni par l'agence).
+ * Lien + image hébergés par Google (gstatic). Chargé en lazy.
+ */
+import { site } from "../data/site";
+
+interface Props {
+  /** Hauteur du badge en px. */
+  height?: number;
+  class?: string;
+}
+const { height = 96, class: className = "" } = Astro.props;
+const { googlePartner } = site;
+---
+
+<a
+  href={googlePartner.url}
+  target="_blank"
+  rel="noopener noreferrer"
+  class:list={["gp-badge", className]}
+  style={`--gp-h:${height}px`}
+  aria-label="Flash Ads est une agence Google Partner — voir le profil officiel"
+>
+  <img
+    src={googlePartner.badgeImg}
+    alt="Badge Google Partner — Flash Ads"
+    height={height}
+    loading="lazy"
+    decoding="async"
+  />
+</a>
+
+<style>
+  .gp-badge { display: inline-flex; line-height: 0; }
+  .gp-badge img { height: var(--gp-h, 96px); width: auto; }
+</style>

@@ -1,0 +1,71 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import QuoteForm from "../components/QuoteForm.astro";
+import { site } from "../data/site";
+import { breadcrumbSchema } from "../lib/schema";
+
+const title = "Contact — Demander un devis gratuit | Flash Ads";
+const description =
+  "Demandez un devis gratuit pour la gestion de vos campagnes Google Ads. Réponse sous un jour ouvré, sans engagement. Indiquez votre budget publicitaire pour une estimation adaptée.";
+const path = "/contact";
+
+const jsonLd = [
+  breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Contact", url: path },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
+  <section class="contact">
+    <div class="wrap contact-grid">
+      <div class="intro">
+        <span class="eyebrow">Demande de devis</span>
+        <h1 class="display">Parlons de votre <span class="flash-word">croissance</span>.</h1>
+        <p class="lead">
+          Décrivez votre situation en deux lignes. On vous répond sous un jour ouvré avec une première
+          lecture honnête — et un devis adapté à votre budget. Sans engagement.
+        </p>
+
+        <ul class="reassure">
+          <li><span class="chk" aria-hidden="true">✓</span> Audit gratuit de votre compte ou de votre marché</li>
+          <li><span class="chk" aria-hidden="true">✓</span> Prix fixes, sans pourcentage sur votre budget</li>
+          <li><span class="chk" aria-hidden="true">✓</span> Sans engagement annuel</li>
+        </ul>
+
+        <div class="direct">
+          <p class="mono lbl">Ou directement</p>
+          <a href={`mailto:${site.email}`} class="mono">{site.email}</a>
+          <a href={`tel:${site.phone.replace(/\s/g, "")}`} class="mono">{site.phone}</a>
+          <p class="mono loc">{site.city} · {site.region} · Suisse</p>
+        </div>
+      </div>
+
+      <div class="form-wrap">
+        <QuoteForm />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact { padding: 72px 0 40px; }
+  .contact-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 64px; align-items: start; }
+  .intro h1 { font-size: clamp(34px, 4.4vw, 52px); font-weight: 600; margin: 18px 0 0; }
+  .lead { font-size: 18px; color: var(--muted); margin-top: 20px; max-width: 26em; }
+  .reassure { list-style: none; margin: 28px 0; display: flex; flex-direction: column; gap: 12px; }
+  .reassure li { display: flex; gap: 11px; align-items: center; font-size: 15px; }
+  .chk { color: var(--flash-deep); font-weight: 700; }
+  .direct { border-top: 1px solid var(--hairline); padding-top: 22px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
+  .direct .lbl { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .direct a { font-size: 14px; color: var(--ink); text-decoration: none; }
+  .direct a:hover { color: var(--flash-deep); }
+  .direct .loc { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .form-wrap { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--r); padding: 34px; box-shadow: var(--shadow); }
+
+  @media (max-width: 900px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .form-wrap { padding: 24px; }
+  }
+</style>

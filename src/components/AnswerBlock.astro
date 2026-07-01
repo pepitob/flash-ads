@@ -1,0 +1,35 @@
+---
+/**
+ * Bloc de réponse directe (GEO) — 2-3 phrases factuelles extractibles par les
+ * moteurs génératifs, sous un H2 formulé comme une question quand pertinent.
+ * Brief §9. Placé en début de page service / article.
+ */
+interface Props {
+  /** Question (devient le H2). Optionnel : si absent, pas de titre. */
+  question?: string;
+  /** Niveau de titre (default h2). */
+  as?: "h2" | "h3";
+}
+const { question, as = "h2" } = Astro.props;
+const Heading = as;
+---
+
+<div class="answer reveal">
+  {question && <Heading class="answer-q display">{question}</Heading>}
+  <div class="answer-body"><slot /></div>
+</div>
+
+<style>
+  .answer {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--flash-deep);
+    border-radius: var(--r);
+    padding: 26px 28px;
+    margin: 8px 0 8px;
+  }
+  .answer-q { font-size: clamp(20px, 2.4vw, 26px); font-weight: 600; margin-bottom: 12px; }
+  .answer-body :global(p) { font-size: 17px; color: var(--ink); }
+  .answer-body :global(p + p) { margin-top: 10px; }
+  .answer-body :global(b) { color: var(--ink); }
+</style>

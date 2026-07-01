@@ -1,0 +1,266 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AdPreview from "../components/AdPreview.astro";
+import SectionHead from "../components/SectionHead.astro";
+import ServiceCard from "../components/ServiceCard.astro";
+import CaseStudyCard from "../components/CaseStudyCard.astro";
+import PricingGrid from "../components/PricingGrid.astro";
+import Testimonials from "../components/Testimonials.astro";
+import GooglePartnerBadge from "../components/GooglePartnerBadge.astro";
+import FAQ from "../components/FAQ.astro";
+import CTA from "../components/CTA.astro";
+import { ui } from "../i18n/fr";
+import { site } from "../data/site";
+import { keyStats, clientLogos } from "../data/temoignages";
+import { serviceSchema, type FaqItem } from "../lib/schema";
+
+const title = "Agence Google Ads pour PME en Suisse | Flash Ads";
+const description =
+  "On vous amène plus de clients avec Google Ads. Prix clairs et publics, aucune commission sur votre budget, sans engagement. Simple, transparent, efficace. Demandez un devis gratuit.";
+
+const faqItems: FaqItem[] = [
+  {
+    question: "Combien ça coûte ?",
+    answer:
+      "Vous payez un montant fixe chaque mois pour la gestion, plus une mise en place au départ. C'est tout. On ne prend aucune commission sur votre budget de pub : cet argent-là, vous le versez directement à Google et il reste à vous. Nos prix sont affichés sur cette page.",
+  },
+  {
+    question: "Est-ce que vous prenez un pourcentage sur mon budget de pub ?",
+    answer:
+      "Non, jamais. Beaucoup d'agences se rémunèrent en prenant un pourcentage de ce que vous dépensez en pub — donc elles gagnent plus quand vous dépensez plus. Nous, on est payés un montant fixe pour bien gérer vos campagnes. Nos intérêts sont les mêmes que les vôtres.",
+  },
+  {
+    question: "Faut-il un rendez-vous avant de commencer ?",
+    answer:
+      "Non, ce n'est pas obligatoire. Comme nos prix sont publics, vous pouvez comparer, nous écrire, ou même payer et démarrer directement. On préfère quand même un court échange au début pour bien comprendre votre besoin — mais c'est vous qui décidez.",
+  },
+  {
+    question: "Faites-vous aussi des sites web ou des réseaux sociaux ?",
+    answer:
+      "Non. On ne fait que de la publicité en ligne. C'est notre seul métier, et c'est exactement pour ça qu'on le fait bien. Pour le reste, on peut vous recommander des partenaires de confiance.",
+  },
+  {
+    question: "Y a-t-il un engagement sur la durée ?",
+    answer:
+      "Non. Vous n'êtes lié par aucun contrat long. Vous restez parce que ça marche, pas parce qu'un papier vous y oblige.",
+  },
+  {
+    question: "À partir de quel budget ça vaut la peine ?",
+    answer:
+      "En dessous d'environ 1 000 CHF par mois de budget de pub, il n'y a pas assez d'activité pour bien régler les campagnes. À partir de là, un accompagnement commence à avoir du sens. On vous le dira franchement si ce n'est pas le moment.",
+  },
+];
+
+const jsonLd = [
+  serviceSchema({
+    name: "Gestion de campagnes Google Ads pour PME",
+    description,
+    url: "/services/google-ads",
+    serviceType: "Publicité en ligne (Google Ads)",
+  }),
+];
+---
+
+<BaseLayout title={title} description={description} path="/" jsonLd={jsonLd}>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Agence Google Ads pour PME · Suisse romande</span>
+        <h1 class="display">
+          Plus de clients grâce à Google, à un prix <span class="flash-word">clair et sans surprise.</span>
+        </h1>
+        <p class="lead">
+          On s'occupe de votre publicité sur Google pour vous amener plus de clients. Vous gardez la
+          main sur votre budget, payé directement à Google. Pas de commission cachée, pas d'engagement,
+          et vous voyez exactement ce que vous payez.
+        </p>
+        <div class="hero-cta">
+          <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
+          <a href="/#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
+        </div>
+        <p class="baseline mono">{site.baseline}</p>
+      </div>
+      <AdPreview />
+    </div>
+  </section>
+
+  <!-- BANDEAU CONFIANCE : badge Google Partner + chiffres + logos -->
+  <div class="trust">
+    <div class="wrap trust-inner">
+      <div class="trust-badge">
+        <GooglePartnerBadge height={72} />
+        <span class="mono">Agence certifiée Google Partner</span>
+      </div>
+      <div class="trust-stats">
+        {keyStats.map((s) => (
+          <div><span class="n display">{s.value}</span><span class="l mono">{s.label}</span></div>
+        ))}
+      </div>
+    </div>
+    <div class="wrap logos">
+      <span class="logos-lbl mono">Ils nous font confiance</span>
+      {clientLogos.map((l) => <span class="logo display">{l}</span>)}
+      <span class="logos-warn mono">⚠️ logos placeholder</span>
+    </div>
+  </div>
+
+  <!-- PROBLÈME / SOLUTION + SPÉCIALISTE -->
+  <section class="problem">
+    <div class="wrap">
+      <div class="problem-grid">
+        <div class="reveal">
+          <span class="eyebrow">Le problème</span>
+          <h2 class="display">Avec la plupart des agences, on ne sait pas ce qu'on paie.</h2>
+          <p class="muted">
+            Une commission sur votre budget qui grimpe quand vous dépensez plus. Un contrat qui vous
+            retient. Des rapports compliqués où on ne comprend rien. Et toujours un rendez-vous de
+            vente avant le moindre prix.
+          </p>
+        </div>
+        <div class="reveal">
+          <span class="eyebrow">Notre façon de faire</span>
+          <h2 class="display">Un seul métier, des prix affichés, zéro mauvaise surprise.</h2>
+          <p class="muted">
+            On ne fait <b>que</b> de la publicité en ligne — pas de site web, pas de logo, pas de
+            réseaux sociaux. Juste vos campagnes, bien faites. Les prix sont sur le site, votre budget
+            reste chez vous, et vous savez toujours ce qu'on fait et pourquoi.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Ce qu'on fait"
+        title="On transforme votre budget de pub en clients."
+        text="Pas de facturation à l'heure ni de commission. On met en place ce qu'il faut pour vous amener des demandes, simplement."
+      />
+      <div class="cards3">
+        <ServiceCard title="Publicité Google" href="/services/google-ads">
+          <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v6h-6" /></svg>
+          Vos annonces s'affichent sur Google au moment où vos clients cherchent ce que vous proposez. On les crée et on les améliore en continu.
+        </ServiceCard>
+        <ServiceCard title="Publicité sur ChatGPT" href="/services/chatgpt-ads" linkLabel="Rejoindre la liste">
+          <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 2a4 4 0 014 4c2 0 4 2 4 4a4 4 0 01-1 7H7a5 5 0 01-1-9 4 4 0 016-5z" /></svg>
+          La pub arrive sur les IA comme ChatGPT. On vous prépare en avance. Inscrivez-vous pour être prévenu en priorité dès l'arrivée en Suisse.
+        </ServiceCard>
+        <ServiceCard title="Savoir ce qui marche" href="/services/tracking-analytics">
+          <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 19V5m4 14V9m4 10V7m4 12v-6m4 6V11" /></svg>
+          On installe les outils qui montrent d'où viennent vos clients. Sans ça, on dépense à l'aveugle. On règle ça proprement.
+        </ServiceCard>
+      </div>
+    </div>
+  </section>
+
+  <!-- TARIFS -->
+  <section id="tarifs">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Nos prix"
+        title="Un prix fixe, affiché. Votre budget de pub reste chez vous."
+        text="Un montant fixe chaque mois pour la gestion, plus une mise en place au départ. Vous payez Google directement avec votre carte."
+      />
+      <PricingGrid ctaHref="/contact" />
+    </div>
+  </section>
+
+  <!-- MÉTHODE résumée -->
+  <section id="methode">
+    <div class="wrap method">
+      <div class="reveal">
+        <span class="eyebrow">Comment on travaille</span>
+        <h2 class="display method-title">Un déroulé clair, du premier échange au premier client.</h2>
+        <p class="muted method-intro">
+          Pas de boîte noire. Vous savez ce qu'on fait, quand, et pourquoi. À chaque étape.
+        </p>
+        <a href="/agence" class="btn btn-ghost method-link">{ui.cta.discoverAgency} <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="steps reveal">
+        <div class="step"><span class="no">01</span><div><h4>On regarde, gratuitement</h4><p>On analyse votre situation et on vous dit franchement si la pub Google vaut le coup pour vous.</p></div></div>
+        <div class="step"><span class="no">02</span><div><h4>On installe la mesure</h4><p>On met en place les outils qui montrent ce qui marche. Sans ça, impossible de savoir où va votre argent.</p></div></div>
+        <div class="step"><span class="no">03</span><div><h4>On crée vos annonces</h4><p>On construit vos campagnes et on choisit les bons mots, adaptés à votre métier.</p></div></div>
+        <div class="step"><span class="no">04</span><div><h4>On améliore et on vous tient au courant</h4><p>On ajuste en continu et on vous envoie un rapport simple : ce qu'on a fait, ce que ça donne.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TÉMOIGNAGES -->
+  <section class="proof">
+    <div class="wrap">
+      <SectionHead eyebrow="Ils en parlent" title="Ce que disent nos clients." />
+      <Testimonials />
+    </div>
+  </section>
+
+  <!-- RÉSULTATS / CAS -->
+  <section id="cas">
+    <div class="wrap">
+      <SectionHead eyebrow="Résultats" title="Des chiffres, pas des promesses." />
+      <p class="cases-disclaimer mono">
+        ⚠️ PLACEHOLDER — remplacer par des résultats clients réels (anonymisés). Détail sur la page Publicité Google.
+      </p>
+      <div class="cases">
+        <CaseStudyCard metric="2×" who="Commerce · Sion">
+          Deux fois plus de demandes en six mois, sans augmenter le budget.
+        </CaseStudyCard>
+        <CaseStudyCard metric="−34%" who="Cabinet · Lausanne">
+          Chaque nouveau patient coûte un tiers de moins qu'avant.
+        </CaseStudyCard>
+        <CaseStudyCard metric="4 ×" who="Boutique en ligne · Genève">
+          Pour 1 franc investi en pub, plus de 4 francs de ventes.
+        </CaseStudyCard>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <FAQ items={faqItems} title="Vos questions, nos réponses." />
+
+  <!-- CTA FINAL -->
+  <CTA />
+</BaseLayout>
+
+<style>
+  .hero { position: relative; padding: 96px 0 56px; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
+  .hero h1 { font-size: clamp(38px, 5.2vw, 56px); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; margin: 18px 0 0; }
+  .hero .lead { font-size: 19px; color: var(--muted); max-width: 31em; margin-top: 22px; }
+  .hero-cta { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
+  .baseline { margin-top: 22px; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+
+  /* trust strip */
+  .trust { border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); padding: 28px 0; background: var(--paper); }
+  .trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .trust-badge { display: flex; align-items: center; gap: 16px; }
+  .trust-badge .mono { font-size: 12px; letter-spacing: .08em; color: var(--muted); max-width: 14em; }
+  .trust-stats { display: flex; gap: 40px; flex-wrap: wrap; }
+  .trust-stats div { display: flex; flex-direction: column; gap: 3px; }
+  .trust-stats .n { font-weight: 700; font-size: 28px; letter-spacing: -.02em; }
+  .trust-stats .l { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .logos { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--hairline); }
+  .logos-lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .logo { font-weight: 700; font-size: 17px; color: var(--ink); opacity: .3; }
+  .logos-warn { font-size: 10px; color: var(--muted); opacity: .6; margin-left: auto; }
+
+  .problem { padding-top: 56px; }
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .problem-grid h2 { font-size: clamp(23px, 2.7vw, 31px); font-weight: 600; margin-top: 14px; }
+  .muted { color: var(--muted); font-size: 16px; margin-top: 14px; max-width: 33em; }
+
+  .method-title { font-size: clamp(28px, 3.4vw, 40px); font-weight: 600; margin-top: 16px; }
+  .method-intro { margin-top: 16px; }
+  .method-link { margin-top: 26px; }
+
+  .cases-disclaimer { font-size: 11px; color: var(--muted); margin: -28px 0 24px; }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero { padding: 64px 0 40px; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .trust-inner { gap: 22px; }
+  }
+</style>

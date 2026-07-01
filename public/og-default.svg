@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2563FF"/>
+      <stop offset="0.4" stop-color="#2E6BFF"/>
+      <stop offset="0.6" stop-color="#FF2E8B"/>
+      <stop offset="1" stop-color="#FF1E84"/>
+    </linearGradient>
+    <linearGradient id="gh" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2563FF"/>
+      <stop offset="0.4" stop-color="#2E6BFF"/>
+      <stop offset="0.6" stop-color="#FF2E8B"/>
+      <stop offset="1" stop-color="#FF1E84"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="88%" cy="12%" r="55%">
+      <stop offset="0%" stop-color="#2563FF" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#2563FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g transform="translate(96,120)">
+    <svg width="70" height="90" viewBox="0 0 86 110"><path d="M52 4 L8 62 L34 62 L26 106 L78 40 L48 40 Z" fill="url(#g)"/></svg>
+    <text x="92" y="72" font-family="'Space Grotesk',sans-serif" font-size="58" font-weight="700" fill="#161a28" letter-spacing="-1.5">Flash<tspan fill="#8a90a0" font-weight="400"> Ads</tspan></text>
+  </g>
+  <text x="98" y="340" font-family="'Space Grotesk',sans-serif" font-size="54" font-weight="700" fill="#161a28" letter-spacing="-1.8">Plus de clients grâce à Google,</text>
+  <text x="98" y="406" font-family="'Space Grotesk',sans-serif" font-size="54" font-weight="700" letter-spacing="-1.8"><tspan fill="#161a28">à un prix </tspan><tspan fill="url(#gh)">clair et sans surprise.</tspan></text>
+  <text x="98" y="500" font-family="'Space Grotesk',sans-serif" font-size="22" font-weight="600" fill="#aeb4c2" letter-spacing="3">SIMPLE. TRANSPARENT. EFFICACE.</text>
+</svg>

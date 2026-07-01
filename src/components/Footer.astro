@@ -1,0 +1,96 @@
+---
+import Brand from "./Brand.astro";
+import GooglePartnerBadge from "./GooglePartnerBadge.astro";
+import { site, nav } from "../data/site";
+import { ui } from "../i18n/fr";
+
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <Brand href="/" />
+        <p>{ui.footer.tagline}</p>
+        <div class="foot-badge"><GooglePartnerBadge height={64} /></div>
+      </div>
+
+      <div class="foot-col">
+        <h5>{ui.footer.agency}</h5>
+        <a href="/agence">Agence</a>
+        <a href="/agence#methode">Méthode</a>
+        <a href="/blog">Blog</a>
+        <a href="/contact">Contact</a>
+      </div>
+
+      <div class="foot-col">
+        <h5>{ui.footer.services}</h5>
+        {nav.services.map((s) => <a href={s.href}>{s.label}</a>)}
+      </div>
+
+      <div class="foot-col">
+        <h5>{ui.footer.contact}</h5>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+        <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+        <span class="loc">{site.city} · {site.region}</span>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© {year} {site.name}. {ui.footer.rights}</span>
+      <span class="legal">
+        {nav.legal.map((l, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true"> · </span>}
+            <a href={l.href}>{l.label}</a>
+          </>
+        ))}
+      </span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  footer { padding: 64px 0 40px; border-top: 1px solid var(--hairline); margin-top: 92px; }
+  .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 36px; }
+  .foot-grid p { color: var(--muted); font-size: 14px; margin-top: 14px; max-width: 24em; }
+  .foot-badge { margin-top: 18px; }
+  .foot-col h5 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .foot-col a,
+  .foot-col .loc {
+    display: block;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14px;
+    opacity: .75;
+    margin-bottom: 9px;
+    transition: opacity .15s;
+  }
+  .foot-col a:hover { opacity: 1; }
+  .foot-col .loc { opacity: .55; }
+  .foot-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--hairline);
+    font-size: 13px;
+    color: var(--muted);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .legal a { text-decoration: none; color: var(--muted); }
+  .legal a:hover { color: var(--ink); }
+
+  @media (max-width: 900px) {
+    .foot-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+  }
+</style>

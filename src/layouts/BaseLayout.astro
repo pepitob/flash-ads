@@ -1,0 +1,68 @@
+---
+import "../styles/global.css";
+import SEOHead from "../components/seo/SEOHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { organizationSchema } from "../lib/schema";
+
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  image?: string;
+  noindex?: boolean;
+  /** JSON-LD spécifiques à la page (Service, FAQPage, Article, Breadcrumb…). */
+  jsonLd?: Record<string, unknown>[];
+  type?: "website" | "article";
+}
+
+const { title, description, path, image, noindex, jsonLd = [], type } = Astro.props;
+
+// Organization injecté globalement + schémas spécifiques à la page.
+const allSchemas = [organizationSchema(), ...jsonLd];
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <SEOHead
+      title={title}
+      description={description}
+      path={path}
+      image={image}
+      noindex={noindex}
+      jsonLd={allSchemas}
+      type={type}
+    />
+  </head>
+  <body>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <!-- Reveal au scroll (IntersectionObserver). Respecte prefers-reduced-motion via CSS. -->
+    <script>
+      const els = document.querySelectorAll<HTMLElement>(".reveal");
+      if (els.length) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add("in");
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12 },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,107 @@
+---
+/**
+ * Formulaire de demande de devis (brief §6.7).
+ * Endpoint host-agnostic via env (PUBLIC_FORMSPREE_QUOTE_ID) — email + webhook-ready.
+ * Anti-spam : honeypot. Validation côté client (required + types). Succès inline (JS).
+ * Champ budget = pré-qualification du palier tarifaire.
+ */
+import { ui } from "../i18n/fr";
+
+const endpointId = import.meta.env.PUBLIC_FORMSPREE_QUOTE_ID ?? "";
+const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
+---
+
+<form class="lead-form" id="quote-form" method="POST" action={action} novalidate>
+  {!endpointId && (
+    <p class="form-warn">
+      ⚠️ Endpoint non configuré : définissez <code>PUBLIC_FORMSPREE_QUOTE_ID</code> dans <code>.env</code>.
+    </p>
+  )}
+
+  <div class="grid2">
+    <label>{ui.form.name}*<input type="text" name="nom" required autocomplete="name" /></label>
+    <label>{ui.form.company}<input type="text" name="entreprise" autocomplete="organization" /></label>
+  </div>
+  <div class="grid2">
+    <label>{ui.form.email}*<input type="email" name="email" required autocomplete="email" /></label>
+    <label>{ui.form.phone}<input type="tel" name="telephone" autocomplete="tel" /></label>
+  </div>
+  <label>{ui.form.website}<input type="url" name="site_web" placeholder="https://" /></label>
+
+  <label>{ui.form.budget}
+    <select name="budget">
+      <option value="">— Sélectionnez —</option>
+      <option value="<1000">Moins de 1 000 CHF/mois</option>
+      <option value="1000-2500">1 000 – 2 500 CHF/mois</option>
+      <option value="2500-8000">2 500 – 8 000 CHF/mois</option>
+      <option value="8000-25000">8 000 – 25 000 CHF/mois</option>
+      <option value=">25000">Plus de 25 000 CHF/mois</option>
+    </select>
+  </label>
+
+  <label>{ui.form.message}<textarea name="message" rows="4"></textarea></label>
+
+  <!-- Honeypot anti-spam (caché aux humains, rempli par les bots) -->
+  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="gotcha" aria-hidden="true" />
+
+  <button type="submit" class="btn btn-primary">{ui.form.submit} <span class="arrow" aria-hidden="true">→</span></button>
+
+  <p class="form-success" id="quote-success" hidden role="status">
+    <strong>{ui.form.successTitle}</strong><br />{ui.form.successBody}
+  </p>
+  <p class="form-error" id="quote-error" hidden role="alert">
+    Une erreur est survenue. Réessayez ou écrivez-nous directement.
+  </p>
+</form>
+
+<style>
+  .lead-form { display: flex; flex-direction: column; gap: 16px; max-width: 620px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--ink); }
+  input, select, textarea {
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    background: var(--paper);
+    color: var(--ink);
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: var(--ring-accent);
+  }
+  textarea { resize: vertical; }
+  .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; }
+  .lead-form .btn { align-self: flex-start; margin-top: 4px; }
+  .form-success { background: rgba(37, 99, 255, .06); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
+  .form-error { color: #b00020; font-size: 14px; }
+  .form-warn { background: #fff6d6; border: 1px solid #f0e0a0; border-radius: 10px; padding: 10px 14px; font-size: 13px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const form = document.getElementById("quote-form") as HTMLFormElement | null;
+  const ok = document.getElementById("quote-success");
+  const err = document.getElementById("quote-error");
+  if (form && form.action) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      err?.setAttribute("hidden", "");
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        if (res.ok) { form.reset(); form.style.display = "none"; ok?.removeAttribute("hidden"); }
+        else throw new Error("bad response");
+      } catch {
+        err?.removeAttribute("hidden");
+      }
+    });
+  }
+</script>

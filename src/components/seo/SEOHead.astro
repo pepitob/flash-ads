@@ -1,0 +1,63 @@
+---
+/**
+ * SEOHead — title/meta/canonical/OG/Twitter + JSON-LD par page.
+ * Un seul point de gestion des balises <head> SEO/GEO (brief §9).
+ */
+import { site } from "../../data/site";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Chemin canonique de la page (ex: "/services/google-ads"). */
+  path?: string;
+  /** Image OG relative ou absolue. */
+  image?: string;
+  /** Empêcher l'indexation (pages utilitaires). */
+  noindex?: boolean;
+  /** Objets JSON-LD à injecter (schema.org). */
+  jsonLd?: Record<string, unknown>[];
+  type?: "website" | "article";
+}
+
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  image = "/og-default.svg",
+  noindex = false,
+  jsonLd = [],
+  type = "website",
+} = Astro.props;
+
+const canonical = new URL(path, site.url).href;
+const ogImage = new URL(image, site.url).href;
+const fullTitle = title.includes(site.name) ? title : `${title} · ${site.name}`;
+---
+
+<!-- Primary meta -->
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:locale" content="fr_CH" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- JSON-LD -->
+{
+  jsonLd.map((obj) => (
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(obj)} />
+  ))
+}

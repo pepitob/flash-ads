@@ -1,0 +1,258 @@
+---
+/**
+ * Header sticky + navigation responsive (menu burger mobile).
+ * Seul JS de navigation : toggle du menu mobile (vanilla, accessible).
+ */
+import Brand from "./Brand.astro";
+import { nav } from "../data/site";
+import { ui } from "../i18n/fr";
+---
+
+<a href="#main" class="skip-link">{ui.nav.skipToContent}</a>
+
+<header>
+  <div class="wrap nav">
+    <Brand href="/" />
+
+    <nav class="nav-links" aria-label="Navigation principale">
+      {
+        nav.main.map((item) =>
+          "children" in item ? (
+            <div class="nav-item">
+              <a href={item.href} class="nav-trigger" aria-haspopup="true">
+                {item.label}
+                <svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              </a>
+              <div class="dropdown" role="menu">
+                {item.children.map((c) => (
+                  <a href={c.href} role="menuitem">{c.label}</a>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <a href={item.href}>{item.label}</a>
+          ),
+        )
+      }
+    </nav>
+
+    <div class="nav-cta">
+      <a href="/contact" class="btn btn-primary">{ui.cta.quoteShort}</a>
+      <button
+        type="button"
+        class="burger"
+        aria-label={ui.nav.openMenu}
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="mobile-menu" hidden>
+    <nav aria-label="Navigation mobile">
+      {
+        nav.main.map((item) =>
+          "children" in item ? (
+            <>
+              <a href={item.href}>{item.label}</a>
+              <div class="mobile-sub">
+                {item.children.map((c) => (
+                  <a href={c.href} class="sub-link">{c.label}</a>
+                ))}
+              </div>
+            </>
+          ) : (
+            <a href={item.href}>{item.label}</a>
+          ),
+        )
+      }
+      <a href="/contact" class="btn btn-primary mobile-cta">{ui.cta.quoteShort}</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 0 0 10px 0;
+    font-size: 14px;
+  }
+  .skip-link:focus { left: 0; }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: saturate(180%) blur(12px);
+    background: rgba(255, 255, 255, .9);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 68px;
+  }
+  .nav-links { display: flex; gap: 30px; align-items: center; }
+  .nav-links > a,
+  .nav-trigger {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 500;
+    opacity: .78;
+    transition: opacity .15s;
+  }
+  .nav-links > a:hover,
+  .nav-links > a:focus-visible,
+  .nav-item:hover .nav-trigger,
+  .nav-item:focus-within .nav-trigger { opacity: 1; }
+  .nav-cta { display: flex; align-items: center; gap: 14px; }
+
+  /* Dropdown Services */
+  .nav-item { position: relative; }
+  .nav-trigger { display: inline-flex; align-items: center; gap: 5px; }
+  .nav-trigger .chev { width: 14px; height: 14px; stroke: currentColor; transition: transform .2s ease; }
+  .nav-item:hover .nav-trigger .chev,
+  .nav-item:focus-within .nav-trigger .chev { transform: rotate(180deg); }
+
+  .dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: -14px;
+    min-width: 232px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity .18s ease, transform .18s ease, visibility .18s;
+  }
+  /* Pont invisible pour ne pas perdre le survol entre trigger et panneau */
+  .dropdown::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 12px;
+  }
+  .nav-item:hover .dropdown,
+  .nav-item:focus-within .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .dropdown a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 14.5px;
+    font-weight: 500;
+    opacity: .82;
+    padding: 11px 14px;
+    border-radius: 9px;
+    transition: background .15s, opacity .15s;
+  }
+  .dropdown a:hover,
+  .dropdown a:focus-visible { opacity: 1; background: rgba(37, 99, 255, .07); }
+
+  .burger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    background: var(--paper);
+    cursor: pointer;
+  }
+  .burger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    margin: 0 auto;
+    background: var(--ink);
+    border-radius: 2px;
+    transition: transform .2s ease, opacity .2s ease;
+  }
+  .burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .mobile-menu { border-bottom: 1px solid var(--hairline); background: var(--paper); }
+  .mobile-menu nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 12px 28px 22px;
+  }
+  .mobile-menu a {
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 500;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .mobile-sub { display: flex; flex-direction: column; }
+  .mobile-sub .sub-link {
+    font-size: 15px;
+    font-weight: 500;
+    opacity: .72;
+    padding: 11px 4px 11px 18px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .mobile-sub .sub-link::before { content: "↳"; margin-right: 9px; color: var(--flash-deep); opacity: .8; }
+  .mobile-menu .mobile-cta {
+    border-bottom: none;
+    justify-content: center;
+    margin-top: 14px;
+  }
+
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .burger { display: flex; }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector<HTMLButtonElement>(".burger");
+  const menu = document.getElementById("mobile-menu");
+  if (burger && menu) {
+    const setOpen = (open: boolean) => {
+      burger.setAttribute("aria-expanded", String(open));
+      burger.setAttribute("aria-label", open ? "Fermer le menu" : "Ouvrir le menu");
+      menu.hidden = !open;
+    };
+    burger.addEventListener("click", () =>
+      setOpen(burger.getAttribute("aria-expanded") !== "true"),
+    );
+    // Close on link click + Escape
+    menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && burger.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        burger.focus();
+      }
+    });
+  }
+</script>

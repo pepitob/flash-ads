@@ -1,0 +1,27 @@
+---
+/**
+ * Carte de cas client — chiffre signature (gradient) + contexte/résultat.
+ * ⚠️ Utiliser uniquement des données RÉELLES (anonymisées). Pas de faux chiffres.
+ */
+interface Props {
+  metric: string;
+  who: string;
+  /** Détail optionnel contexte → action → résultat. */
+  context?: string;
+  action?: string;
+}
+const { metric, who, context, action } = Astro.props;
+---
+
+<div class="case reveal">
+  <div class="metric">{metric}</div>
+  <div class="who">{who}</div>
+  <p><slot /></p>
+  {context && <p class="detail"><b>Contexte :</b> {context}</p>}
+  {action && <p class="detail"><b>Action :</b> {action}</p>}
+</div>
+
+<style>
+  .detail { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  .detail b { color: var(--ink); font-weight: 600; }
+</style>

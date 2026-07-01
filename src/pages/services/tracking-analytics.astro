@@ -1,0 +1,118 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AnswerBlock from "../../components/AnswerBlock.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import FAQ from "../../components/FAQ.astro";
+import CTA from "../../components/CTA.astro";
+import { ui } from "../../i18n/fr";
+import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
+
+const title = "Savoir d'où viennent vos clients (mesure & suivi) | Flash Ads";
+const description =
+  "Si vous ne mesurez pas d'où viennent vos clients, vous dépensez à l'aveugle. Flash Ads installe proprement les outils de mesure de Google (GA4, Tag Manager) et vérifie que tout fonctionne. En prestation seule ou avec la gestion.";
+const path = "/services/tracking-analytics";
+
+const faqItems: FaqItem[] = [
+  {
+    question: "Pourquoi c'est si important de mesurer ?",
+    answer:
+      "Sans mesure fiable, vous pilotez à l'aveugle : impossible de savoir quelles annonces vous amènent vraiment des clients. Du coup, l'argent part un peu partout et les décisions sont faussées. Bien mesurer, c'est la base pour dépenser au bon endroit.",
+  },
+  {
+    question: "Qu'est-ce que vous installez exactement ?",
+    answer:
+      "Les outils de mesure de Google — Google Analytics et Google Tag Manager — ainsi que le suivi des demandes qui arrivent (formulaire rempli, appel, achat). Ensuite on teste chaque élément pour être sûr que tout se déclenche correctement, et on vous explique le tout simplement.",
+  },
+  {
+    question: "Peut-on faire ça sans vous confier la gestion des campagnes ?",
+    answer:
+      "Oui. La mise en place de la mesure peut se faire seule, sans nous confier vos campagnes. Elle est aussi comprise dans la mise en place quand vous nous confiez votre publicité.",
+  },
+  {
+    question: "Et la protection des données ?",
+    answer:
+      "On respecte la loi suisse (nLPD) et le RGPD : gestion du consentement, et respect du choix de vos visiteurs sur les cookies non essentiels. C'est fait proprement.",
+  },
+];
+
+const jsonLd = [
+  serviceSchema({
+    name: "Mise en place de la mesure (suivi des résultats)",
+    description,
+    url: path,
+    serviceType: "Mesure et suivi des résultats",
+  }),
+  breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Services", url: path },
+    { name: "Savoir ce qui marche", url: path },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
+  <section class="page-hero">
+    <div class="wrap">
+      <nav class="crumbs mono" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Savoir ce qui marche</span>
+      </nav>
+      <span class="eyebrow">Mesure & suivi des résultats</span>
+      <h1 class="display">Savoir exactement <span class="flash-word">d'où viennent vos clients.</span></h1>
+
+      <AnswerBlock question="Pourquoi c'est important ?">
+        <p>
+          <b>Sans mesure, on dépense à l'aveugle.</b> Si on ne sait pas quelles annonces vous amènent
+          vraiment des clients, l'argent part un peu partout. Flash Ads installe proprement les
+          <b>outils de mesure de Google</b> et vérifie, un par un, que tout fonctionne. Possible
+          <b>seul</b>, ou compris quand vous nous confiez votre publicité.
+        </p>
+      </AnswerBlock>
+
+      <div class="hero-cta">
+        <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Ce qu'on met en place"
+        title="Des chiffres fiables, vérifiés, expliqués."
+      />
+      <div class="cards3">
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 19V5m4 14V9m4 10V7m4 12v-6m4 6V11" /></svg></div>
+          <h3>Les outils de mesure de Google</h3>
+          <p>On installe Google Analytics et Tag Manager — réglés pour votre activité, pas un copier-coller générique.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 7h-9M14 17H5M17 3l4 4-4 4M7 21l-4-4 4-4" /></svg></div>
+          <h3>Le suivi des demandes</h3>
+          <p>Chaque demande qui arrive (formulaire, appel, achat) est comptée, pour savoir d'où elle vient.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg></div>
+          <h3>On vérifie tout</h3>
+          <p>Avant de lancer, on teste chaque élément (un vrai formulaire, un vrai appel). Pas de « ça devrait marcher ».</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <FAQ items={faqItems} title="Vos questions sur la mesure" eyebrow="FAQ · Mesure" />
+
+  <CTA
+    title="Vous savez vraiment d'où viennent vos clients ?"
+    text="On regarde votre mesure actuelle et on vous dit ce qui manque. C'est souvent là que se cache l'argent gaspillé."
+  />
+</BaseLayout>
+
+<style>
+  .page-hero { padding: 72px 0 20px; }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted); }
+  .crumbs a:hover { color: var(--flash-deep); }
+  .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 15em; }
+  .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+</style>

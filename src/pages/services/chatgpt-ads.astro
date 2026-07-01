@@ -1,0 +1,185 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AnswerBlock from "../../components/AnswerBlock.astro";
+import WaitlistForm from "../../components/WaitlistForm.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import FAQ from "../../components/FAQ.astro";
+import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
+
+const title = "Publicité ChatGPT en Suisse : liste d'attente | Flash Ads";
+const description =
+  "La publicité ChatGPT (ChatGPT Ads) arrive progressivement hors des États-Unis. Comprenez le format, son état actuel, et inscrivez-vous sur la liste d'attente pour être prioritaire dès l'ouverture en Suisse.";
+const path = "/services/chatgpt-ads";
+
+// Date de mise à jour visible (les moteurs génératifs privilégient le contenu frais).
+const updated = new Date("2026-06-16");
+const updatedStr = updated.toLocaleDateString("fr-CH", { year: "numeric", month: "long", day: "numeric" });
+const updatedISO = updated.toISOString().slice(0, 10);
+
+const faqItems: FaqItem[] = [
+  {
+    question: "Qu'est-ce que la publicité ChatGPT (ChatGPT Ads) ?",
+    answer:
+      "Ce sont des annonces sponsorisées affichées sous certaines réponses de ChatGPT, clairement labellisées comme publicités. Elles n'influencent pas le contenu des réponses générées par l'IA. Le format a été lancé en test aux États-Unis le 9 février 2026 pour les utilisateurs Free et Go.",
+  },
+  {
+    question: "La publicité ChatGPT est-elle disponible en Suisse ?",
+    answer:
+      "Pas encore. À la date de mise à jour de cette page (juin 2026), ChatGPT Ads est ouvert aux États-Unis et son expansion a commencé au Canada, en Australie et en Nouvelle-Zélande. L'arrivée en Europe, et donc en Suisse, est probable à moyen terme mais n'est pas confirmée.",
+  },
+  {
+    question: "Comment ça marche, concrètement ?",
+    answer:
+      "Depuis le 5 mai 2026, les entreprises américaines peuvent créer leurs annonces elles-mêmes. On paie au clic (environ 3 à 5 dollars par clic au lancement), sans montant minimum, et on peut mesurer les résultats. Le fonctionnement pourra évoluer avant l'arrivée en Europe.",
+  },
+  {
+    question: "Pourquoi se préparer maintenant si ce n'est pas encore disponible ?",
+    answer:
+      "Parce que l'avantage au premier entrant est réel : sur un canal nouveau et peu concurrentiel, les annonceurs présents tôt apprennent plus vite et paient moins cher. Se préparer, c'est aussi soigner sa visibilité dans les réponses IA (GEO/AEO), un travail utile dès aujourd'hui.",
+  },
+  {
+    question: "Que se passe-t-il quand je m'inscris sur la liste d'attente ?",
+    answer:
+      "Vous recevez un seul e-mail : celui qui vous prévient, en priorité, le jour où la publicité ChatGPT ouvre en Suisse. Aucune sollicitation commerciale entre-temps. Votre adresse n'est utilisée que pour cette alerte.",
+  },
+];
+
+const jsonLd = [
+  serviceSchema({
+    name: "Publicité ChatGPT (liste d'attente)",
+    description,
+    url: path,
+    serviceType: "Préparation à la publicité sur ChatGPT",
+  }),
+  breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Services", url: path },
+    { name: "Publicité ChatGPT", url: path },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
+  <section class="page-hero">
+    <div class="wrap">
+      <nav class="crumbs mono" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité ChatGPT</span>
+      </nav>
+      <span class="eyebrow">Publicité IA · Anticipation</span>
+      <h1 class="display">La publicité <span class="flash-word">ChatGPT</span> arrive. Prenez une longueur d'avance.</h1>
+      <p class="updated mono">Mis à jour le <time datetime={updatedISO}>{updatedStr}</time></p>
+
+      <AnswerBlock>
+        <p>
+          <b>La publicité ChatGPT</b> désigne des annonces sponsorisées affichées sous certaines
+          réponses de ChatGPT, clairement labellisées et sans influence sur le contenu généré. Le
+          format est <b>en test aux États-Unis depuis février 2026</b> et son déploiement
+          international a commencé (Canada, Australie, Nouvelle-Zélande). <b>La Suisse n'est pas
+          encore couverte</b>, mais une arrivée en Europe est probable à moyen terme. Flash Ads ne
+          vend pas encore ce service : nous vous préparons et vous prévenons en priorité.
+        </p>
+      </AnswerBlock>
+    </div>
+  </section>
+
+  <!-- FORMAT -->
+  <section>
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Le format"
+        title="Des annonces clairement séparées des réponses."
+        text="Contrairement aux craintes, la publicité n'altère pas les réponses de l'IA."
+      />
+      <div class="cards3">
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg></div>
+          <h3>Sous la réponse</h3>
+          <p>L'annonce apparaît après la réponse de ChatGPT, dans une zone identifiée, sans se substituer au contenu généré.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg></div>
+          <h3>Clairement labellisée</h3>
+          <p>Chaque annonce est marquée comme publicité. L'utilisateur sait ce qui est sponsorisé et ce qui ne l'est pas.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 20V10M18 20V4M6 20v-4" /></svg></div>
+          <h3>On paie au clic</h3>
+          <p>Vous payez quand quelqu'un clique (environ 3 à 5 dollars par clic au lancement aux États-Unis), sans montant minimum, et les résultats se mesurent.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POURQUOI MAINTENANT -->
+  <section class="why">
+    <div class="wrap why-grid">
+      <div class="reveal">
+        <span class="eyebrow">Pourquoi s'y préparer</span>
+        <h2 class="display">Le premier entrant apprend plus vite et paie moins cher.</h2>
+        <p class="muted">
+          Sur un canal tout neuf, il y a peu de concurrence et les coûts sont bas. Ceux qui arrivent
+          en premier apprennent plus vite et paient moins cher que ceux qui s'y mettront plus tard.
+          S'y préparer, c'est aussi soigner dès maintenant votre présence dans les réponses des IA —
+          un travail qui aide déjà votre visibilité sur Google.
+        </p>
+      </div>
+      <div class="why-panel reveal">
+        <span class="eyebrow">État du déploiement</span>
+        <ul class="timeline mono">
+          <li><b>9 fév. 2026</b> — Test aux États-Unis (Free + Go)</li>
+          <li><b>5 mai 2026</b> — Ads Manager self-serve ouvert aux entreprises US</li>
+          <li><b>2026</b> — Expansion : Canada, Australie, Nouvelle-Zélande</li>
+          <li class="pending"><b>À venir</b> — Europe et Suisse (non confirmé)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTE D'ATTENTE (CTA principal) -->
+  <section id="liste" class="waitlist">
+    <div class="wrap">
+      <div class="waitlist-box reveal">
+        <span class="eyebrow">Liste d'attente</span>
+        <h2 class="display">Soyez prévenu·e et prioritaire dès l'ouverture en Suisse.</h2>
+        <p class="muted">
+          Laissez votre e-mail. Le jour où la publicité ChatGPT devient disponible en Suisse, vous
+          êtes parmi les premiers informés — et accompagnés si vous le souhaitez.
+        </p>
+        <WaitlistForm />
+      </div>
+    </div>
+  </section>
+
+  <FAQ items={faqItems} title="Questions fréquentes sur la publicité ChatGPT" eyebrow="FAQ · ChatGPT Ads" />
+</BaseLayout>
+
+<style>
+  .page-hero { padding: 72px 0 20px; }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted); }
+  .crumbs a:hover { color: var(--flash-deep); }
+  .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 10px; max-width: 15em; }
+  .updated { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+
+  .muted { color: var(--muted); font-size: 16px; margin-top: 14px; max-width: 36em; }
+  .why-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+  .why h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; margin-top: 16px; }
+  .why-panel { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--r); padding: 28px; }
+  .timeline { list-style: none; margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .timeline li { font-size: 13px; color: var(--muted); padding-left: 18px; position: relative; }
+  .timeline li::before { content: ""; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--flash-deep); }
+  .timeline li b { color: var(--ink); }
+  .timeline li.pending::before { background: var(--hairline); border: 1px solid var(--flash-deep); }
+
+  .waitlist-box { background: var(--surface-dark); border-radius: var(--radius-2xl); padding: 56px 44px; position: relative; overflow: hidden; }
+  .waitlist-box::before { content: ""; position: absolute; inset: 0; background: radial-gradient(500px 260px at 100% 0%, rgba(255, 46, 139, .30), transparent 70%); }
+  .waitlist-box > * { position: relative; }
+  .waitlist-box .eyebrow { color: var(--fa-pink-light); }
+  .waitlist-box h2 { color: #fff; font-size: clamp(26px, 3.2vw, 38px); font-weight: 600; margin-top: 16px; max-width: 18em; }
+  .waitlist-box .muted { color: rgba(255, 255, 255, .66); margin-bottom: 26px; }
+
+  @media (max-width: 900px) {
+    .why-grid { grid-template-columns: 1fr; gap: 36px; }
+    .waitlist-box { padding: 40px 24px; }
+  }
+</style>

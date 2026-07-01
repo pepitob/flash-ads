@@ -1,0 +1,215 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AnswerBlock from "../../components/AnswerBlock.astro";
+import PricingGrid from "../../components/PricingGrid.astro";
+import CaseStudyCard from "../../components/CaseStudyCard.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import GooglePartnerBadge from "../../components/GooglePartnerBadge.astro";
+import FAQ from "../../components/FAQ.astro";
+import CTA from "../../components/CTA.astro";
+import { ui } from "../../i18n/fr";
+import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
+
+const title = "Agence Google Ads en Suisse pour PME | Flash Ads";
+const description =
+  "Flash Ads s'occupe de vos publicités sur Google pour vous amener plus de clients. Prix fixe affiché, aucune commission sur votre budget, sans engagement. Agence Google Partner en Suisse romande.";
+const path = "/services/google-ads";
+
+const faqItems: FaqItem[] = [
+  {
+    question: "Concrètement, que faites-vous ?",
+    answer:
+      "On crée et on gère vos publicités sur Google : celles qui s'affichent quand quelqu'un cherche votre produit ou service. On choisit les bons mots, on écrit les annonces, on suit les résultats et on améliore tout ça mois après mois, pour vous amener plus de demandes de clients.",
+  },
+  {
+    question: "Combien coûte la publicité sur Google ?",
+    answer:
+      "Il y a deux choses : le budget de pub (versé directement à Google, à partir d'environ 1 000 CHF/mois pour que ça vaille la peine) et notre montant fixe pour la gestion. Chez nous, ce montant est fixe et affiché : on ne prend aucune commission sur votre budget.",
+  },
+  {
+    question: "Travaillez-vous avec mon compte Google existant ?",
+    answer:
+      "Oui. On peut reprendre votre compte actuel ou en créer un nouveau si besoin. Dans tous les cas, le compte vous appartient : vous gardez la main, et son historique aussi.",
+  },
+  {
+    question: "Faut-il signer un long contrat ?",
+    answer:
+      "Non. Pas d'engagement sur la durée. Vous restez parce que ça marche. Et avant de démarrer, vous choisissez : un court échange avec nous, ou un démarrage direct.",
+  },
+  {
+    question: "À partir de quel budget ça vaut la peine ?",
+    answer:
+      "En dessous d'environ 1 000 CHF par mois de budget de pub, il n'y a pas assez d'activité pour bien régler les campagnes. On vous le dira franchement, lors du premier échange gratuit, si ce n'est pas adapté à votre situation.",
+  },
+];
+
+const jsonLd = [
+  serviceSchema({
+    name: "Gestion de publicités Google Ads",
+    description,
+    url: path,
+    serviceType: "Publicité en ligne (Google Ads)",
+  }),
+  breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Services", url: path },
+    { name: "Publicité Google", url: path },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
+  <section class="page-hero">
+    <div class="wrap">
+      <nav class="crumbs mono" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité Google</span>
+      </nav>
+      <span class="eyebrow">Publicité sur Google</span>
+      <h1 class="display">Vos annonces sur Google, <span class="flash-word">sans commission</span> sur votre budget.</h1>
+
+      <AnswerBlock>
+        <p>
+          <b>Flash Ads s'occupe de vos publicités sur Google</b> pour les PME en Suisse romande : on
+          crée vos annonces, on choisit les bons mots et on améliore tout en continu pour vous amener
+          plus de clients. Vous payez un <b>montant fixe chaque mois</b> — aucune commission sur votre
+          budget de pub, que vous versez directement à Google. On démarre simplement, après un court
+          échange ou directement si vous préférez.
+        </p>
+      </AnswerBlock>
+
+      <div class="hero-cta">
+        <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
+        <a href="/#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
+      </div>
+      <div class="hero-badge"><GooglePartnerBadge height={56} /><span class="mono">Agence certifiée Google Partner</span></div>
+    </div>
+  </section>
+
+  <!-- BÉNÉFICES -->
+  <section>
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Ce que vous y gagnez"
+        title="Des demandes de clients, pas juste des clics."
+        text="On pilote vos campagnes sur ce qui compte vraiment : combien de clients ça vous amène, et à quel prix."
+      />
+      <div class="cards3">
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v6h-6" /></svg></div>
+          <h3>Plus de demandes</h3>
+          <p>Vos annonces apparaissent au moment exact où les gens cherchent ce que vous proposez. Vous touchez des personnes vraiment intéressées.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg></div>
+          <h3>Un coût maîtrisé</h3>
+          <p>On surveille combien vous coûte chaque nouvelle demande, et on coupe ce qui ne rapporte pas. Votre argent va là où il fait venir des clients.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" /></svg></div>
+          <h3>Tout est clair</h3>
+          <p>Rapports simples, accès à votre compte, prix affiché. Vous savez ce qu'on fait, ce que ça coûte, et ce que ça vous rapporte.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMENT ON FAIT -->
+  <section class="process">
+    <div class="wrap process-grid">
+      <div class="reveal">
+        <span class="eyebrow">Comment on fait</span>
+        <h2 class="display">On regarde, on installe, on lance, on améliore.</h2>
+        <p class="muted">
+          Chaque client suit le même déroulé clair : on regarde ce qui existe, on installe de quoi
+          mesurer les résultats, on crée vos annonces, puis on améliore en continu. Le détail complet
+          est sur la page Agence.
+        </p>
+        <a href="/agence#methode" class="btn btn-ghost process-link">{ui.cta.discoverAgency} <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <ul class="proc-list reveal">
+        <li><span class="mono no">01</span> On regarde votre situation, gratuitement</li>
+        <li><span class="mono no">02</span> On installe de quoi voir ce qui marche</li>
+        <li><span class="mono no">03</span> On crée et on lance vos annonces</li>
+        <li><span class="mono no">04</span> On améliore en continu, avec un rapport clair</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- TARIFS -->
+  <section id="tarifs">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Nos prix"
+        title="Trois formules, un prix fixe et affiché."
+        text="Choisissez selon ce que vous voulez investir en pub chaque mois. Pas de commission, pas d'engagement."
+      />
+      <PricingGrid ctaHref="/contact" />
+    </div>
+  </section>
+
+  <!-- RÉSULTATS CLIENTS -->
+  <section>
+    <div class="wrap">
+      <SectionHead eyebrow="Résultats clients" title="Ce qu'on a obtenu pour des PME romandes." />
+      <p class="cases-disclaimer mono">
+        ⚠️ PLACEHOLDER — remplacer par 1-2 résultats clients réels (situation → ce qu'on a fait → résultat chiffré, anonymisables).
+      </p>
+      <div class="cases">
+        <CaseStudyCard
+          metric="2×"
+          who="Commerce · Sion"
+          context="Annonces dispersées, budget gaspillé sur des recherches trop larges."
+          action="On a réorganisé les campagnes et écarté les recherches qui ne rapportaient rien."
+        >
+          Deux fois plus de demandes en six mois, sans augmenter le budget.
+        </CaseStudyCard>
+        <CaseStudyCard
+          metric="−34%"
+          who="Cabinet · Lausanne"
+          context="Chaque nouveau patient coûtait cher, et on ne mesurait pas bien d'où ils venaient."
+          action="On a remis la mesure d'aplomb, puis réécrit les annonces."
+        >
+          Chaque nouveau patient coûte un tiers de moins qu'avant, en trois mois.
+        </CaseStudyCard>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <FAQ items={faqItems} title="Vos questions sur la publicité Google" eyebrow="FAQ · Publicité Google" />
+
+  <CTA
+    title="On regarde votre situation, gratuitement ?"
+    text="On vous dit franchement si la pub Google peut vous amener des clients — et combien ça coûterait. Sans jargon, sans engagement."
+  />
+</BaseLayout>
+
+<style>
+  .page-hero { padding: 72px 0 20px; }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted); }
+  .crumbs a:hover { color: var(--flash-deep); }
+  .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 16em; }
+  .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+  .hero-badge { display: flex; align-items: center; gap: 14px; margin-top: 28px; }
+  .hero-badge .mono { font-size: 12px; letter-spacing: .06em; color: var(--muted); }
+
+  .muted { color: var(--muted); font-size: 16px; margin-top: 14px; max-width: 34em; }
+  .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .process h2 { font-size: clamp(26px, 3vw, 38px); font-weight: 600; margin-top: 16px; }
+  .process-link { margin-top: 24px; }
+  .proc-list { list-style: none; display: flex; flex-direction: column; }
+  .proc-list li {
+    display: flex; gap: 16px; align-items: baseline;
+    padding: 18px 0; border-top: 1px solid var(--hairline);
+    font-size: 16px;
+  }
+  .proc-list li:last-child { border-bottom: 1px solid var(--hairline); }
+  .proc-list .no { color: var(--flash-deep); font-size: 13px; flex: 0 0 auto; }
+
+  .cases-disclaimer { font-size: 11px; color: var(--muted); margin: -28px 0 24px; }
+
+  @media (max-width: 900px) {
+    .process-grid { grid-template-columns: 1fr; gap: 36px; }
+  }
+</style>

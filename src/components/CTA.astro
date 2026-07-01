@@ -1,0 +1,41 @@
+---
+/**
+ * Bloc CTA final — le SEUL moment gradient "bold" autorisé (fond encre +
+ * lueur violette). Réutilisé en bas des pages.
+ */
+import { ui } from "../i18n/fr";
+
+interface Props {
+  title?: string;
+  text?: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+}
+const {
+  title = "On en parle ? Le premier échange est gratuit.",
+  text = "On regarde ensemble votre situation et on vous dit, simplement, ce qui est possible. Sans jargon, sans engagement. Et si vous préférez, vous pouvez aussi démarrer directement.",
+  primaryLabel = ui.cta.quote,
+  primaryHref = "/contact",
+  secondaryLabel = ui.cta.seePricing,
+  secondaryHref = "/#tarifs",
+} = Astro.props;
+---
+
+<section class="cta-section">
+  <div class="wrap">
+    <div class="final reveal">
+      <h2 class="display">{title}</h2>
+      <p>{text}</p>
+      <div class="cta-row">
+        <a href={primaryHref} class="btn btn-primary">{primaryLabel} <span class="arrow" aria-hidden="true">→</span></a>
+        {secondaryLabel && <a href={secondaryHref} class="btn btn-ghost">{secondaryLabel}</a>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-section { padding-top: 0; }
+</style>

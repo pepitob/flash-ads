@@ -1,0 +1,83 @@
+---
+/**
+ * FAQ accordéon + schema FAQPage injecté (clé GEO, brief §9).
+ * Utilise <details>/<summary> natifs : accessible, sans JS, dans le HTML statique.
+ */
+import { faqSchema, type FaqItem } from "../lib/schema";
+
+interface Props {
+  items: FaqItem[];
+  title?: string;
+  eyebrow?: string;
+}
+const { items, title = "Questions fréquentes", eyebrow = "FAQ" } = Astro.props;
+const schema = faqSchema(items);
+---
+
+<section class="faq-section">
+  <div class="wrap faq-layout">
+    <div class="faq-intro reveal">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2 class="display">{title}</h2>
+    </div>
+    <div class="faq-list">
+      {
+        items.map((it) => (
+          <details class="faq-item reveal">
+            <summary>
+              <span>{it.question}</span>
+              <span class="chev" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer"><p>{it.answer}</p></div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+<style>
+  /* Head à gauche, accordéon à droite : occupe toute la largeur du conteneur. */
+  .faq-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+    gap: 56px;
+    align-items: start;
+  }
+  .faq-intro h2 { font-size: clamp(28px, 3.4vw, 42px); font-weight: 600; margin-top: 16px; }
+  .faq-list { width: 100%; }
+  .faq-item { border-bottom: 1px solid var(--hairline); }
+  .faq-item:first-child { border-top: 1px solid var(--hairline); }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 22px 4px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 18px;
+    letter-spacing: -.01em;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary:focus-visible { outline: 2px solid var(--flash-deep); outline-offset: 4px; border-radius: 6px; }
+  .chev {
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 22px;
+    color: var(--flash-deep);
+    transition: transform .2s ease;
+    line-height: 1;
+  }
+  .faq-item[open] .chev { transform: rotate(45deg); }
+  .faq-answer { padding: 0 4px 22px; }
+  .faq-answer p { color: var(--muted); font-size: 16px; max-width: 70ch; }
+
+  @media (max-width: 900px) {
+    .faq-layout { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>

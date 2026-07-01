@@ -1,0 +1,74 @@
+---
+/**
+ * Grille tarifaire (3 paliers) — lit src/data/tarifs.ts (source unique).
+ * Palier du milieu mis en avant.
+ * Deux chemins (brief / décision client) : on FAVORISE un échange préalable
+ * (CTA principal "Demander un devis"), et on offre le self-serve Stripe
+ * ("Payer et démarrer") quand un lien de paiement est configuré.
+ */
+import { tiers, pricingNotes } from "../data/tarifs";
+
+interface Props {
+  /** Lien CTA "échange" par carte. */
+  ctaHref?: string;
+}
+const { ctaHref = "/contact" } = Astro.props;
+
+const Check = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>`;
+---
+
+<div class="price-grid">
+  {
+    tiers.map((tier) => (
+      <div class:list={["price", "reveal", { feat: tier.featured }]}>
+        <span class="tier">{tier.name}</span>
+        <div class="amt">{tier.price}<small>{tier.unit}</small></div>
+        <div class="for">{tier.forBudget}</div>
+        <ul>
+          {tier.features.map((f) => (
+            <li><Fragment set:html={Check} />{f}</li>
+          ))}
+        </ul>
+        <div class="price-cta">
+          <a href={ctaHref} class:list={["btn", tier.featured ? "btn-primary" : "btn-ghost"]}>
+            {tier.ctaLabel}
+          </a>
+          {tier.stripeLink && (
+            <a href={tier.stripeLink} class="start-link" rel="nofollow">
+              ou payer et démarrer <span aria-hidden="true">→</span>
+            </a>
+          )}
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<p class="price-note">{pricingNotes.custom}</p>
+<p class="price-sub">{pricingNotes.exchangeFirst}</p>
+<p class="price-sub">{pricingNotes.budgetSeparate}</p>
+<p class="price-sub">{pricingNotes.qualification}</p>
+
+<style>
+  .price-cta { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .price-cta .btn { justify-content: center; width: 100%; }
+  .start-link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--flash-deep);
+    text-decoration: none;
+    opacity: .85;
+  }
+  .start-link:hover { opacity: 1; text-decoration: underline; }
+  .price-sub {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 8px;
+    max-width: 46em;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+</style>

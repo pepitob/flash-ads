@@ -1,0 +1,15 @@
+---
+/** En-tête de section réutilisable : eyebrow mono + H2 + sous-titre. */
+interface Props {
+  eyebrow: string;
+  title: string;
+  text?: string;
+}
+const { eyebrow, title, text } = Astro.props;
+---
+
+<div class="sec-head reveal">
+  <span class="eyebrow">{eyebrow}</span>
+  <h2 class="display">{title}</h2>
+  {text && <p>{text}</p>}
+</div>
