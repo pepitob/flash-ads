@@ -131,6 +131,47 @@ const jsonLd = [
     </div>
   </section>
 
+  <!-- POURQUOI FLASH ADS / USP -->
+  <section class="why">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Pourquoi nous choisir"
+        title="Tout est pris en main, par une agence certifiée Google."
+        text="Vous nous confiez votre publicité, on s'occupe du reste. Voici ce qui fait la différence."
+      />
+      <div class="cards4">
+        <div class="card reveal">
+          <div class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 8l-9-5-9 5v8l9 5 9-5z" /><path d="M3 8l9 5 9-5" /><path d="M12 13v8" /></svg>
+          </div>
+          <h3>Service clé en main</h3>
+          <p>On s'occupe de tout, de A à Z : création, réglages et suivi de vos campagnes. Vous n'avez rien à gérer — on vous amène les demandes.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z" /><path d="M9 12l2 2 4-4" /></svg>
+          </div>
+          <h3>Agence certifiée Google</h3>
+          <p>Nous sommes agence certifiée Google Partner. Vos campagnes sont montées par des personnes formées et reconnues par Google.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12a8 8 0 0113-6" /><path d="M20 5v4h-4" /><path d="M20 12a8 8 0 01-13 6" /><path d="M4 19v-4h4" /></svg>
+          </div>
+          <h3>Optimisation continue</h3>
+          <p>On ne lance pas vos annonces pour les oublier. Chaque semaine, on les ajuste pour qu'elles vous rapportent toujours plus.</p>
+        </div>
+        <div class="card reveal">
+          <div class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 18a8 8 0 1116 0" /><path d="M12 18l4-5" /></svg>
+          </div>
+          <h3>Résultats rapides et mesurables</h3>
+          <p>Les premières demandes arrivent vite, et vous voyez précisément ce que chaque franc rapporte. Des chiffres clairs, pas des promesses.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- SERVICES -->
   <section id="services">
     <div class="wrap">
@@ -246,6 +287,12 @@ const jsonLd = [
   .logo { font-weight: 700; font-size: 17px; color: var(--ink); opacity: .3; }
   .logos-warn { font-size: 10px; color: var(--muted); opacity: .6; margin-left: auto; }
 
+  .why { padding-top: 64px; }
+  .cards4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .cards4 .card { padding: 26px; }
+  .cards4 h3 { font-size: 18px; font-weight: 600; margin-top: 2px; }
+  .cards4 p { color: var(--muted); font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
+
   .problem { padding-top: 56px; }
   .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
   .problem-grid h2 { font-size: clamp(23px, 2.7vw, 31px); font-weight: 600; margin-top: 14px; }
@@ -262,5 +309,9 @@ const jsonLd = [
     .hero { padding: 64px 0 40px; }
     .problem-grid { grid-template-columns: 1fr; }
     .trust-inner { gap: 22px; }
+    .cards4 { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .cards4 { grid-template-columns: 1fr; }
   }
 </style>
