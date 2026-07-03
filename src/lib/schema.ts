@@ -24,6 +24,8 @@ export function organizationSchema() {
     areaServed: ["CH", "FR", "BE"],
     address: {
       "@type": "PostalAddress",
+      streetAddress: site.street,
+      postalCode: site.postalCode,
       addressLocality: site.city,
       addressRegion: site.region,
       addressCountry: site.country,

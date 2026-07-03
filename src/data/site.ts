@@ -10,10 +10,11 @@ export const site = {
   description:
     "Agence Google Ads pour PME francophones en Suisse romande. Prix fixes et transparents, sans pourcentage sur le budget publicitaire, sans engagement annuel.",
   tagline: "Gestion Google Ads pour PME — transparente et abordable.",
-  email: "hello@flashads.ch",
-  // PLACEHOLDER — remplacer par le numéro réel avant publication.
-  phone: "+41 79 000 00 00",
-  city: "Sion",
+  email: "info@flashads.ch",
+  phone: "+41 27 552 05 07",
+  street: "Chemin du Tsâblo 55",
+  postalCode: "1997",
+  city: "Haute-Nendaz",
   region: "Valais",
   country: "CH",
   // Réseaux sociaux (à compléter ; utilisés dans le champ sameAs du schema).
@@ -49,7 +50,7 @@ export const nav = {
     { label: "Blog", href: "/blog" },
   ],
   legal: [
-    { label: "Mentions légales", href: "/mentions-legales" },
+    { label: "Mentions légales & CGV", href: "/cgv" },
     { label: "Politique de confidentialité", href: "/confidentialite" },
   ],
 } as const;
