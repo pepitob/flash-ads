@@ -27,11 +27,11 @@ export default defineConfig({
 
   integrations: [
     mdx(),
-    // Exclut du sitemap les pages en noindex (légales placeholder) : un sitemap
-    // ne doit lister que des URLs indexables.
+    // Exclut du sitemap les pages légales (CGV, confidentialité) : ce ne sont pas
+    // des cibles de référencement.
     sitemap({
       filter: (page) =>
-        !page.includes('/mentions-legales') && !page.includes('/confidentialite'),
+        !page.includes('/cgv') && !page.includes('/confidentialite'),
     }),
   ],
 });
