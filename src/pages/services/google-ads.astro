@@ -10,9 +10,9 @@ import CTA from "../../components/CTA.astro";
 import { ui } from "../../i18n/fr";
 import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
 
-const title = "Agence Google Ads en Suisse pour PME | Flash Ads";
+const title = "Gestion de campagnes Google Ads en Suisse romande | Flash Ads";
 const description =
-  "Flash Ads s'occupe de vos publicités sur Google pour vous amener plus de clients. Prix fixe affiché, aucune commission sur votre budget, sans engagement. Agence Google Partner en Suisse romande.";
+  "Flash Ads gère vos campagnes Google Ads pour vous amener plus de clients : prix fixe, aucune commission sur votre budget, sans engagement. Google Partner en Suisse romande.";
 const path = "/services/google-ads";
 
 const faqItems: FaqItem[] = [
@@ -49,6 +49,7 @@ const jsonLd = [
     description,
     url: path,
     serviceType: "Publicité en ligne (Google Ads)",
+    withPricing: true, // offres tarifaires (émises seulement si pricingValidated)
   }),
   breadcrumbSchema([
     { name: "Accueil", url: "/" },

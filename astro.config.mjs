@@ -25,5 +25,13 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
 
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    // Exclut du sitemap les pages en noindex (légales placeholder) : un sitemap
+    // ne doit lister que des URLs indexables.
+    sitemap({
+      filter: (page) =>
+        !page.includes('/mentions-legales') && !page.includes('/confidentialite'),
+    }),
+  ],
 });

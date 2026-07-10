@@ -18,6 +18,9 @@ const blog = defineCollection({
     category: z.string().default("Google Ads"),
     /** Réponse directe (GEO) affichée en intro. */
     answer: z.string().optional(),
+    /** Auteur nommé (byline + Person dans le schema Article — fort signal E-E-A-T).
+     *  À renseigner avec un nom réel dès que les associés sont nommés (cf. /agence). */
+    author: z.string().optional(),
     /** Maillage interne : page service liée. */
     relatedService: z.string().optional(),
     draft: z.boolean().default(false),

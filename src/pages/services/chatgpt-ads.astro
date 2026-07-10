@@ -6,9 +6,9 @@ import SectionHead from "../../components/SectionHead.astro";
 import FAQ from "../../components/FAQ.astro";
 import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
 
-const title = "Publicité ChatGPT en Suisse : liste d'attente | Flash Ads";
+const title = "ChatGPT Ads en Suisse : la publicité ChatGPT expliquée | Flash Ads";
 const description =
-  "La publicité ChatGPT (ChatGPT Ads) arrive progressivement hors des États-Unis. Comprenez le format, son état actuel, et inscrivez-vous sur la liste d'attente pour être prioritaire dès l'ouverture en Suisse.";
+  "ChatGPT Ads (publicité ChatGPT) arrive progressivement hors des États-Unis. Comprenez le format et inscrivez-vous à la liste d'attente pour être prioritaire dès l'ouverture en Suisse.";
 const path = "/services/chatgpt-ads";
 
 // Date de mise à jour visible (les moteurs génératifs privilégient le contenu frais).
@@ -73,8 +73,8 @@ const jsonLd = [
         <p>
           <b>La publicité ChatGPT</b> désigne des annonces sponsorisées affichées sous certaines
           réponses de ChatGPT, clairement labellisées et sans influence sur le contenu généré. Le
-          format est <b>en test aux États-Unis depuis février 2026</b> et son déploiement
-          international a commencé (Canada, Australie, Nouvelle-Zélande). <b>La Suisse n'est pas
+          format est <b>en test aux États-Unis depuis février 2026</b> (selon OpenAI) et son
+          déploiement international a commencé (Canada, Australie, Nouvelle-Zélande). <b>La Suisse n'est pas
           encore couverte</b>, mais une arrivée en Europe est probable à moyen terme. Flash Ads ne
           vend pas encore ce service : nous vous préparons et vous prévenons en priorité.
         </p>
@@ -104,7 +104,7 @@ const jsonLd = [
         <div class="card reveal">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 20V10M18 20V4M6 20v-4" /></svg></div>
           <h3>On paie au clic</h3>
-          <p>Vous payez quand quelqu'un clique (environ 3 à 5 dollars par clic au lancement aux États-Unis), sans montant minimum, et les résultats se mesurent.</p>
+          <p>Vous payez quand quelqu'un clique (environ 3 à 5 dollars par clic au lancement aux États-Unis, selon OpenAI), sans montant minimum, et les résultats se mesurent.</p>
         </div>
       </div>
     </div>
@@ -131,6 +131,11 @@ const jsonLd = [
           <li><b>2026</b> — Expansion : Canada, Australie, Nouvelle-Zélande</li>
           <li class="pending"><b>À venir</b> — Europe et Suisse (non confirmé)</li>
         </ul>
+        <p class="tl-source">
+          Source :
+          <a href="https://openai.com/news/" target="_blank" rel="noopener">annonces officielles d'OpenAI</a>.
+          {/* ⚠️ TODO : remplacer par les deep-links exacts des annonces OpenAI une fois vérifiés. */}
+        </p>
       </div>
     </div>
   </section>
@@ -170,6 +175,8 @@ const jsonLd = [
   .timeline li::before { content: ""; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--flash-deep); }
   .timeline li b { color: var(--ink); }
   .timeline li.pending::before { background: var(--hairline); border: 1px solid var(--flash-deep); }
+  .tl-source { font-size: 12px; color: var(--muted); margin-top: 16px; }
+  .tl-source a { color: var(--flash-deep); }
 
   .waitlist-box { background: var(--surface-dark); border-radius: var(--radius-2xl); padding: 56px 44px; position: relative; overflow: hidden; }
   .waitlist-box::before { content: ""; position: absolute; inset: 0; background: radial-gradient(500px 260px at 100% 0%, rgba(255, 46, 139, .30), transparent 70%); }

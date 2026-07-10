@@ -33,6 +33,7 @@ const jsonLd = [
     datePublished: data.pubDate,
     dateModified: data.updatedDate ?? data.pubDate,
     image: data.image,
+    author: data.author,
   }),
   breadcrumbSchema([
     { name: "Accueil", url: "/" },
@@ -53,6 +54,7 @@ const jsonLd = [
       <h1 class="display">{data.title}</h1>
 
       <div class="post-meta mono">
+        {data.author && <span>Par {data.author} ·</span>}
         <time datetime={pubISO}>Publié le {fmt(data.pubDate)}</time>
         {data.updatedDate && <time datetime={updISO}>· Mis à jour le {fmt(data.updatedDate)}</time>}
       </div>

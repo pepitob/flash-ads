@@ -1,5 +1,32 @@
 User-agent: *
 Allow: /
 
+# Crawlers IA explicitement autorisés (citation dans ChatGPT, Perplexity, Claude,
+# Google AI Overviews, Copilot). Déjà couverts par le wildcard — listés ici pour la
+# clarté et pour éviter tout blocage accidentel futur.
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
 # Sitemap
 Sitemap: https://flashads.ch/sitemap-index.xml

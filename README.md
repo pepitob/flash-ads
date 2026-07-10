@@ -143,6 +143,34 @@ Pour changer de prestataire plus tard, il suffit d'adapter `action` dans
 - **Open Graph** : `public/og-default.svg`. ⚠️ Pour une compatibilité maximale (LinkedIn/X),
   exporter une version **PNG 1200×630** et changer le défaut dans `src/components/seo/SEOHead.astro`.
 
+### 🎯 Stratégie de mots-clés (1 mot-clé principal par page)
+
+Un mot-clé principal **par page**, séparés **par intention** pour éviter la cannibalisation
+(la home cible « l'agence », la page service cible « le service »). Volumes = Google Keyword
+Planner (juil. 2026).
+
+| Page | Mot-clé principal | Vol. · concurrence |
+|---|---|---|
+| `/services/chatgpt-ads` | **chatgpt ads** — priorité #1 | 40/mo · faible · +400 %/an |
+| `/services/google-ads` | **gestion google ads** | 20/mo · faible |
+| `/` (accueil) | **agence google ads** + « Suisse romande » | 10/mo (+ cluster « publicité google » 20/mo) |
+| `/services/tracking-analytics` | *suivi de conversion* — déprioritisé | non chiffré |
+
+**Règles à respecter en éditant le contenu :**
+
+- La home **ne doit PAS** viser « chatgpt ads » dans son `title`/H1 : elle le mentionne
+  seulement en thème + ancre de lien vers la page dédiée (sinon cannibalisation).
+- Ne **jamais** viser « google ads » seul (5400/mo) : navigationnel, sans intention d'achat.
+- Ancres de liens internes = **descriptives** (le mot-clé cible), pas « En savoir plus ».
+- Pages légales *placeholder* : `noindex` + exclues du sitemap (`filter` dans `astro.config.mjs`).
+
+**Actions en attente** avant d'investir davantage :
+
+1. Re-pull Keyword Planner en **ciblage Suisse + français** avec des seeds géo
+   (genève/lausanne/valais) — l'export initial était en EUR sans mots-clés géo.
+2. Pull des volumes tracking/GA4/Tag Manager pour trancher la page tracking.
+3. SEO local par ville (pages `/geneve`, `/lausanne`) = phase 2 éventuelle.
+
 ---
 
 ## 🌍 i18n
