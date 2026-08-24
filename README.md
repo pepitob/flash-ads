@@ -1,4 +1,4 @@
-# Flash Ads — site
+# Flash Ads : site
 
 Site vitrine de **Flash Ads**, agence de gestion Google Ads pour PME en Suisse romande.
 Construit avec **Astro 6** (SSG) + **Tailwind CSS 4**. Orienté conversion, SEO et GEO.
@@ -29,7 +29,7 @@ src/
 ├── lib/schema.ts      Helpers JSON-LD (Organization, Service, FAQPage, Article, Breadcrumb)
 ├── data/
 │   ├── site.ts        Identité de l'entreprise + navigation (source unique)
-│   └── tarifs.ts      ⚠️ Paliers tarifaires — SEULE source à modifier pour les prix
+│   └── tarifs.ts      ⚠️ Paliers tarifaires : SEULE source à modifier pour les prix
 ├── i18n/fr.ts         Chaînes d'interface partagées (i18n-ready)
 ├── content/
 │   ├── blog/          Articles (Markdown/MDX)
@@ -97,16 +97,21 @@ Deux options :
 
 ### Modifier les tarifs
 
-Tout se passe dans **`src/data/tarifs.ts`** — un seul endroit, répercuté sur la home
-et la page Google Ads :
+Tout se passe dans **`src/data/tarifs.ts`**, un seul endroit, répercuté sur la home,
+la page Google Ads, `/pricing.txt` et le JSON-LD :
 
-- `tiers[]` : nom, prix, tranche de budget, liste des inclusions, libellé du CTA.
-- `setupFee` : frais de mise en place.
-- `pricingNotes` : mentions sous la grille (budget séparé, sur-mesure, seuil minimum).
-- `pricingValidated` : passez à `true` une fois les **prix réels confirmés**.
+- `tiers[]` : 4 packs (Starter 390.-, Croissance 590.-, Performance 1190.-, Sur mesure
+  dès 1490.-) : prix, tranche de budget pub, lignes d'attributs (canaux, langues,
+  campagnes spéciales, reporting, CRM, support, point de contact, engagement), CTA.
+- `addOns[]` : setup tracking (obligatoire, 300.-), setup Shopping, landing page,
+  connexion CRM (+200.-/mois), langue supplémentaire (+100.-/mois).
+- `pricingNotes` : mentions obligatoires sous la grille (budget payé à Google + TVA).
+- `specialCampaignsNote` / `budgetFloorNote` : note « campagnes spéciales » et plancher
+  de 500 CHF/mois de budget pub (réutilisé par le formulaire de contact et les FAQ).
+- `pricingValidated` : `true` (prix réels et publics, brief pricing 2026-08).
 
-> ⚠️ Les montants actuels sont des **placeholders** repris du mockup. Ne publiez pas de
-> prix non validés (brief §13).
+> ✅ Prix validés. Règle de cohérence : si un montant change, il change **partout**
+> (grille, FAQ home + Google Ads, formulaire, CGV, `llms.txt`, article de blog budget).
 
 ### Modifier l'identité / les coordonnées
 
@@ -138,7 +143,7 @@ Pour changer de prestataire plus tard, il suffit d'adapter `action` dans
 
 - **Sitemap** : généré automatiquement (`/sitemap-index.xml`) via `@astrojs/sitemap`.
 - **robots.txt** et **llms.txt** : dans `public/` (mettre à jour `llms.txt` au fil du contenu).
-- **Schema.org** : Organization (global), Service, FAQPage, Article, BreadcrumbList — via `src/lib/schema.ts`.
+- **Schema.org** : Organization (global), Service, FAQPage, Article, BreadcrumbList, via `src/lib/schema.ts`.
 - **Blocs de réponse directe** : composant `<AnswerBlock>` en tête des pages services et articles.
 - **Open Graph** : `public/og-default.svg`. ⚠️ Pour une compatibilité maximale (LinkedIn/X),
   exporter une version **PNG 1200×630** et changer le défaut dans `src/components/seo/SEOHead.astro`.
@@ -151,10 +156,10 @@ Planner (juil. 2026).
 
 | Page | Mot-clé principal | Vol. · concurrence |
 |---|---|---|
-| `/services/chatgpt-ads` | **chatgpt ads** — priorité #1 | 40/mo · faible · +400 %/an |
+| `/services/chatgpt-ads` | **chatgpt ads** (priorité #1) | 40/mo · faible · +400 %/an |
 | `/services/google-ads` | **gestion google ads** | 20/mo · faible |
 | `/` (accueil) | **agence google ads** + « Suisse romande » | 10/mo (+ cluster « publicité google » 20/mo) |
-| `/services/tracking-analytics` | *suivi de conversion* — déprioritisé | non chiffré |
+| `/services/tracking-analytics` | *suivi de conversion* (déprioritisé) | non chiffré |
 
 **Règles à respecter en éditant le contenu :**
 
@@ -167,7 +172,7 @@ Planner (juil. 2026).
 **Actions en attente** avant d'investir davantage :
 
 1. Re-pull Keyword Planner en **ciblage Suisse + français** avec des seeds géo
-   (genève/lausanne/valais) — l'export initial était en EUR sans mots-clés géo.
+   (genève/lausanne/valais) : l'export initial était en EUR sans mots-clés géo.
 2. Pull des volumes tracking/GA4/Tag Manager pour trancher la page tracking.
 3. SEO local par ville (pages `/geneve`, `/lausanne`) = phase 2 éventuelle.
 
@@ -192,11 +197,11 @@ Définir l'URL de production dans `astro.config.mjs` (`site`) et les variables `
 
 ## ✅ À finaliser avant publication
 
-- [ ] Confirmer les **prix réels** (`src/data/tarifs.ts`, passer `pricingValidated` à `true`).
-- [ ] Coller les **liens de paiement Stripe** par palier (`stripeLink` dans `src/data/tarifs.ts`).
-      Vide = le bouton « payer et démarrer » est masqué, on garde l'échange préalable.
-- [ ] Remplacer les **témoignages / logos clients / chiffres** (`src/data/temoignages.ts`,
-      passer `proofPlaceholder` à `false`) par du **réel** — jamais de faux témoignage (brief §13).
+- [x] Confirmer les **prix réels** (`src/data/tarifs.ts`, `pricingValidated` à `true`, brief pricing 2026-08).
+- [ ] Coller les **liens de paiement Stripe** par pack (`stripeLink` dans `src/data/tarifs.ts`).
+      Vide = le CTA « Choisir [pack] » renvoie vers `/contact?pack=<id>` (pré-sélection du budget).
+- [x] Remplacer les **témoignages** (`src/data/temoignages.ts`, `proofPlaceholder` à `false`) :
+      avis Google réels. Restent placeholders : **logos clients** et chiffres marqués.
 - [ ] Remplacer les **résultats clients** `⚠️ PLACEHOLDER` (home + page Publicité Google).
 - [ ] Compléter les **bios des associés** (`src/pages/agence.astro`).
 - [ ] Compléter **mentions légales** et **politique de confidentialité** (IDE, hébergeur, juriste).

@@ -1,74 +1,67 @@
 ---
 /**
- * Grille tarifaire (3 paliers) — lit src/data/tarifs.ts (source unique).
- * Palier du milieu mis en avant.
- * Deux chemins (brief / décision client) : on FAVORISE un échange préalable
- * (CTA principal "Demander un devis"), et on offre le self-serve Stripe
- * ("Payer et démarrer") quand un lien de paiement est configuré.
+ * Grille tarifaire (4 packs) - lit src/data/tarifs.ts (source unique).
+ * Pack Croissance mis en avant (badge « Le plus choisi »).
+ * Prix fixes et publics : CTA « Choisir [pack] » → /contact?pack=<id>
+ * (pré-sélection du budget dans le formulaire). Seul « Sur mesure » invite
+ * à l'échange. Un lien Stripe configuré remplace le lien contact.
  */
-import { tiers, pricingNotes } from "../data/tarifs";
-
-interface Props {
-  /** Lien CTA "échange" par carte. */
-  ctaHref?: string;
-}
-const { ctaHref = "/contact" } = Astro.props;
-
-const Check = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>`;
+import AddOnsTable from "./AddOnsTable.astro";
+import { tiers, pricingNotes, specialCampaignsNote } from "../data/tarifs";
 ---
 
 <div class="price-grid">
   {
     tiers.map((tier) => (
       <div class:list={["price", "reveal", { feat: tier.featured }]}>
+        {tier.badge && <span class="badge">{tier.badge}</span>}
         <span class="tier">{tier.name}</span>
-        <div class="amt">{tier.price}<small>{tier.unit}</small></div>
+        <div class="amt">{tier.price}<small> {tier.unit}</small></div>
         <div class="for">{tier.forBudget}</div>
-        <ul>
-          {tier.features.map((f) => (
-            <li><Fragment set:html={Check} />{f}</li>
+        <div class="rows">
+          {tier.attributes.map((a) => (
+            <div class="row">
+              <span class="k">
+                {a.label}
+                {a.footnote && <sup title={specialCampaignsNote}>*</sup>}
+              </span>
+              <span class="v">{a.value}</span>
+            </div>
           ))}
-        </ul>
+        </div>
         <div class="price-cta">
-          <a href={ctaHref} class:list={["btn", tier.featured ? "btn-primary" : "btn-ghost"]}>
+          <a
+            href={tier.stripeLink || `/contact?pack=${tier.id}`}
+            class:list={["btn", tier.featured ? "btn-primary" : "btn-ghost"]}
+            rel={tier.stripeLink ? "nofollow" : undefined}
+          >
             {tier.ctaLabel}
           </a>
-          {tier.stripeLink && (
-            <a href={tier.stripeLink} class="start-link" rel="nofollow">
-              ou payer et démarrer <span aria-hidden="true">→</span>
-            </a>
-          )}
         </div>
       </div>
     ))
   }
 </div>
 
-<p class="price-note">{pricingNotes.custom}</p>
-<p class="price-sub">{pricingNotes.exchangeFirst}</p>
-<p class="price-sub">{pricingNotes.budgetSeparate}</p>
-<p class="price-sub">{pricingNotes.qualification}</p>
+<p class="price-footnote">* Campagnes spéciales : {specialCampaignsNote}</p>
+<p class="price-sub"><b>{pricingNotes.budgetSeparate}</b> {pricingNotes.vat}</p>
+
+<AddOnsTable />
 
 <style>
-  .price-cta { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .price-cta { margin-top: auto; padding-top: 20px; }
   .price-cta .btn { justify-content: center; width: 100%; }
-  .start-link {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--flash-deep);
-    text-decoration: none;
-    opacity: .85;
-  }
-  .start-link:hover { opacity: 1; text-decoration: underline; }
+  .price-footnote,
   .price-sub {
-    font-family: var(--font-mono);
-    font-size: 11.5px;
+    font-size: 12.5px;
     color: var(--muted);
     text-align: center;
-    margin-top: 8px;
-    max-width: 46em;
+    margin-top: 14px;
+    max-width: 52em;
     margin-left: auto;
     margin-right: auto;
     line-height: 1.6;
   }
+  .price-sub { margin-top: 8px; }
+  .price-sub b { color: var(--body); font-weight: 500; }
 </style>

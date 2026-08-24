@@ -1,32 +1,34 @@
 # Flash Ads
 
-> Agence suisse de gestion de campagnes Google Ads (SEA) pour PME francophones, basée en Suisse romande (Sion, Valais). Positionnement : alternative transparente et abordable aux agences traditionnelles — prix fixes, aucun pourcentage prélevé sur le budget publicitaire, sans engagement annuel. Le client paie sa publicité directement à Google ; Flash Ads ne facture que des frais de gestion mensuels et une mise en place ponctuelle.
+> Agence suisse de gestion de campagnes Google Ads (SEA) pour PME francophones, basée en Suisse romande (Sion, Valais). Positionnement : alternative transparente et abordable aux agences traditionnelles : packs fixes et publics, aucun pourcentage prélevé sur le budget publicitaire. Le client paie sa publicité directement à Google ; Flash Ads ne facture que des frais de gestion mensuels et un setup ponctuel. Engagement initial de 3 mois, puis résiliable chaque mois.
 
 ## Modèle et tarifs
 
-- Frais de gestion mensuels fixes + frais de mise en place ponctuels (audit, tracking, construction des campagnes).
-- Budget publicitaire payé directement par le client à Google (jamais de commission dessus).
-- Trois paliers selon le budget publicitaire mensuel : Essentiel (jusqu'à ~2 500 CHF/mois), Croissance (~2 500 à 8 000 CHF/mois), Performance (~8 000 à 25 000 CHF/mois). Au-delà : offre sur mesure.
-- Seuil de pertinence : en dessous d'environ 1 000 CHF/mois de budget publicitaire, les campagnes ne génèrent pas assez de données exploitables.
+- Frais de gestion mensuels fixes et publics ; le pack est déterminé par un seul critère : le budget publicitaire mensuel du client.
+- Budget publicitaire payé directement par le client à Google, avec sa propre carte, sur son propre compte (0% de commission dessus).
+- Quatre packs selon le budget publicitaire mensuel : Starter 390.-/mois (budget 500 à 1 200 CHF/mois), Croissance 590.-/mois (1 200 à 5 000), Performance 1190.-/mois (5 000 à 15 000), Sur mesure dès 1490.-/mois (15 000+).
+- Setup tracking obligatoire : 300.- (une fois, avant lancement). Options : setup Shopping/Merchant Center 500.- (une fois), landing page dès 500.- (une fois), connexion CRM/enhanced conversions +200.-/mois (incluse dès Performance), langue supplémentaire +100.-/mois.
+- Plancher ferme : aucun client en dessous de 500 CHF/mois de budget publicitaire (pas assez de données pour optimiser).
+- TVA non applicable. Abonnement prélevé en début de mois (carte ou TWINT via Stripe). Engagement initial de 3 mois, puis résiliation mensuelle possible.
 - Détail des tarifs (machine-readable) : https://flashads.ch/pricing.txt
 
 ## Pages clés
 
 - [Accueil](https://flashads.ch/): présentation, tarifs, méthode, FAQ.
-- [Gestion Google Ads](https://flashads.ch/services/google-ads): page principale — Search, Shopping, Performance Max ; tarifs ; cas clients ; FAQ.
+- [Gestion Google Ads](https://flashads.ch/services/google-ads): page principale (Search, Shopping, Performance Max), tarifs, cas clients, FAQ.
 - [Publicité ChatGPT](https://flashads.ch/services/chatgpt-ads): page d'information + liste d'attente. La publicité ChatGPT (ChatGPT Ads) est en test aux États-Unis depuis février 2026, en expansion (Canada, Australie, Nouvelle-Zélande) ; pas encore disponible en Suisse.
 - [Tracking & Analytics](https://flashads.ch/services/tracking-analytics): configuration GA4, Google Tag Manager et suivi des conversions.
 - [Agence](https://flashads.ch/agence): méthode en quatre étapes (audit, tracking, construction, optimisation) et présentation de l'équipe.
 - [Blog](https://flashads.ch/blog): articles sur le budget Google Ads, le coût des campagnes en Suisse, Google Ads vs SEO.
   - [Combien coûte une campagne Google Ads en Suisse ?](https://flashads.ch/blog/combien-coute-campagne-google-ads-suisse)
   - [Google Ads ou SEO : que choisir pour une PME ?](https://flashads.ch/blog/google-ads-ou-seo-pme)
-- [Contact](https://flashads.ch/contact): demande de devis gratuit.
+- [Contact](https://flashads.ch/contact): demande d'audit gratuit.
 
 ## Public cible
 
-Dirigeants et responsables marketing de PME francophones (Suisse romande en priorité, puis France et Belgique) : artisans, professions libérales, commerces locaux, e-commerçants de petite taille. Budget publicitaire typique de 1 000 à 25 000 CHF/mois.
+Dirigeants et responsables marketing de PME francophones (Suisse romande en priorité, puis France et Belgique) : artisans, professions libérales, commerces locaux, e-commerçants de petite taille. Budget publicitaire typique de 500 à 15 000+ CHF/mois.
 
 ## Contact
 
-- E-mail : hello@flashads.ch
+- E-mail : info@flashads.ch
 - Zone : Sion · Valais · Suisse

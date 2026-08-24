@@ -12,7 +12,7 @@ import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema"
 
 const title = "Gestion de campagnes Google Ads en Suisse romande | Flash Ads";
 const description =
-  "Flash Ads gère vos campagnes Google Ads pour vous amener plus de clients : prix fixe, aucune commission sur votre budget, sans engagement. Google Partner en Suisse romande.";
+  "Flash Ads gère vos campagnes Google Ads pour vous amener plus de clients : packs fixes et publics dès 390.-/mois, 0% de commission sur votre budget. Google Partner en Suisse romande.";
 const path = "/services/google-ads";
 
 const faqItems: FaqItem[] = [
@@ -24,7 +24,42 @@ const faqItems: FaqItem[] = [
   {
     question: "Combien coûte la publicité sur Google ?",
     answer:
-      "Il y a deux choses : le budget de pub (versé directement à Google, à partir d'environ 1 000 CHF/mois pour que ça vaille la peine) et notre montant fixe pour la gestion. Chez nous, ce montant est fixe et affiché : on ne prend aucune commission sur votre budget.",
+      "Il y a deux montants distincts. D'abord votre budget publicitaire, versé directement à Google avec votre carte (500 CHF/mois minimum pour que ça vaille la peine). Ensuite nos frais de gestion, fixes et affichés : de 390.- à 1190.- par mois selon votre budget, sur mesure au-delà de 15 000.- de budget. On ne prend aucune commission sur ce que vous dépensez chez Google.",
+  },
+  {
+    question: "Que veut dire Search, Display et Shopping ?",
+    answer:
+      "Search : vos annonces apparaissent dans les résultats de recherche Google quand quelqu'un cherche vos services (« plombier Sion », « dentiste Lausanne ») : le canal le plus direct, la personne cherche déjà ce que vous offrez. Display : des bannières visuelles diffusées sur des sites et applications partenaires de Google, utiles pour la notoriété et pour rappeler votre marque aux visiteurs de votre site. Shopping : vos produits apparaissent avec photo et prix directement dans Google, réservé aux e-commerces, avec un catalogue produits (d'où le setup Shopping). Il existe aussi Performance Max (PMax), un format automatisé de Google qui diffuse sur tous les canaux à la fois, utilisable dès le pack Croissance.",
+  },
+  {
+    question: "Comment mon pack est-il déterminé ?",
+    answer:
+      "Uniquement par votre budget publicitaire mensuel : de 500 à 1200.- c'est Starter, de 1200 à 5000.- Croissance, de 5000 à 15000.- Performance, et au-delà sur mesure. Pas de grille par secteur, par taille d'entreprise ou par nombre de mots-clés. Et si votre budget évolue, le changement de pack se fait au mois suivant, sans frais.",
+  },
+  {
+    question: "Pourquoi refusez-vous les budgets sous 500.- par mois ?",
+    answer:
+      "Parce qu'en dessous de ce seuil, les campagnes ne génèrent pas assez de données pour être optimisées : les résultats sont aléatoires et vous paieriez des frais de gestion pour rien. Plutôt que d'encaisser en sachant que ça ne marchera pas, on préfère vous le dire d'entrée. Mieux vaut attendre d'avoir le budget que de tester trop petit.",
+  },
+  {
+    question: "Pourquoi le setup tracking est-il obligatoire ?",
+    answer:
+      "Sans suivi des conversions, impossible de savoir quelles annonces génèrent des appels, des formulaires ou des ventes, donc impossible d'optimiser. Gérer des campagnes sans tracking, c'est piloter à l'aveugle, et on refuse de le faire. Les 300.- couvrent l'installation complète sur WordPress : appels, clics e-mail, formulaires et actions clés. Les intégrations CRM font l'objet d'une option dédiée.",
+  },
+  {
+    question: "Que sont les 2 canaux au choix du pack Croissance ?",
+    answer:
+      "Deux canaux définis ensemble au setup, selon votre activité : par exemple Search + Shopping pour un e-commerce, ou Search + Display pour une entreprise de services. Aucune combinaison imposée : on choisit ce qui rapporte le plus pour vous.",
+  },
+  {
+    question: "Qu'est-ce qu'une campagne spéciale ?",
+    answer:
+      "Une campagne ou un ajustement ponctuel lié à un événement : soldes, Black Friday, saison haute, lancement d'une promotion. C'est inclus selon votre pack (1, 3 ou 5 par an). Au-delà du quota, c'est facturable en supplément.",
+  },
+  {
+    question: "Qu'est-ce que la connexion CRM / enhanced conversions ?",
+    answer:
+      "On relie votre CRM (ou vos données de vente) à Google Ads, pour que l'algorithme sache quels clics deviennent de vrais clients, pas seulement des formulaires remplis. Résultat : un ciblage qui s'améliore et un budget qui va vers ce qui rapporte vraiment. Incluse dans le pack Performance, en option à +200.-/mois sur Starter et Croissance.",
   },
   {
     question: "Travaillez-vous avec mon compte Google existant ?",
@@ -34,12 +69,7 @@ const faqItems: FaqItem[] = [
   {
     question: "Faut-il signer un long contrat ?",
     answer:
-      "Non. Pas d'engagement sur la durée. Vous restez parce que ça marche. Et avant de démarrer, vous choisissez : un court échange avec nous, ou un démarrage direct.",
-  },
-  {
-    question: "À partir de quel budget ça vaut la peine ?",
-    answer:
-      "En dessous d'environ 1 000 CHF par mois de budget de pub, il n'y a pas assez d'activité pour bien régler les campagnes. On vous le dira franchement, lors du premier échange gratuit, si ce n'est pas adapté à votre situation.",
+      "Non, juste un engagement initial de 3 mois, le temps que Google Ads accumule 6 à 8 semaines de données et que l'optimisation devienne fiable. Ensuite, vous pouvez résilier chaque mois, sans pénalité. Vous restez parce que ça marche, pas parce qu'un contrat vous retient.",
   },
 ];
 
@@ -72,15 +102,15 @@ const jsonLd = [
         <p>
           <b>Flash Ads s'occupe de vos publicités sur Google</b> pour les PME en Suisse romande : on
           crée vos annonces, on choisit les bons mots et on améliore tout en continu pour vous amener
-          plus de clients. Vous payez un <b>montant fixe chaque mois</b> — aucune commission sur votre
-          budget de pub, que vous versez directement à Google. On démarre simplement, après un court
-          échange ou directement si vous préférez.
+          plus de clients. Vous payez un <b>montant fixe chaque mois</b>, de 390.- à 1190.- selon
+          votre budget publicitaire. Aucune commission sur votre budget de pub, que vous versez
+          directement à Google. Le pack se choisit sur un seul critère : votre budget mensuel.
         </p>
       </AnswerBlock>
 
       <div class="hero-cta">
         <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
-        <a href="/#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
+        <a href="#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
       </div>
       <div class="hero-badge"><GooglePartnerBadge height={56} /><span class="mono">Agence certifiée Google Partner</span></div>
     </div>
@@ -141,8 +171,8 @@ const jsonLd = [
     <div class="wrap">
       <SectionHead
         eyebrow="Nos prix"
-        title="Trois formules, un prix fixe et affiché."
-        text="Choisissez selon ce que vous voulez investir en pub chaque mois. Pas de commission, pas d'engagement."
+        title="Quatre packs, un prix fixe et affiché."
+        text="Choisissez selon votre budget publicitaire mensuel : c'est le seul critère. 0% de commission sur votre budget."
       />
       <PricingGrid ctaHref="/contact" />
     </div>
@@ -153,7 +183,7 @@ const jsonLd = [
     <div class="wrap">
       <SectionHead eyebrow="Résultats clients" title="Ce qu'on a obtenu pour des PME romandes." />
       <p class="cases-disclaimer mono">
-        ⚠️ PLACEHOLDER — remplacer par 1-2 résultats clients réels (situation → ce qu'on a fait → résultat chiffré, anonymisables).
+        ⚠️ PLACEHOLDER : remplacer par 1-2 résultats clients réels (situation → ce qu'on a fait → résultat chiffré, anonymisables).
       </p>
       <div class="cases">
         <CaseStudyCard
@@ -181,7 +211,7 @@ const jsonLd = [
 
   <CTA
     title="On regarde votre situation, gratuitement ?"
-    text="On vous dit franchement si la pub Google peut vous amener des clients — et combien ça coûterait. Sans jargon, sans engagement."
+    text="On vous dit franchement si la pub Google peut vous amener des clients, et combien ça coûterait. Sans jargon, prix publics."
   />
 </BaseLayout>
 

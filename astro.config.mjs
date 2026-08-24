@@ -7,7 +7,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // Production URL — used for canonical tags, sitemap, OG and schema absolute URLs.
+  // Production URL - used for canonical tags, sitemap, OG and schema absolute URLs.
   site: 'https://flashads.ch',
 
   // i18n-ready: French only at launch. Adding EN/DE later = extend `locales`

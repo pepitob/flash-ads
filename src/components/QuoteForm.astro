@@ -1,11 +1,14 @@
 ---
 /**
- * Formulaire de demande de devis (brief §6.7).
- * Endpoint host-agnostic via env (PUBLIC_FORMSPREE_QUOTE_ID) — email + webhook-ready.
+ * Formulaire de contact / demande d'audit gratuit.
+ * Endpoint host-agnostic via env (PUBLIC_FORMSPREE_QUOTE_ID) - email + webhook-ready.
  * Anti-spam : honeypot. Validation côté client (required + types). Succès inline (JS).
- * Champ budget = pré-qualification du palier tarifaire.
+ * Champ budget = pré-qualification du pack (tranches alignées sur la grille tarifaire).
+ * « Moins de 500 » affiche un message expliquant qu'on ne prend pas ces budgets.
+ * ?pack=<id> (CTA « Choisir X » de la grille) pré-sélectionne la tranche.
  */
 import { ui } from "../i18n/fr";
+import { budgetFloorNote } from "../data/tarifs";
 
 const endpointId = import.meta.env.PUBLIC_FORMSPREE_QUOTE_ID ?? "";
 const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
@@ -30,14 +33,19 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
 
   <label>{ui.form.budget}
     <select name="budget">
-      <option value="">— Sélectionnez —</option>
-      <option value="<1000">Moins de 1 000 CHF/mois</option>
-      <option value="1000-2500">1 000 – 2 500 CHF/mois</option>
-      <option value="2500-8000">2 500 – 8 000 CHF/mois</option>
-      <option value="8000-25000">8 000 – 25 000 CHF/mois</option>
-      <option value=">25000">Plus de 25 000 CHF/mois</option>
+      <option value="">Sélectionnez…</option>
+      <option value="<500">Moins de 500 CHF/mois</option>
+      <option value="500-1200">500 – 1 200 CHF/mois (Starter)</option>
+      <option value="1200-5000">1 200 – 5 000 CHF/mois (Croissance)</option>
+      <option value="5000-15000">5 000 – 15 000 CHF/mois (Performance)</option>
+      <option value=">15000">Plus de 15 000 CHF/mois (Sur mesure)</option>
     </select>
+    <span class="budget-min">Budget publicitaire minimum : 500 CHF/mois.</span>
   </label>
+
+  <p class="budget-floor" id="budget-floor-msg" hidden role="status">
+    <strong>On préfère être francs :</strong> {budgetFloorNote}
+  </p>
 
   <label>{ui.form.message}<textarea name="message" rows="4"></textarea></label>
 
@@ -79,6 +87,17 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
   .form-success { background: rgba(37, 99, 255, .06); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
   .form-error { color: #b00020; font-size: 14px; }
   .form-warn { background: #fff6d6; border: 1px solid #f0e0a0; border-radius: 10px; padding: 10px 14px; font-size: 13px; }
+  .budget-min { font-size: 12px; font-weight: 400; color: var(--muted); }
+  .budget-floor {
+    background: rgba(255, 46, 139, .05);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--pink);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--body);
+  }
   @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
 </style>
 
@@ -86,6 +105,27 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
   const form = document.getElementById("quote-form") as HTMLFormElement | null;
   const ok = document.getElementById("quote-success");
   const err = document.getElementById("quote-error");
+
+  // Budget : message « moins de 500 » + pré-sélection via ?pack=<id> (grille tarifaire).
+  const budget = form?.querySelector<HTMLSelectElement>('select[name="budget"]');
+  const floorMsg = document.getElementById("budget-floor-msg");
+  if (budget) {
+    const packToBudget: Record<string, string> = {
+      starter: "500-1200",
+      croissance: "1200-5000",
+      performance: "5000-15000",
+      "sur-mesure": ">15000",
+    };
+    const pack = new URLSearchParams(location.search).get("pack");
+    if (pack && packToBudget[pack]) budget.value = packToBudget[pack];
+    const toggleFloor = () => {
+      if (budget.value === "<500") floorMsg?.removeAttribute("hidden");
+      else floorMsg?.setAttribute("hidden", "");
+    };
+    budget.addEventListener("change", toggleFloor);
+    toggleFloor();
+  }
+
   if (form && form.action) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();

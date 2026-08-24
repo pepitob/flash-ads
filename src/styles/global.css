@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ──────────────────────────────────────────────────────────────
-   Fonts — self-hosted (perf: woff2 + swap, no render-block).
+   Fonts - self-hosted (perf: woff2 + swap, no render-block).
    Flash Ads Design System pairs Space Grotesk (display/labels/UI)
    with Inter (body). No monospace in the system.
    ────────────────────────────────────────────────────────────── */
@@ -9,7 +9,7 @@
 @import "@fontsource-variable/inter";
 
 /* ──────────────────────────────────────────────────────────────
-   Design tokens — Flash Ads Design System.
+   Design tokens - Flash Ads Design System.
    Signature: gradient lightning bolt, blue → pink, NEVER dwelling
    in purple. Solid accent = Flash Blue. Pink for eyebrows, checks,
    the featured badge and the "en direct" dot.
@@ -125,7 +125,7 @@ h1, h2, h3, h4, .display { color: var(--ink); }
 .display { font-family: var(--font-display); letter-spacing: -.02em; line-height: 1.08; }
 .section-alt { background: var(--surface-subtle); }
 
-/* Eyebrow — pink, Space Grotesk, uppercase, wide tracking (DS spec) */
+/* Eyebrow - pink, Space Grotesk, uppercase, wide tracking (DS spec) */
 .eyebrow {
   font-family: var(--font-display);
   font-size: 11px;
@@ -136,7 +136,7 @@ h1, h2, h3, h4, .display { color: var(--ink); }
   display: inline-block;
 }
 
-/* Signature gradient — ONLY via these classes (blue → pink) */
+/* Signature gradient - ONLY via these classes (blue → pink) */
 .flash-word,
 .text-gradient {
   background: var(--grad-h);
@@ -144,7 +144,7 @@ h1, h2, h3, h4, .display { color: var(--ink); }
 }
 .bg-gradient-signature { background: var(--grad); }
 
-/* ── Buttons — rounded rectangles (radius-md), not pills ─────── */
+/* ── Buttons - rounded rectangles (radius-md), not pills ─────── */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-family: var(--font-display); font-weight: 600; font-size: 15px; letter-spacing: -.01em;
@@ -182,17 +182,19 @@ section { padding: 84px 0; }
 .card:hover .lnk .arrow { transform: translateX(3px); }
 
 /* ── Pricing ────────────────────────────────────────────────── */
-.price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
-.price { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 32px; display: flex; flex-direction: column; }
-.price.feat { border: 1.5px solid var(--accent); box-shadow: var(--shadow-lg); position: relative; }
-.price.feat::after { content: "Le plus choisi"; position: absolute; top: 20px; right: 20px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
+.price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
+.price { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 26px 24px; display: flex; flex-direction: column; position: relative; }
+.price.feat { border: 1.5px solid var(--accent); box-shadow: var(--shadow-lg); }
+.price .badge { position: absolute; top: 18px; right: 18px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
 .price .tier { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
-.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 40px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--ink); }
+.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--ink); }
 .price .amt small { font-size: 14px; font-weight: 500; color: var(--muted); }
 .price .for { font-size: 13px; color: var(--muted); min-height: 40px; }
-.price ul { list-style: none; margin: 20px 0 24px; display: flex; flex-direction: column; gap: 11px; }
-.price li { font-size: 14px; display: flex; gap: 9px; align-items: flex-start; color: var(--body); }
-.price li svg { width: 15px; height: 15px; flex: 0 0 15px; margin-top: 3px; stroke: var(--fa-pink); }
+.price .rows { margin-top: 16px; display: flex; flex-direction: column; }
+.price .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--hairline-subtle); }
+.price .row .k { font-size: 12px; color: var(--muted); flex-shrink: 0; }
+.price .row .k sup { color: var(--fa-pink); cursor: help; }
+.price .row .v { font-size: 13px; color: var(--body); text-align: right; }
 .price .btn { justify-content: center; margin-top: auto; }
 .price-note { font-size: 13px; color: var(--muted); text-align: center; margin-top: 24px; }
 .price-note b { color: var(--ink); }
@@ -213,7 +215,7 @@ section { padding: 84px 0; }
 .case .who { font-family: var(--font-display); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-top: 10px; }
 .case p { font-size: 14px; color: var(--muted); margin-top: 12px; }
 
-/* ── Final CTA — midnight + pink glow (the one bold moment) ──── */
+/* ── Final CTA - midnight + pink glow (the one bold moment) ──── */
 .final { background: var(--surface-dark); border-radius: var(--radius-2xl); padding: 72px 48px; text-align: center; position: relative; overflow: hidden; }
 .final::before { content: ""; position: absolute; width: 480px; height: 480px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 46, 139, .18), transparent 65%); bottom: -260px; left: 50%; transform: translateX(-50%); }
 .final h2 { color: #fff; font-size: clamp(30px, 4vw, 42px); font-weight: 700; letter-spacing: -.025em; position: relative; max-width: 18em; margin: 0 auto; }
@@ -227,10 +229,16 @@ section { padding: 84px 0; }
 .reveal.in { opacity: 1; transform: none; }
 
 /* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .price-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
 @media (max-width: 900px) {
-  .cards3, .price-grid, .cases { grid-template-columns: 1fr; }
+  .cards3, .cases { grid-template-columns: 1fr; }
   .method { grid-template-columns: 1fr; gap: 36px; }
   section { padding: 60px 0; }
+}
+@media (max-width: 640px) {
+  .price-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Accessibility: respect reduced-motion ─────────────────── */

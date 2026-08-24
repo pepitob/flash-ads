@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Site vitrine statique de **Flash Ads**, agence de gestion Google Ads pour PME en Suisse
 romande. **Astro 6** (SSG) + **Tailwind CSS 4**, TypeScript. Français uniquement (i18n-ready).
 Le `README.md` est la doc de référence détaillée (démarrage, formulaires, déploiement,
-checklist de publication) — le consulter en complément de ce fichier.
+checklist de publication) : le consulter en complément de ce fichier.
 
 ## Commandes
 
@@ -21,7 +21,7 @@ npx astro check   # vérification TypeScript / diagnostics Astro (pas de suite d
 Node ≥ 22.12 requis. Pas de linter ni de tests configurés ; la validation se fait via
 `astro check` + inspection du HTML généré dans `dist/`.
 
-## Architecture — le "big picture"
+## Architecture : le "big picture"
 
 Comprendre ces flux transversaux avant d'éditer :
 
@@ -49,11 +49,15 @@ Comprendre ces flux transversaux avant d'éditer :
   **Flash Blue `#2563FF`**, rose `#FF2E8B`, gradient signature bleu→rose **sans jamais passer
   par le violet**. Typo Space Grotesk + Inter, **pas de monospace**.
 - **Pas de faux contenu** : prix (`pricingValidated`), témoignages/logos (`proofPlaceholder`),
-  résultats et cas clients sont des **placeholders** tant qu'ils ne sont pas validés — ne jamais
+  résultats et cas clients sont des **placeholders** tant qu'ils ne sont pas validés : ne jamais
   publier de faux chiffres ou témoignages. Les zones concernées portent `⚠️ PLACEHOLDER`.
 - **Ton** : langage simple, sans jargon marketing, sur les pages principales. Le conserver.
+- **Jamais d'em-dash (le caractère « — »)** : interdit partout, sans exception : contenus des
+  pages, FAQ, meta descriptions, données (`src/data/`), `llms.txt`, articles de blog, CGV,
+  commentaires de code et docs. Reformuler avec un deux-points, une virgule, un point ou des
+  parenthèses (tiret simple `-` toléré dans les commentaires de code).
 
-## SEO / GEO — ciblage des mots-clés
+## SEO / GEO : ciblage des mots-clés
 
 Stratégie complète (carte des mots-clés, règles anti-cannibalisation, actions en attente)
 dans **README.md §🎯 Stratégie de mots-clés**. Règles clés à ne pas casser :

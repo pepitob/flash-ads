@@ -1,105 +1,218 @@
 /**
- * TARIFS — source UNIQUE des paliers (Home + /services/google-ads).
+ * TARIFS - source UNIQUE des packs (Home + /services/google-ads + pricing.txt + JSON-LD).
  *
- * ⚠️  PRIX À CONFIRMER PAR L'AGENCE AVANT PUBLICATION (brief §7 & §13).
- *     Les montants ci-dessous reprennent la structure validée dans le mockup,
- *     mais doivent être validés sur les coûts réels par client. Tant que
- *     `validated` est `false`, traiter ces chiffres comme provisoires.
+ * Prix validés (brief pricing 2026-08) : frais de gestion fixes uniquement.
+ * Le budget publicitaire n'est JAMAIS encaissé par Flash Ads : le client le
+ * paie directement à Google, avec sa propre carte, sur son propre compte.
+ * 0% de commission sur le budget. Le pack est déterminé par un seul critère :
+ * le budget publicitaire mensuel.
  *
- * Modèle : frais de setup ponctuels + abonnement mensuel de gestion.
- * Le budget publicitaire est payé directement par le client à Google.
+ * Plancher dur : aucun client en dessous de 500 CHF/mois de budget pub.
  */
 
-export const pricingValidated = false; // passer à true une fois les prix confirmés
+export const pricingValidated = true;
 
-/** Frais de mise en place ponctuels (audit + tracking + construction). */
-export const setupFee = {
-  label: "Mise en place",
-  // PLACEHOLDER — montant à confirmer.
-  amount: "CHF 890",
-  unit: "ponctuel",
-  note: "Audit, configuration du tracking (GA4 + GTM + conversions) et construction des campagnes.",
+export type TierId = "starter" | "croissance" | "performance" | "sur-mesure";
+
+/** Ligne d'attribut affichée dans la carte (grille comparative). */
+export type TierAttribute = {
+  label: string;
+  value: string;
+  /** true → marqueur « * » renvoyant à la note sous la grille (campagnes spéciales). */
+  footnote?: boolean;
 };
 
 export type Tier = {
-  id: string;
+  id: TierId;
   name: string;
-  /** Prix mensuel — PLACEHOLDER tant que pricingValidated === false. */
+  /** Prix affiché, format suisse : "390.-" ou "dès 1490.-". */
   price: string;
-  unit: string;
-  /** Tranche de budget publicitaire visée. */
+  /** Valeur numérique pour le JSON-LD (PriceSpecification). */
+  priceValue: number;
+  /** true = prix « dès » (Sur mesure) → minPrice dans le schema, jamais un prix fixe. */
+  priceIsFrom: boolean;
+  unit: "/mois";
+  /** Tranche de budget publicitaire affichée sur la carte. */
   forBudget: string;
   featured: boolean;
-  features: string[];
+  /** Badge affiché sur la carte (Croissance : « Le plus choisi »). */
+  badge?: string;
+  attributes: TierAttribute[];
   ctaLabel: string;
   /**
-   * Lien de paiement Stripe (self-serve "payer et démarrer").
-   * PLACEHOLDER — coller le Stripe Payment Link réel de chaque palier.
-   * Vide = bouton self-serve masqué, on garde uniquement l'échange préalable.
+   * Lien de paiement Stripe (self-serve). Vide = le CTA renvoie vers
+   * /contact?pack=<id> (pré-sélection du budget dans le formulaire).
    */
   stripeLink: string;
 };
 
+const commonLabels = {
+  canaux: "Canaux",
+  langues: "Langues",
+  campagnes: "Campagnes spéciales/an",
+  reporting: "Reporting",
+  crm: "Connexion CRM",
+  support: "Support",
+  contact: "Point de contact",
+  engagement: "Engagement initial",
+};
+
 export const tiers: Tier[] = [
   {
-    id: "essentiel",
-    name: "Essentiel",
-    price: "CHF 490",
+    id: "starter",
+    name: "Starter",
+    price: "390.-",
+    priceValue: 390,
+    priceIsFrom: false,
     unit: "/mois",
-    forBudget: "Budget pub jusqu'à 2 500 CHF/mois",
+    forBudget: "Budget pub de 500 à 1 200 CHF/mois",
     featured: false,
-    features: [
-      "Vos annonces sur Google",
-      "Une région, une langue",
-      "Améliorations chaque mois",
-      "Rapport clair, envoyé automatiquement",
-      "Aide par e-mail",
+    attributes: [
+      { label: commonLabels.canaux, value: "Search" },
+      { label: commonLabels.langues, value: "1 langue" },
+      { label: commonLabels.campagnes, value: "1", footnote: true },
+      { label: commonLabels.reporting, value: "Dashboard + PDF mensuel auto" },
+      { label: commonLabels.crm, value: "En option (+200.-/mois)" },
+      { label: commonLabels.support, value: "E-mail, réponse sous 72 h" },
+      { label: commonLabels.contact, value: "Aucun" },
+      { label: commonLabels.engagement, value: "3 mois" },
     ],
-    ctaLabel: "Demander un devis",
+    ctaLabel: "Choisir Starter",
     stripeLink: "",
   },
   {
     id: "croissance",
     name: "Croissance",
-    price: "CHF 990",
+    price: "590.-",
+    priceValue: 590,
+    priceIsFrom: false,
     unit: "/mois",
-    forBudget: "Budget pub de 2 500 à 8 000 CHF/mois",
+    forBudget: "Budget pub de 1 200 à 5 000 CHF/mois",
     featured: true,
-    features: [
-      "Plusieurs campagnes, 2 langues",
-      "Améliorations deux fois par mois",
-      "Rapport mensuel + point tous les 3 mois",
-      "Aide prioritaire",
+    badge: "Le plus choisi",
+    attributes: [
+      { label: commonLabels.canaux, value: "2 canaux au choix" },
+      { label: commonLabels.langues, value: "2 langues" },
+      { label: commonLabels.campagnes, value: "3", footnote: true },
+      { label: commonLabels.reporting, value: "Dashboard + PDF mensuel auto" },
+      { label: commonLabels.crm, value: "En option (+200.-/mois)" },
+      { label: commonLabels.support, value: "E-mail, réponse sous 48 h" },
+      { label: commonLabels.contact, value: "30 min par trimestre" },
+      { label: commonLabels.engagement, value: "3 mois" },
     ],
-    ctaLabel: "Demander un devis",
+    ctaLabel: "Choisir Croissance",
     stripeLink: "",
   },
   {
     id: "performance",
     name: "Performance",
-    price: "CHF 2 200",
+    price: "1190.-",
+    priceValue: 1190,
+    priceIsFrom: false,
     unit: "/mois",
-    forBudget: "Budget pub de 8 000 à 25 000 CHF/mois",
+    forBudget: "Budget pub de 5 000 à 15 000 CHF/mois",
     featured: false,
-    features: [
-      "Gestion complète de vos campagnes",
-      "Relance des visiteurs + conseils sur votre site",
-      "Améliorations chaque semaine",
-      "Point mensuel dédié",
+    attributes: [
+      { label: commonLabels.canaux, value: "Search, Display, Shopping" },
+      { label: commonLabels.langues, value: "3 langues" },
+      { label: commonLabels.campagnes, value: "5", footnote: true },
+      { label: commonLabels.reporting, value: "Dashboard + PDF + vidéo mensuelle (Loom)" },
+      { label: commonLabels.crm, value: "Incluse" },
+      { label: commonLabels.support, value: "E-mail + WhatsApp, réponse sous 24 h" },
+      { label: commonLabels.contact, value: "30 min par mois" },
+      { label: commonLabels.engagement, value: "3 mois" },
     ],
-    ctaLabel: "Demander un devis",
+    ctaLabel: "Choisir Performance",
+    stripeLink: "",
+  },
+  {
+    id: "sur-mesure",
+    name: "Sur mesure",
+    price: "dès 1490.-",
+    priceValue: 1490,
+    priceIsFrom: true,
+    unit: "/mois",
+    forBudget: "Budget pub de 15 000 CHF/mois et plus",
+    featured: false,
+    attributes: [
+      { label: commonLabels.canaux, value: "Tous" },
+      { label: commonLabels.langues, value: "Sur mesure" },
+      { label: commonLabels.campagnes, value: "Illimitées", footnote: true },
+      { label: commonLabels.reporting, value: "Sur mesure" },
+      { label: commonLabels.crm, value: "Incluse" },
+      { label: commonLabels.support, value: "Dédié" },
+      { label: commonLabels.contact, value: "Sur mesure" },
+      { label: commonLabels.engagement, value: "Sur mesure" },
+    ],
+    ctaLabel: "Discutons-en",
     stripeLink: "",
   },
 ];
 
-/** Mention sous la grille (budget séparé + sur-mesure au-delà). */
+/** Frais de mise en place et options (tableau séparé sous la grille). */
+export type AddOn = {
+  id: string;
+  label: string;
+  /** Format suisse : "300.-", "dès 500.-", "+200.-". */
+  price: string;
+  unit: "une fois" | "/mois";
+  /** true → tag « obligatoire » (setup tracking, avant tout lancement). */
+  mandatory?: boolean;
+  /** Packs concernés (ex. CRM : Starter et Croissance seulement). */
+  availability?: string;
+  note?: string;
+};
+
+export const addOns: AddOn[] = [
+  {
+    id: "setup-tracking",
+    label: "Setup tracking standard",
+    price: "300.-",
+    unit: "une fois",
+    mandatory: true,
+    note: "Sur WordPress : suivi des appels, clics e-mail, formulaires et actions simples (téléchargement de PDF, vue d'une page clé). Hors connexion CRM.",
+  },
+  {
+    id: "setup-shopping",
+    label: "Setup Shopping / Merchant Center",
+    price: "500.-",
+    unit: "une fois",
+  },
+  {
+    id: "landing-page",
+    label: "Landing page dédiée",
+    price: "dès 500.-",
+    unit: "une fois",
+  },
+  {
+    id: "crm",
+    label: "Connexion CRM / enhanced conversions",
+    price: "+200.-",
+    unit: "/mois",
+    availability: "Starter et Croissance (incluse dès Performance)",
+  },
+  {
+    id: "langue-supp",
+    label: "Langue supplémentaire",
+    price: "+100.-",
+    unit: "/mois",
+  },
+];
+
+/** Mentions obligatoires sous la grille. */
 export const pricingNotes = {
   budgetSeparate:
-    "Votre budget de pub est séparé et payé directement à Google avec votre carte. Il reste chez vous.",
-  custom:
-    "Vous voulez investir plus de 25 000 CHF/mois en pub ? Parlons-en — offre sur mesure.",
-  qualification:
-    "En dessous d'environ 1 000 CHF/mois de budget de pub, il n'y a pas assez de données pour bien régler les campagnes.",
-  exchangeFirst:
-    "On préfère un court échange avant de démarrer, pour bien comprendre votre besoin. Mais si vous préférez, vous pouvez payer et démarrer directement.",
+    "Budget publicitaire payé directement à Google, en plus des frais de gestion. Setup tracking obligatoire : 300.- (une fois).",
+  vat: "TVA non applicable.",
 };
+
+/** Micro-explication « campagnes spéciales » (note * sous la grille). */
+export const specialCampaignsNote =
+  "Campagnes ou ajustements ponctuels liés à des événements : saisons, Black Friday, soldes, promotions.";
+
+/**
+ * Plancher budget pub - réutilisé par le formulaire de contact (message < 500)
+ * et les FAQ. Aucun client en dessous de 500 CHF/mois de budget publicitaire.
+ */
+export const budgetFloorNote =
+  "En dessous de 500 CHF par mois de budget publicitaire, les campagnes ne génèrent pas assez de données pour être optimisées : les résultats sont aléatoires et vous paieriez des frais de gestion pour rien. Nous préférons vous le dire d'entrée : mieux vaut attendre d'avoir ce budget que de tester trop petit.";
