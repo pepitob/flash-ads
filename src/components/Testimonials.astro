@@ -1,32 +1,128 @@
 ---
 /**
- * Bloc preuve sociale — témoignages clients (+ avertissement placeholder).
- * Données dans src/data/temoignages.ts. ⚠️ Remplacer par du réel avant publication.
+ * Bloc preuve sociale - témoignages clients issus des avis Google.
+ * Données dans src/data/temoignages.ts (source : fiche Google Business Profile).
+ *
+ * Affichage : rail à défilement horizontal (scroll-snap), 2-3 cartes visibles
+ * à la fois + amorce de la suivante pour signaler qu'on peut faire défiler.
+ * Le `.reveal` est porté par le conteneur, PAS par les cartes : une carte hors
+ * du rail n'intersecte jamais le viewport et resterait invisible.
  */
-import { testimonials, proofPlaceholder } from "../data/temoignages";
+import { testimonials, googleReviews } from "../data/temoignages";
+
+const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
 ---
 
-<div class="tm-grid">
-  {
-    testimonials.map((t) => (
-      <figure class="tm reveal">
-        <div class="tm-stars" aria-hidden="true">★★★★★</div>
-        <blockquote>« {t.quote} »</blockquote>
-        <figcaption>
-          <span class="tm-author">{t.author}</span>
-          <span class="tm-meta mono">{t.company} · {t.location}</span>
-        </figcaption>
-      </figure>
-    ))
-  }
+<div class="tm-carousel reveal">
+  <div class="tm-bar">
+    <a
+      class="tm-rating"
+      href={googleReviews.profileUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span class="tm-stars" aria-hidden="true">★★★★★</span>
+      <span>
+        <strong>{ratingFr}</strong> sur {googleReviews.count} avis Google
+      </span>
+    </a>
+    <div class="tm-nav">
+      <button type="button" class="tm-btn" data-tm-prev aria-label="Témoignages précédents">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+      </button>
+      <button type="button" class="tm-btn" data-tm-next aria-label="Témoignages suivants">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="tm-rail"
+    data-tm-rail
+    role="group"
+    aria-label="Témoignages clients, faites défiler horizontalement"
+    tabindex="0"
+  >
+    {
+      testimonials.map((t) => (
+        <figure class="tm">
+          <div class="tm-stars" aria-hidden="true">★★★★★</div>
+          <blockquote>« {t.quote} »</blockquote>
+          <figcaption>
+            <span class="tm-author">{t.author}</span>
+            <span class="tm-meta mono">
+              {[t.company, t.location, "Avis Google"].filter(Boolean).join(" · ")}
+            </span>
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
 </div>
-{proofPlaceholder && (
-  <p class="tm-warn mono">⚠️ PLACEHOLDER — remplacer par de vrais témoignages clients (avec accord). Voir src/data/temoignages.ts.</p>
-)}
 
 <style>
-  .tm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .tm-carousel { --tm-gap: 20px; --tm-per-view: 2.4; }
+
+  /* ── Barre : note Google + flèches ─────────────────────────── */
+  .tm-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .tm-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  .tm-rating strong { color: var(--ink); font-family: var(--font-display); }
+  .tm-rating:hover { color: var(--ink); }
+
+  .tm-nav { display: flex; gap: 8px; flex-shrink: 0; }
+  .tm-btn {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color .2s, color .2s, opacity .2s;
+  }
+  .tm-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .tm-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .tm-btn:disabled { opacity: .35; cursor: default; }
+
+  /* ── Rail ───────────────────────────────────────────────────── */
+  .tm-rail {
+    display: flex;
+    gap: var(--tm-gap);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    /* laisse respirer l'ombre de focus, évite le rognage vertical */
+    padding: 4px 4px 18px;
+    margin: -4px -4px -18px;
+    /* la carte snappée s'aligne sur le bord du conteneur, pas sur le padding */
+    scroll-padding-inline-start: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--hairline) transparent;
+  }
+  .tm-rail::-webkit-scrollbar { height: 6px; }
+  .tm-rail::-webkit-scrollbar-track { background: transparent; }
+  .tm-rail::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 3px; }
+  .tm-rail:hover::-webkit-scrollbar-thumb { background: var(--muted); }
+  .tm-rail:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
   .tm {
+    flex: 0 0 calc(100% / var(--tm-per-view) - var(--tm-gap));
+    scroll-snap-align: start;
     background: var(--paper);
     border: 1px solid var(--hairline);
     border-radius: var(--r);
@@ -36,11 +132,50 @@ import { testimonials, proofPlaceholder } from "../data/temoignages";
     gap: 14px;
   }
   .tm-stars { color: #f5a623; font-size: 15px; letter-spacing: 2px; }
-  .tm blockquote { font-size: 17px; line-height: 1.6; color: var(--ink); }
-  .tm figcaption { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+  .tm blockquote { font-size: 16px; line-height: 1.6; color: var(--ink); }
+  /* pousse l'attribution en bas : cartes de hauteur égale, légendes alignées */
+  .tm figcaption { display: flex; flex-direction: column; gap: 3px; margin-top: auto; padding-top: 4px; }
   .tm-author { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
   .tm-meta { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-  .tm-warn { font-size: 11px; color: var(--muted); margin-top: 16px; text-align: center; }
 
-  @media (max-width: 760px) { .tm-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .tm-carousel { --tm-per-view: 1.6; } }
+  @media (max-width: 560px) {
+    .tm-carousel { --tm-per-view: 1.12; }
+    .tm { padding: 24px; }
+    .tm-nav { display: none; } /* le doigt suffit, on gagne de la place */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tm-rail { scroll-behavior: auto; }
+  }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".tm-carousel").forEach((root) => {
+    const rail = root.querySelector<HTMLElement>("[data-tm-rail]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-tm-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-tm-next]");
+    if (!rail || !prev || !next) return;
+
+    // Largeur d'une carte + gouttière : on avance d'une carte par clic.
+    const step = () => {
+      const card = rail.querySelector<HTMLElement>(".tm");
+      if (!card) return rail.clientWidth;
+      const gap = parseFloat(getComputedStyle(rail).columnGap) || 0;
+      return card.offsetWidth + gap;
+    };
+
+    const sync = () => {
+      // 1px de tolérance : les navigateurs arrondissent scrollLeft.
+      const max = rail.scrollWidth - rail.clientWidth - 1;
+      prev.disabled = rail.scrollLeft <= 0;
+      next.disabled = rail.scrollLeft >= max;
+    };
+
+    prev.addEventListener("click", () => rail.scrollBy({ left: -step() }));
+    next.addEventListener("click", () => rail.scrollBy({ left: step() }));
+    rail.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    sync();
+  });
+</script>

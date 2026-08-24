@@ -29,7 +29,7 @@ C'est l'outil idéal quand vous avez besoin de **clients maintenant** : lancemen
 
 ## La combinaison qui marche pour une PME
 
-Dans la plupart des cas, nous recommandons de **démarrer avec Google Ads** pour générer des leads rapidement et apprendre quels mots-clés convertissent — puis d'utiliser ces enseignements pour **alimenter une stratégie SEO** qui réduira progressivement votre dépendance au payant.
+Dans la plupart des cas, nous recommandons de **démarrer avec Google Ads** pour générer des leads rapidement et apprendre quels mots-clés convertissent, puis d'utiliser ces enseignements pour **alimenter une stratégie SEO** qui réduira progressivement votre dépendance au payant.
 
 Les données de vos campagnes Google Ads sont une mine d'or pour le SEO : elles vous disent précisément quelles requêtes valent la peine d'être travaillées.
 

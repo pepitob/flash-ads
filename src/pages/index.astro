@@ -17,38 +17,58 @@ import { serviceSchema, type FaqItem } from "../lib/schema";
 
 const title = "Agence Google Ads en Suisse romande pour PME | Flash Ads";
 const description =
-  "Agence Google Ads pour PME en Suisse romande : plus de clients avec la publicité Google. Prix clairs, aucune commission sur votre budget, sans engagement. Demandez un devis gratuit.";
+  "Agence Google Ads pour PME en Suisse romande : plus de clients avec la publicité Google. Prix fixes et publics dès 390.-/mois, 0% de commission sur votre budget. Audit gratuit.";
 
 const faqItems: FaqItem[] = [
   {
     question: "Combien ça coûte ?",
     answer:
-      "Vous payez un montant fixe chaque mois pour la gestion, plus une mise en place au départ. C'est tout. On ne prend aucune commission sur votre budget de pub : cet argent-là, vous le versez directement à Google et il reste à vous. Nos prix sont affichés sur cette page.",
+      "Quatre packs à prix fixes et publics, de 390.- à 1190.- par mois (sur mesure dès 1490.-), selon votre budget publicitaire mensuel. S'ajoute un setup tracking obligatoire de 300.-, payé une seule fois avant le lancement. Votre budget de pub, lui, est payé directement à Google : on ne prend aucune commission dessus.",
   },
   {
-    question: "Est-ce que vous prenez un pourcentage sur mon budget de pub ?",
+    question: "Comment savoir quel pack choisir ?",
     answer:
-      "Non, jamais. Beaucoup d'agences se rémunèrent en prenant un pourcentage de ce que vous dépensez en pub — donc elles gagnent plus quand vous dépensez plus. Nous, on est payés un montant fixe pour bien gérer vos campagnes. Nos intérêts sont les mêmes que les vôtres.",
+      "Un seul critère : votre budget publicitaire mensuel. Moins de 1200.- : Starter. De 1200 à 5000.- : Croissance. De 5000 à 15000.- : Performance. Au-delà : sur mesure. Si vous ne connaissez pas encore votre budget idéal, il se calcule à partir de la valeur d'un client et du nombre de clients que vous visez. C'est la première chose qu'on regarde ensemble.",
+  },
+  {
+    question: "Qui paie le budget publicitaire ?",
+    answer:
+      "Vous, directement à Google, avec votre propre carte sur votre propre compte Google Ads. Flash Ads ne touche jamais ce budget et ne prend aucun pourcentage dessus. Vous voyez exactement ce que Google facture, et nous n'avons aucun intérêt à gonfler vos dépenses : nos frais de gestion sont fixes.",
+  },
+  {
+    question: "À partir de quel budget ça vaut la peine ?",
+    answer:
+      "À partir de 500 CHF par mois de budget publicitaire : c'est notre seuil, et il est ferme. En dessous, les campagnes ne génèrent pas assez de données pour être optimisées et vous paieriez des frais de gestion pour rien. Plutôt que d'encaisser en sachant que ça ne marchera pas, on préfère vous conseiller d'attendre d'avoir ce budget.",
+  },
+  {
+    question: "Que se passe-t-il si mon budget augmente en cours de route ?",
+    answer:
+      "Le pack suit le budget : si votre budget publicitaire dépasse durablement la limite de votre pack, vous passez au pack supérieur le mois suivant, sans frais. Et c'est une bonne nouvelle : en général, le budget augmente parce que les campagnes rapportent.",
+  },
+  {
+    question: "Pourquoi un engagement initial de 3 mois ?",
+    answer:
+      "Parce que Google Ads a besoin de 6 à 8 semaines de données avant que l'optimisation produise des résultats fiables. Un client qui part au bout d'un mois n'a rien vu des résultats réels. Après les 3 premiers mois, vous pouvez résilier chaque mois, sans pénalité.",
+  },
+  {
+    question: "Comment se passe la facturation ?",
+    answer:
+      "Un abonnement mensuel, prélevé automatiquement en début de mois par carte ou TWINT via Stripe. Les frais de setup (tracking, Shopping, landing page) sont facturés une seule fois, avant le lancement. Un changement de pack se fait au mois suivant, sans frais.",
+  },
+  {
+    question: "Vos prix incluent-ils la TVA ?",
+    answer:
+      "Flash Ads n'est pas assujettie à la TVA à ce jour : les prix affichés sont donc nets, sans TVA. En cas d'assujettissement futur, les prix pourront être ajustés conformément aux CGV.",
   },
   {
     question: "Faut-il un rendez-vous avant de commencer ?",
     answer:
-      "Non, ce n'est pas obligatoire. Comme nos prix sont publics, vous pouvez comparer, nous écrire, ou même payer et démarrer directement. On préfère quand même un court échange au début pour bien comprendre votre besoin — mais c'est vous qui décidez.",
+      "Non, ce n'est pas obligatoire. Nos prix sont publics et le pack se choisit sur un seul critère, votre budget publicitaire : vous pouvez comparer et nous écrire directement. On garde quand même un court échange au démarrage pour bien comprendre votre activité. Et le pack Sur mesure, lui, commence toujours par une discussion.",
   },
   {
     question: "Faites-vous aussi des sites web ou des réseaux sociaux ?",
     answer:
       "Non. On ne fait que de la publicité en ligne. C'est notre seul métier, et c'est exactement pour ça qu'on le fait bien. Pour le reste, on peut vous recommander des partenaires de confiance.",
-  },
-  {
-    question: "Y a-t-il un engagement sur la durée ?",
-    answer:
-      "Non. Vous n'êtes lié par aucun contrat long. Vous restez parce que ça marche, pas parce qu'un papier vous y oblige.",
-  },
-  {
-    question: "À partir de quel budget ça vaut la peine ?",
-    answer:
-      "En dessous d'environ 1 000 CHF par mois de budget de pub, il n'y a pas assez d'activité pour bien régler les campagnes. À partir de là, un accompagnement commence à avoir du sens. On vous le dira franchement si ce n'est pas le moment.",
   },
 ];
 
@@ -74,8 +94,8 @@ const jsonLd = [
         </h1>
         <p class="lead">
           On s'occupe de votre publicité sur Google pour vous amener plus de clients. Vous gardez la
-          main sur votre budget, payé directement à Google. Pas de commission cachée, pas d'engagement,
-          et vous voyez exactement ce que vous payez.
+          main sur votre budget, payé directement à Google. Des packs fixes et publics, 0% de
+          commission, et vous voyez exactement ce que vous payez.
         </p>
         <div class="hero-cta">
           <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
@@ -107,15 +127,15 @@ const jsonLd = [
     </div>
   </div>
 
-  <!-- BLOC DE RÉPONSE DIRECTE (GEO) — définition extractible par les moteurs IA -->
+  <!-- BLOC DE RÉPONSE DIRECTE (GEO) - définition extractible par les moteurs IA -->
   <section class="intro-answer" style="padding: 28px 0 4px;">
     <div class="wrap">
       <AnswerBlock question="Qu'est-ce que Flash Ads ?">
         <p>
           <b>Flash Ads</b> est une agence Google Ads pour PME en Suisse romande. Nous créons et gérons
-          vos campagnes publicitaires sur Google contre un <b>forfait mensuel fixe</b>, sans commission
-          sur votre budget et sans engagement. Votre budget publicitaire est payé directement à Google
-          et reste chez vous.
+          vos campagnes publicitaires sur Google contre un <b>forfait mensuel fixe et public</b>, dès
+          390.-/mois, sans commission sur votre budget. Votre budget publicitaire est payé directement
+          à Google et reste chez vous. Engagement initial de 3 mois, puis résiliable chaque mois.
         </p>
       </AnswerBlock>
     </div>
@@ -138,7 +158,7 @@ const jsonLd = [
           <span class="eyebrow">Notre façon de faire</span>
           <h2 class="display">Un seul métier, des prix affichés, zéro mauvaise surprise.</h2>
           <p class="muted">
-            On ne fait <b>que</b> de la publicité en ligne — pas de site web, pas de logo, pas de
+            On ne fait <b>que</b> de la publicité en ligne : pas de site web, pas de logo, pas de
             réseaux sociaux. Juste vos campagnes, bien faites. Les prix sont sur le site, votre budget
             reste chez vous, et vous savez toujours ce qu'on fait et pourquoi.
           </p>
@@ -161,7 +181,7 @@ const jsonLd = [
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 8l-9-5-9 5v8l9 5 9-5z" /><path d="M3 8l9 5 9-5" /><path d="M12 13v8" /></svg>
           </div>
           <h3>Service clé en main</h3>
-          <p>On s'occupe de tout, de A à Z : création, réglages et suivi de vos campagnes. Vous n'avez rien à gérer — on vous amène les demandes.</p>
+          <p>On s'occupe de tout, de A à Z : création, réglages et suivi de vos campagnes. Vous n'avez rien à gérer : on vous amène les demandes.</p>
         </div>
         <div class="card reveal">
           <div class="ico" aria-hidden="true">
@@ -219,7 +239,7 @@ const jsonLd = [
       <SectionHead
         eyebrow="Nos prix"
         title="Un prix fixe, affiché. Votre budget de pub reste chez vous."
-        text="Un montant fixe chaque mois pour la gestion, plus une mise en place au départ. Vous payez Google directement avec votre carte."
+        text="Quatre packs fixes, choisis sur un seul critère : votre budget publicitaire mensuel. Vous payez Google directement avec votre carte, 0% de commission."
       />
       <PricingGrid ctaHref="/contact" />
     </div>
@@ -258,7 +278,7 @@ const jsonLd = [
     <div class="wrap">
       <SectionHead eyebrow="Résultats" title="Des chiffres, pas des promesses." />
       <p class="cases-disclaimer mono">
-        ⚠️ PLACEHOLDER — remplacer par des résultats clients réels (anonymisés). Détail sur la page Publicité Google.
+        ⚠️ PLACEHOLDER : remplacer par des résultats clients réels (anonymisés). Détail sur la page Publicité Google.
       </p>
       <div class="cases">
         <CaseStudyCard metric="2×" who="Commerce · Sion">

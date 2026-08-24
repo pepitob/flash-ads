@@ -4,15 +4,12 @@
  * Brief §9 : Organization (global), Service, FAQPage, Article, BreadcrumbList.
  */
 import { site } from "../data/site";
-import { pricingValidated, tiers } from "../data/tarifs";
+import { pricingValidated, tiers, addOns } from "../data/tarifs";
 
 const abs = (path: string) =>
   path.startsWith("http") ? path : `${site.url}${path.startsWith("/") ? "" : "/"}${path}`;
 
-/** "CHF 2 200" → 2200 (nombre) pour les PriceSpecification. */
-const parsePrice = (price: string) => Number(price.replace(/[^\d]/g, "")) || undefined;
-
-/** Organization — injecté globalement dans le layout. */
+/** Organization - injecté globalement dans le layout. */
 export function organizationSchema() {
   // Liens d'identité externes vérifiables (E-E-A-T / GEO) : réseaux sociaux (à compléter)
   // + page Google Partner officielle, qui est un vrai signal d'entité.
@@ -47,26 +44,42 @@ export function organizationSchema() {
  */
 function pricingOffers() {
   if (!pricingValidated) return undefined;
+  const setup = addOns.find((a) => a.mandatory);
   return {
     "@type": "OfferCatalog",
-    name: "Formules de gestion Google Ads",
-    itemListElement: tiers.map((t) => ({
-      "@type": "Offer",
-      name: t.name,
-      description: t.forBudget,
-      priceCurrency: "CHF",
-      price: parsePrice(t.price),
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
+    name: "Packs de gestion Google Ads",
+    itemListElement: [
+      ...tiers.map((t) => ({
+        "@type": "Offer",
+        name: t.name,
+        description: t.forBudget,
         priceCurrency: "CHF",
-        price: parsePrice(t.price),
-        unitCode: "MON", // facturation mensuelle
-      },
-    })),
+        // « dès X » (Sur mesure) → minPrice uniquement, jamais un prix fixe trompeur.
+        ...(t.priceIsFrom ? {} : { price: t.priceValue }),
+        priceSpecification: {
+          "@type": "UnitPriceSpecification",
+          priceCurrency: "CHF",
+          ...(t.priceIsFrom ? { minPrice: t.priceValue } : { price: t.priceValue }),
+          unitCode: "MON", // facturation mensuelle
+        },
+      })),
+      ...(setup
+        ? [
+            {
+              "@type": "Offer",
+              name: `${setup.label} (obligatoire)`,
+              description: setup.note,
+              priceCurrency: "CHF",
+              // ponctuel, avant lancement - pas de unitCode MON
+              price: Number(setup.price.replace(/[^\d]/g, "")),
+            },
+          ]
+        : []),
+    ],
   };
 }
 
-/** Service — pages services. `withPricing` = attacher les offres (gaté sur pricingValidated). */
+/** Service - pages services. `withPricing` = attacher les offres (gaté sur pricingValidated). */
 export function serviceSchema(opts: {
   name: string;
   description: string;
@@ -91,7 +104,7 @@ export function serviceSchema(opts: {
 
 export type FaqItem = { question: string; answer: string };
 
-/** FAQPage — toutes les FAQ (clé pour le GEO). */
+/** FAQPage - toutes les FAQ (clé pour le GEO). */
 export function faqSchema(items: FaqItem[]) {
   return {
     "@context": "https://schema.org",
@@ -104,7 +117,7 @@ export function faqSchema(items: FaqItem[]) {
   };
 }
 
-/** Article — articles de blog. `author` (nom réel) ⇒ auteur Person (fort signal E-E-A-T). */
+/** Article - articles de blog. `author` (nom réel) ⇒ auteur Person (fort signal E-E-A-T). */
 export function articleSchema(opts: {
   title: string;
   description: string;
@@ -134,7 +147,7 @@ export function articleSchema(opts: {
   };
 }
 
-/** Blog — index des articles (ItemList sémantique pour l'IA / rich results). */
+/** Blog - index des articles (ItemList sémantique pour l'IA / rich results). */
 export function blogListSchema(
   posts: { title: string; url: string; datePublished: Date; description?: string }[],
 ) {
@@ -157,7 +170,7 @@ export function blogListSchema(
 
 export type Crumb = { name: string; url: string };
 
-/** BreadcrumbList — navigation. */
+/** BreadcrumbList - navigation. */
 export function breadcrumbSchema(crumbs: Crumb[]) {
   return {
     "@context": "https://schema.org",

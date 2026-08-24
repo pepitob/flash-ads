@@ -1,5 +1,5 @@
 /**
- * Identité de l'entreprise — source unique consommée par le schema
+ * Identité de l'entreprise - source unique consommée par le schema
  * Organization, le footer et les balises meta. À mettre à jour ici uniquement.
  */
 export const site = {
@@ -8,8 +8,8 @@ export const site = {
   url: "https://flashads.ch",
   domain: "flashads.ch",
   description:
-    "Agence Google Ads pour PME francophones en Suisse romande. Prix fixes et transparents, sans pourcentage sur le budget publicitaire, sans engagement annuel.",
-  tagline: "Gestion Google Ads pour PME — transparente et abordable.",
+    "Agence Google Ads pour PME francophones en Suisse romande. Packs fixes et publics dès 390.-/mois, 0% de commission sur le budget publicitaire, payé directement à Google.",
+  tagline: "Gestion Google Ads pour PME : transparente et abordable.",
   email: "info@flashads.ch",
   phone: "+41 27 552 05 07",
   street: "Chemin du Tsâblo 55",
@@ -33,14 +33,14 @@ export const site = {
   },
 } as const;
 
-/** Sous-pages services — réutilisées dans le menu (dropdown) et le footer. */
+/** Sous-pages services - réutilisées dans le menu (dropdown) et le footer. */
 const services = [
   { label: "Gestion Google Ads", href: "/services/google-ads" },
   { label: "Publicité ChatGPT", href: "/services/chatgpt-ads" },
   { label: "Tracking & Analytics", href: "/services/tracking-analytics" },
 ] as const;
 
-/** Navigation principale — partagée header + footer, prête pour i18n. */
+/** Navigation principale - partagée header + footer, prête pour i18n. */
 export const nav = {
   services,
   main: [

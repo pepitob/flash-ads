@@ -100,7 +100,11 @@ import { ui } from "../i18n/fr";
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 68px;
+    gap: 16px;
+    /* min-height (et pas height) : si un enfant grandit, la navbar grandit
+       avec lui au lieu de le laisser déborder. */
+    min-height: 68px;
+    padding-block: 8px;
   }
   .nav-links { display: flex; gap: 30px; align-items: center; }
   .nav-links > a,
@@ -116,7 +120,13 @@ import { ui } from "../i18n/fr";
   .nav-links > a:focus-visible,
   .nav-item:hover .nav-trigger,
   .nav-item:focus-within .nav-trigger { opacity: 1; }
-  .nav-cta { display: flex; align-items: center; gap: 14px; }
+  .nav-cta { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  /* Le libellé ne doit jamais passer sur 2 lignes : c'est ce qui faisait
+     dépasser le bouton de la hauteur de la navbar en dessous de ~425px. */
+  .nav-cta .btn {
+    white-space: nowrap;
+    line-height: 1.2;
+  }
 
   /* Dropdown Services */
   .nav-item { position: relative; }
@@ -231,6 +241,16 @@ import { ui } from "../i18n/fr";
   @media (max-width: 900px) {
     .nav-links { display: none; }
     .burger { display: flex; }
+    /* CTA compact : ~40px de haut dans une navbar de 68px → marge nette. */
+    .nav-cta .btn { padding: 11px 18px; font-size: 14px; }
+  }
+
+  /* En dessous de 480px, logo (~122px) + « Audit gratuit » (~130px) +
+     burger (42px) + gouttières + 64px de padding .wrap : trop juste sur les
+     plus petits écrans. On s'appuie sur le CTA du menu mobile
+     (.mobile-cta), qui pointe vers la même page : rien n'est perdu. */
+  @media (max-width: 480px) {
+    .nav-cta .btn { display: none; }
   }
 </style>
 

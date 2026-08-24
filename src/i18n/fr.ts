@@ -1,5 +1,5 @@
 /**
- * Chaînes d'interface partagées (chrome) — i18n-ready.
+ * Chaînes d'interface partagées (chrome) - i18n-ready.
  *
  * Au lancement : français uniquement. Pour ajouter EN/DE plus tard :
  * créer `src/i18n/en.ts` avec les mêmes clés, router via `src/pages/[lang]/`.
@@ -9,8 +9,8 @@
 export const ui = {
   locale: "fr",
   cta: {
-    quote: "Demander un devis gratuit",
-    quoteShort: "Demander un devis",
+    quote: "Demander un audit gratuit",
+    quoteShort: "Audit gratuit",
     talkExpert: "En discuter avec nous",
     seeResults: "Voir nos résultats",
     seePricing: "Voir nos prix",
