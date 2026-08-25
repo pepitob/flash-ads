@@ -10,6 +10,9 @@ Services :
 - **Tracking & Analytics** : mesure des conversions et données fiables.
 
 Flash Ads est agence **Google Partner** certifiée.
+<a href="https://www.google.com/partners/agency?id=9907170973" target="_blank">
+    <img src="https://www.gstatic.com/partners/badge/images/2026/PartnerBadgeClickable.svg"/>
+</a>
 
 ## Ce repo
 
