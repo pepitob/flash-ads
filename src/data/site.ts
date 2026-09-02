@@ -40,9 +40,15 @@ const services = [
   { label: "Tracking & Analytics", href: "/services/tracking-analytics" },
 ] as const;
 
+/** Outils gratuits - liens footer et maillage interne (hors menu principal). */
+const tools = [
+  { label: "Calculateur de budget Google Ads", href: "/calculateur-budget" },
+] as const;
+
 /** Navigation principale - partagée header + footer, prête pour i18n. */
 export const nav = {
   services,
+  tools,
   main: [
     { label: "Services", href: "/services/google-ads", children: services },
     { label: "Tarifs", href: "/#tarifs" },

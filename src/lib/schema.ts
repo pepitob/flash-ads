@@ -102,6 +102,27 @@ export function serviceSchema(opts: {
   };
 }
 
+/**
+ * WebApplication - outils interactifs du site (calculateur de budget).
+ * Signale à Google et aux moteurs génératifs qu'il s'agit d'un outil utilisable
+ * en ligne, gratuit et sans inscription, pas d'une simple page de contenu.
+ */
+export function toolSchema(opts: { name: string; description: string; url: string }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: opts.name,
+    description: opts.description,
+    url: abs(opts.url),
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Tout navigateur web",
+    inLanguage: "fr-CH",
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: 0, priceCurrency: "CHF" },
+    publisher: { "@type": "Organization", name: site.name, url: site.url },
+  };
+}
+
 export type FaqItem = { question: string; answer: string };
 
 /** FAQPage - toutes les FAQ (clé pour le GEO). */

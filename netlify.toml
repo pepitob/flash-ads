@@ -1,0 +1,14 @@
+# Configuration Netlify - build statique Astro.
+#
+# Le formulaire de devis (/contact) utilise Netlify Forms : Netlify analyse le
+# HTML statique produit dans `dist/` à la fin du build et y détecte le
+# formulaire portant `data-netlify="true"`. Prérequis côté interface Netlify :
+# activer « Forms > Enable form detection » avant le déploiement, sinon aucune
+# soumission n'est enregistrée.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22.12.0"

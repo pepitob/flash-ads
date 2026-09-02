@@ -24,11 +24,14 @@ const {
 ---
 
 <div class="ad reveal" role="img" aria-label={`Exemple d'annonce Google Search gérée par Flash Ads pour la recherche « ${query} »`}>
-  <!-- Barre de recherche -->
-  <div class="ad-search">
-    <svg class="ad-loupe" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke-width="2" /><path d="M21 21l-4-4" stroke-width="2" stroke-linecap="round" /></svg>
-    <span class="ad-query">{query}</span>
-    <span class="ad-caret" aria-hidden="true"></span>
+  <!-- Barre de recherche, précédée du logo Google comme sur une vraie page de résultats -->
+  <div class="ad-bar">
+    <img class="ad-google" src="/google-wordmark.webp" alt="Google" width="122" height="40" decoding="async" />
+    <div class="ad-search">
+      <svg class="ad-loupe" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke-width="2" /><path d="M21 21l-4-4" stroke-width="2" stroke-linecap="round" /></svg>
+      <span class="ad-query">{query}</span>
+      <span class="ad-caret" aria-hidden="true"></span>
+    </div>
   </div>
 
   <!-- Résultat sponsorisé -->
@@ -77,7 +80,11 @@ const {
   }
 
   /* search bar */
+  .ad-bar { display: flex; align-items: center; gap: 14px; }
+  .ad-google { width: 61px; height: auto; flex: 0 0 auto; }
   .ad-search {
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 11px;
@@ -88,7 +95,7 @@ const {
     position: relative;
   }
   .ad-loupe { width: 17px; height: 17px; stroke: var(--muted); flex: 0 0 auto; }
-  .ad-query { font-size: 15px; color: var(--ink); }
+  .ad-query { font-size: 15px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ad-caret {
     width: 1.5px; height: 17px; background: var(--accent); margin-left: -4px;
     animation: blink 1.1s step-end infinite;
@@ -163,5 +170,11 @@ const {
     0% { box-shadow: 0 0 0 0 rgba(255, 46, 139, .45); }
     70% { box-shadow: 0 0 0 8px rgba(255, 46, 139, 0); }
     100% { box-shadow: 0 0 0 0 rgba(255, 46, 139, 0); }
+  }
+
+  /* Sur écran étroit, le logo passe au-dessus : la requête garde toute la largeur. */
+  @media (max-width: 420px) {
+    .ad-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .ad-search { width: 100%; }
   }
 </style>

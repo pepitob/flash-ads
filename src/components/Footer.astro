@@ -27,6 +27,7 @@ const year = new Date().getFullYear();
       <div class="foot-col">
         <h5>{ui.footer.services}</h5>
         {nav.services.map((s) => <a href={s.href}>{s.label}</a>)}
+        {nav.tools.map((t) => <a href={t.href}>{t.label}</a>)}
       </div>
 
       <div class="foot-col">

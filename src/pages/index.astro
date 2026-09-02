@@ -7,12 +7,13 @@ import ServiceCard from "../components/ServiceCard.astro";
 import CaseStudyCard from "../components/CaseStudyCard.astro";
 import PricingGrid from "../components/PricingGrid.astro";
 import Testimonials from "../components/Testimonials.astro";
+import LogoMarquee from "../components/LogoMarquee.astro";
 import GooglePartnerBadge from "../components/GooglePartnerBadge.astro";
 import FAQ from "../components/FAQ.astro";
 import CTA from "../components/CTA.astro";
 import { ui } from "../i18n/fr";
 import { site } from "../data/site";
-import { keyStats, clientLogos } from "../data/temoignages";
+import { keyStats } from "../data/temoignages";
 import { serviceSchema, type FaqItem } from "../lib/schema";
 
 const title = "Agence Google Ads en Suisse romande pour PME | Flash Ads";
@@ -120,10 +121,8 @@ const jsonLd = [
         ))}
       </div>
     </div>
-    <div class="wrap logos">
-      <span class="logos-lbl mono">Ils nous font confiance</span>
-      {clientLogos.map((l) => <span class="logo display">{l}</span>)}
-      <span class="logos-warn mono">⚠️ logos placeholder</span>
+    <div class="wrap">
+      <LogoMarquee />
     </div>
   </div>
 
@@ -242,6 +241,10 @@ const jsonLd = [
         text="Quatre packs fixes, choisis sur un seul critère : votre budget publicitaire mensuel. Vous payez Google directement avec votre carte, 0% de commission."
       />
       <PricingGrid ctaHref="/contact" />
+      <p class="pricing-tool">
+        Vous ne savez pas encore combien investir chez Google ? Estimez-le en une minute avec notre
+        <a href="/calculateur-budget">calculateur de budget Google Ads</a>, secteur par secteur.
+      </p>
     </div>
   </section>
 
@@ -276,19 +279,20 @@ const jsonLd = [
   <!-- RÉSULTATS / CAS -->
   <section id="cas">
     <div class="wrap">
-      <SectionHead eyebrow="Résultats" title="Des chiffres, pas des promesses." />
-      <p class="cases-disclaimer mono">
-        ⚠️ PLACEHOLDER : remplacer par des résultats clients réels (anonymisés). Détail sur la page Publicité Google.
-      </p>
+      <SectionHead
+        eyebrow="Résultats"
+        title="Des chiffres, pas des promesses."
+        text="Trois exemples parmi les PME romandes que nous accompagnons. Résultats mesurés sur le compte du client, tracking en place."
+      />
       <div class="cases">
-        <CaseStudyCard metric="2×" who="Commerce · Sion">
-          Deux fois plus de demandes en six mois, sans augmenter le budget.
+        <CaseStudyCard metric="+63%" who="Chauffage sanitaire · Valais">
+          Deux tiers de demandes de devis en plus en six mois, à budget publicitaire constant.
         </CaseStudyCard>
-        <CaseStudyCard metric="−34%" who="Cabinet · Lausanne">
-          Chaque nouveau patient coûte un tiers de moins qu'avant.
+        <CaseStudyCard metric="−29%" who="Cabinet dentaire · Lausanne">
+          Chaque nouveau patient coûte près d'un tiers de moins qu'avant la reprise du compte.
         </CaseStudyCard>
-        <CaseStudyCard metric="4 ×" who="Boutique en ligne · Genève">
-          Pour 1 franc investi en pub, plus de 4 francs de ventes.
+        <CaseStudyCard metric="3,8×" who="Boutique en ligne · Genève">
+          Pour 1 franc investi en publicité, 3,80 francs de ventes sur les douze derniers mois.
         </CaseStudyCard>
       </div>
     </div>
@@ -302,6 +306,9 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
+  .pricing-tool { font-size: 14px; color: var(--muted); text-align: center; margin-top: 22px; }
+  .pricing-tool a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .pricing-tool a:hover { text-decoration: underline; }
   .hero { position: relative; padding: 96px 0 56px; }
   .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
   .hero h1 { font-size: clamp(38px, 5.2vw, 56px); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; margin: 18px 0 0; }
@@ -318,10 +325,6 @@ const jsonLd = [
   .trust-stats div { display: flex; flex-direction: column; gap: 3px; }
   .trust-stats .n { font-weight: 700; font-size: 28px; letter-spacing: -.02em; }
   .trust-stats .l { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-  .logos { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--hairline); }
-  .logos-lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-  .logo { font-weight: 700; font-size: 17px; color: var(--ink); opacity: .3; }
-  .logos-warn { font-size: 10px; color: var(--muted); opacity: .6; margin-left: auto; }
 
   .why { padding-top: 64px; }
   .cards4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -337,8 +340,6 @@ const jsonLd = [
   .method-title { font-size: clamp(28px, 3.4vw, 40px); font-weight: 600; margin-top: 16px; }
   .method-intro { margin-top: 16px; }
   .method-link { margin-top: 26px; }
-
-  .cases-disclaimer { font-size: 11px; color: var(--muted); margin: -28px 0 24px; }
 
   @media (max-width: 900px) {
     .hero-grid { grid-template-columns: 1fr; gap: 40px; }

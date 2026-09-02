@@ -1,0 +1,124 @@
+---
+/**
+ * Bandeau de logos clients défilant en continu.
+ *
+ * Le défilement est purement CSS (translateX sur une piste dupliquée) : aucun
+ * JavaScript, donc rien à hydrater et aucun coût au chargement. La piste
+ * contient DEUX fois la même série et se déplace de exactement -50 % : à la fin
+ * du cycle, la seconde série se retrouve pile là où était la première, d'où une
+ * boucle sans saut visible.
+ *
+ * Les logos sont déjà en niveaux de gris et à taille unique (public/logos/),
+ * traités en amont. `mix-blend-mode: multiply` fait disparaître leur fond blanc
+ * sur le fond de la section, sans avoir eu à détourer les blancs intérieurs.
+ *
+ * Les images ne sont volontairement PAS en `loading="lazy"` : la piste fait
+ * plusieurs milliers de pixels de large et défile par transform, si bien que
+ * les logos hors écran apparaîtraient en sautant. Les 23 fichiers pèsent 188 Ko
+ * au total et la seconde série réutilise les mêmes URL (donc le cache).
+ *
+ * Accessibilité : la piste dupliquée est masquée aux lecteurs d'écran
+ * (aria-hidden) pour ne pas annoncer deux fois la liste, l'animation s'arrête
+ * au survol et au focus clavier, et `prefers-reduced-motion` la désactive au
+ * profit d'un défilement manuel.
+ */
+import { clientLogos } from "../data/temoignages";
+
+interface Props {
+  /** Durée d'un cycle complet. Plus la valeur est haute, plus c'est lent. */
+  duration?: string;
+  label?: string;
+}
+const { duration = "70s", label = "Ils nous font confiance" } = Astro.props;
+---
+
+<div class="marquee" style={`--marquee-duration: ${duration}`}>
+  <span class="marquee-lbl mono">{label}</span>
+
+  <div class="marquee-viewport">
+    <div class="marquee-track">
+      <ul class="marquee-set" aria-label={`${label} : ${clientLogos.length} entreprises clientes`}>
+        {clientLogos.map((logo) => (
+          <li>
+            <img src={logo.src} alt={logo.name} width="240" height="72" decoding="async" />
+          </li>
+        ))}
+      </ul>
+      <!-- Copie strictement identique : elle assure la continuité de la boucle. -->
+      <ul class="marquee-set" aria-hidden="true">
+        {clientLogos.map((logo) => (
+          <li>
+            <img src={logo.src} alt="" width="240" height="72" decoding="async" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+  .marquee { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--hairline); }
+  .marquee-lbl {
+    display: block;
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  /* Le dégradé latéral évite que les logos soient tranchés net au bord. */
+  .marquee-viewport {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll var(--marquee-duration) linear infinite;
+  }
+  .marquee-viewport:hover .marquee-track,
+  .marquee-track:focus-within { animation-play-state: paused; }
+
+  @keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  .marquee-set {
+    display: flex;
+    align-items: center;
+    gap: 56px;
+    padding: 0 28px;
+    margin: 0;
+    list-style: none;
+    flex: 0 0 auto;
+  }
+  .marquee-set li { flex: 0 0 auto; }
+
+  .marquee-set img {
+    width: 120px;
+    height: 36px;
+    object-fit: contain;
+    /* Fond blanc du fichier neutralisé sur le fond de la section. */
+    mix-blend-mode: multiply;
+    opacity: .62;
+    transition: opacity var(--dur-normal) var(--ease-out);
+  }
+  .marquee-set img:hover { opacity: 1; }
+
+  @media (max-width: 640px) {
+    .marquee-set { gap: 40px; padding: 0 20px; }
+    .marquee-set img { width: 100px; height: 30px; }
+  }
+
+  /* Mouvement réduit : plus d'animation, le visiteur fait défiler lui-même. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-viewport { overflow-x: auto; }
+    .marquee-track { animation: none; }
+    /* La copie de boucle n'a plus d'utilité sans animation. */
+    .marquee-set[aria-hidden="true"] { display: none; }
+  }
+</style>
