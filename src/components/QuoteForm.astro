@@ -1,8 +1,21 @@
 ---
 /**
- * Formulaire de contact / demande d'audit gratuit.
- * Endpoint host-agnostic via env (PUBLIC_FORMSPREE_QUOTE_ID) - email + webhook-ready.
- * Anti-spam : honeypot. Validation côté client (required + types). Succès inline (JS).
+ * Formulaire de contact / demande d'audit gratuit - Netlify Forms.
+ *
+ * Détection par Netlify : `data-netlify="true"` + un `name` unique. Netlify
+ * analyse le HTML STATIQUE à la fin du build, or Astro rend bien ce formulaire
+ * au build : rien d'autre n'est requis côté configuration (il faut simplement
+ * que « Forms > Enable form detection » soit activé sur le site Netlify).
+ *
+ * L'envoi se fait en AJAX pour garder le message de succès en ligne, sans
+ * redirection. Netlify impose alors trois choses (doc « Forms setup ») :
+ *   1. poster sur un chemin du site (ici « / »),
+ *   2. un corps encodé en `application/x-www-form-urlencoded`,
+ *   3. le champ caché `form-name` reprenant le nom du formulaire. Netlify
+ *      l'injecte lui-même dans le HTML statique, mais on le déclare
+ *      explicitement : c'est lui qui route la soumission AJAX.
+ *
+ * Anti-spam : honeypot Netlify (`netlify-honeypot`), champ invisible côté humain.
  * Champ budget = pré-qualification du pack (tranches alignées sur la grille tarifaire).
  * « Moins de 500 » affiche un message expliquant qu'on ne prend pas ces budgets.
  * ?pack=<id> (CTA « Choisir X » de la grille) pré-sélectionne la tranche.
@@ -10,16 +23,21 @@
 import { ui } from "../i18n/fr";
 import { budgetFloorNote } from "../data/tarifs";
 
-const endpointId = import.meta.env.PUBLIC_FORMSPREE_QUOTE_ID ?? "";
-const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
+/** Nom du formulaire : c'est sous ce libellé que les soumissions arrivent dans Netlify. */
+const FORM_NAME = "devis";
 ---
 
-<form class="lead-form" id="quote-form" method="POST" action={action} novalidate>
-  {!endpointId && (
-    <p class="form-warn">
-      ⚠️ Endpoint non configuré : définissez <code>PUBLIC_FORMSPREE_QUOTE_ID</code> dans <code>.env</code>.
-    </p>
-  )}
+<form
+  class="lead-form"
+  id="quote-form"
+  name={FORM_NAME}
+  method="POST"
+  action="/"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  novalidate
+>
+  <input type="hidden" name="form-name" value={FORM_NAME} />
 
   <div class="grid2">
     <label>{ui.form.name}*<input type="text" name="nom" required autocomplete="name" /></label>
@@ -49,8 +67,10 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
 
   <label>{ui.form.message}<textarea name="message" rows="4"></textarea></label>
 
-  <!-- Honeypot anti-spam (caché aux humains, rempli par les bots) -->
-  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="gotcha" aria-hidden="true" />
+  <!-- Honeypot Netlify (caché aux humains, rempli par les bots) -->
+  <p class="gotcha" aria-hidden="true">
+    <label>Ne remplissez pas ce champ<input type="text" name="bot-field" tabindex="-1" autocomplete="off" /></label>
+  </p>
 
   <button type="submit" class="btn btn-primary">{ui.form.submit} <span class="arrow" aria-hidden="true">→</span></button>
 
@@ -82,11 +102,10 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
     box-shadow: var(--ring-accent);
   }
   textarea { resize: vertical; }
-  .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; }
+  .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .lead-form .btn { align-self: flex-start; margin-top: 4px; }
   .form-success { background: rgba(37, 99, 255, .06); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
   .form-error { color: #b00020; font-size: 14px; }
-  .form-warn { background: #fff6d6; border: 1px solid #f0e0a0; border-radius: 10px; padding: 10px 14px; font-size: 13px; }
   .budget-min { font-size: 12px; font-weight: 400; color: var(--muted); }
   .budget-floor {
     background: rgba(255, 46, 139, .05);
@@ -126,16 +145,18 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
     toggleFloor();
   }
 
-  if (form && form.action) {
+  if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!form.checkValidity()) { form.reportValidity(); return; }
       err?.setAttribute("hidden", "");
       try {
-        const res = await fetch(form.action, {
+        // Netlify Forms en AJAX : corps url-encodé, posté sur un chemin du site.
+        // Le champ caché `form-name` (présent dans le FormData) fait le routage.
+        const res = await fetch(form.getAttribute("action") || "/", {
           method: "POST",
-          body: new FormData(form),
-          headers: { Accept: "application/json" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
         });
         if (res.ok) { form.reset(); form.style.display = "none"; ok?.removeAttribute("hidden"); }
         else throw new Error("bad response");

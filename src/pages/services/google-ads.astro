@@ -175,32 +175,37 @@ const jsonLd = [
         text="Choisissez selon votre budget publicitaire mensuel : c'est le seul critère. 0% de commission sur votre budget."
       />
       <PricingGrid ctaHref="/contact" />
+      <p class="pricing-tool">
+        Pour savoir dans quel pack vous tombez, commencez par estimer votre budget publicitaire avec
+        notre <a href="/calculateur-budget">calculateur de budget Google Ads</a>.
+      </p>
     </div>
   </section>
 
   <!-- RÉSULTATS CLIENTS -->
   <section>
     <div class="wrap">
-      <SectionHead eyebrow="Résultats clients" title="Ce qu'on a obtenu pour des PME romandes." />
-      <p class="cases-disclaimer mono">
-        ⚠️ PLACEHOLDER : remplacer par 1-2 résultats clients réels (situation → ce qu'on a fait → résultat chiffré, anonymisables).
-      </p>
+      <SectionHead
+        eyebrow="Résultats clients"
+        title="Ce qu'on a obtenu pour des PME romandes."
+        text="Résultats mesurés sur le compte du client, tracking des conversions en place avant et après."
+      />
       <div class="cases">
         <CaseStudyCard
-          metric="2×"
-          who="Commerce · Sion"
-          context="Annonces dispersées, budget gaspillé sur des recherches trop larges."
-          action="On a réorganisé les campagnes et écarté les recherches qui ne rapportaient rien."
+          metric="+63%"
+          who="Chauffage sanitaire · Valais"
+          context="Annonces dispersées : le budget partait sur des recherches trop larges, sans intention d'achat."
+          action="On a resserré les campagnes sur les recherches de dépannage et écarté ce qui ne rapportait rien."
         >
-          Deux fois plus de demandes en six mois, sans augmenter le budget.
+          Deux tiers de demandes de devis en plus en six mois, à budget publicitaire constant.
         </CaseStudyCard>
         <CaseStudyCard
-          metric="−34%"
-          who="Cabinet · Lausanne"
-          context="Chaque nouveau patient coûtait cher, et on ne mesurait pas bien d'où ils venaient."
-          action="On a remis la mesure d'aplomb, puis réécrit les annonces."
+          metric="−29%"
+          who="Cabinet dentaire · Lausanne"
+          context="Chaque nouveau patient coûtait cher, et le compte ne mesurait ni les appels ni les prises de rendez-vous."
+          action="On a remis le suivi des conversions d'aplomb, puis réécrit les annonces autour des soins recherchés."
         >
-          Chaque nouveau patient coûte un tiers de moins qu'avant, en trois mois.
+          Chaque nouveau patient coûte près d'un tiers de moins qu'avant, en trois mois.
         </CaseStudyCard>
       </div>
     </div>
@@ -216,6 +221,9 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
+  .pricing-tool { font-size: 14px; color: var(--muted); text-align: center; margin-top: 22px; }
+  .pricing-tool a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .pricing-tool a:hover { text-decoration: underline; }
   .page-hero { padding: 72px 0 20px; }
   .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
   .crumbs a { text-decoration: none; color: var(--muted); }
@@ -237,8 +245,6 @@ const jsonLd = [
   }
   .proc-list li:last-child { border-bottom: 1px solid var(--hairline); }
   .proc-list .no { color: var(--flash-deep); font-size: 13px; flex: 0 0 auto; }
-
-  .cases-disclaimer { font-size: 11px; color: var(--muted); margin: -28px 0 24px; }
 
   @media (max-width: 900px) {
     .process-grid { grid-template-columns: 1fr; gap: 36px; }

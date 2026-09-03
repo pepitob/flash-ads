@@ -7,13 +7,13 @@
  *    Le nom « Adineo » a été remplacé par « Flash Ads » dans les citations
  *    qui le mentionnaient ; le reste du texte est verbatim.
  *
- * ⚠️ `clientLogos` reste un PLACEHOLDER (vrais noms/logos requis, avec accord).
- *    Ne jamais inventer de témoignages ni de chiffres (brief §13).
+ * ✅ LOGOS CLIENTS RÉELS. Fichiers fournis par l'agence, normalisés en niveaux
+ *    de gris et à taille unique dans `public/logos/` (voir LogoMarquee.astro).
  *
  * Le badge Google Partner, lui, est réel (voir src/data/site.ts).
  */
 
-/** Témoignages réels depuis le 2026-07-28 - ne plus afficher l'avertissement. */
+/** Témoignages et logos réels : plus aucun avertissement à afficher. */
 export const proofPlaceholder = false;
 
 /** Note agrégée de la fiche Google. Réel - mettre à jour si de nouveaux avis arrivent. */
@@ -77,18 +77,51 @@ export const testimonials: Testimonial[] = [
   },
 ];
 
-/** Logos clients (bandeau confiance). PLACEHOLDER - vrais noms/logos requis. */
-export const clientLogos: string[] = [
-  "Client A",
-  "Client B",
-  "Client C",
-  "Client D",
-  "Client E",
+export type ClientLogo = {
+  /** Nom de l'entreprise - sert de texte alternatif. */
+  name: string;
+  /** Fichier dans public/logos/ (WebP, niveaux de gris, boîte 240x72 en 2x). */
+  src: string;
+};
+
+/**
+ * Logos clients du bandeau défilant (composant LogoMarquee).
+ *
+ * Tous normalisés par le même traitement : niveaux de gris, recadrage sur le
+ * contenu, histogramme étalé, puis centrage dans une boîte commune de
+ * 240x72 px (exportée en 2x). Les logos clairs conçus pour un fond sombre
+ * (Clean Facade, Solution Bois, Sportmax) ont été inversés pour rester
+ * lisibles. Fond blanc neutralisé à l'affichage via `mix-blend-mode: multiply`.
+ */
+export const clientLogos: ClientLogo[] = [
+  { name: "A.R.C.H.E. Hypnose Suisse", src: "/logos/arche.webp" },
+  { name: "Clean Facade", src: "/logos/clean-facade.webp" },
+  { name: "Designlab", src: "/logos/designlab.webp" },
+  { name: "PsyBalance", src: "/logos/psybalance.webp" },
+  { name: "Happy Booth", src: "/logos/happy-booth.webp" },
+  { name: "Hélios Créations SA", src: "/logos/helios.webp" },
+  { name: "Les Paillettes Vertes", src: "/logos/paillettes-vertes.webp" },
+  { name: "Upendo", src: "/logos/upendo.webp" },
+  { name: "Mountain Air", src: "/logos/mountain-air.webp" },
+  { name: "Nexus", src: "/logos/nexus.webp" },
+  { name: "Sportmax Espace Triathlon", src: "/logos/sportmax.webp" },
+  { name: "Trainwell", src: "/logos/trainwell.webp" },
+  { name: "FRB Frères Sàrl", src: "/logos/frb.webp" },
+  { name: "Agence Fret Cargo", src: "/logos/fret-cargo.webp" },
+  { name: "L'Architecte du Feu, Carron-Lugon", src: "/logos/carron-lugon.webp" },
+  { name: "Zoé4Life", src: "/logos/zoe4life.webp" },
+  { name: "Ofinto", src: "/logos/ofinto.webp" },
+  { name: "Proxident", src: "/logos/proxident.webp" },
+  { name: "Ma Porte Sàrl", src: "/logos/maporte.webp" },
+  { name: "PanaDent", src: "/logos/panadent.webp" },
+  { name: "Simonin Électroménager SA", src: "/logos/simonin.webp" },
+  { name: "Solution Bois", src: "/logos/solution-bois.webp" },
+  { name: "FiStores Sàrl", src: "/logos/fistores.webp" },
 ];
 
-/** Chiffres clés du bandeau réassurance. PLACEHOLDER sauf mention. */
+/** Chiffres clés du bandeau réassurance. */
 export const keyStats = [
-  { value: "6-7", label: "PME accompagnées" }, // ordre de grandeur réel (brief)
+  { value: "50+", label: "PME accompagnées" },
   { value: "0%", label: "pris sur votre budget de pub" }, // réel (modèle)
   { value: "dès 390.-", label: "de gestion par mois" }, // réel (grille tarifaire)
 ];

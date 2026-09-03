@@ -1,0 +1,869 @@
+---
+/**
+ * Calculateur de budget Google Ads (îlot interactif).
+ *
+ * Un seul composant, deux habillages : `variant="full"` (page dédiée) et
+ * `variant="compact"` (section intégrée à une page existante, avec lien vers
+ * la version complète). Un seul moteur : src/lib/calculator.ts, appelé ici au
+ * build pour rendre l'état par défaut en HTML statique (référencement + aucun
+ * layout shift + résultat lisible sans JavaScript), puis repris par le script
+ * client au recalcul (aucun bouton « Calculer », tout est instantané).
+ *
+ * Mise en page : `.calc-main` porte la grille deux colonnes et sert de bloc
+ * conteneur au `position: sticky` de la carte résultat. Le disclaimer et le
+ * bloc « Comment ce calcul fonctionne » sont HORS de cette grille, sinon la
+ * carte glisserait par-dessus eux au scroll.
+ *
+ * Mode expert : ?pro=1 dans l'URL ou le bouton discret en bas du calculateur.
+ * Il déverrouille les hypothèses (CPC, taux, marge, LTV) pour construire le
+ * chiffre en direct devant un prospect. Non indexé : la page pose son canonique
+ * sans paramètre.
+ */
+import {
+  sectors,
+  defaultInput,
+  compute,
+  resultCopy,
+  assumptionsCopy,
+  disclaimerShort,
+  params,
+  fmt,
+  fmtDec,
+} from "../../lib/calculator";
+import { pricingNotes } from "../../data/tarifs";
+
+interface Props {
+  variant?: "full" | "compact";
+  /** Lien « Version complète » (variante compacte uniquement). */
+  fullHref?: string;
+}
+const { variant = "full", fullHref = "/calculateur-budget" } = Astro.props;
+
+const input = defaultInput();
+const result = compute(input);
+const copy = resultCopy(input, result);
+const assumptions = assumptionsCopy(input, result);
+const tier = result.tier;
+const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contact";
+---
+
+<div class:list={["calc", variant]} data-calc data-variant={variant}>
+  <div class="calc-main">
+    <form class="calc-form" novalidate autocomplete="off">
+      <!-- Type d'activité : branchement lead-gen / e-commerce -->
+      <fieldset class="field">
+        <legend class="lbl">Quel type d'activité ?</legend>
+        <div class="pills" role="radiogroup">
+          <label class="pill">
+            <input type="radio" name="activity" value="leadgen" checked />
+            <span>Services / génération de leads</span>
+          </label>
+          <label class="pill">
+            <input type="radio" name="activity" value="ecommerce" />
+            <span>Boutique en ligne</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Secteur : commun aux deux modèles -->
+      <div class="field">
+        <label class="lbl" for="calc-sector">
+          Secteur d'activité
+          <span class="tip">
+            <button type="button" class="tip-btn" aria-describedby="tip-sector" aria-label="Aide : secteur d'activité">?</button>
+            <span role="tooltip" id="tip-sector" class="tip-bubble">Le secteur détermine le coût par clic moyen observé en Suisse romande.</span>
+          </span>
+        </label>
+        <select id="calc-sector" name="sector">
+          {sectors.map((s) => (
+            <option value={s.id} selected={s.id === input.sector}>{s.label}</option>
+          ))}
+        </select>
+      </div>
+
+      <!-- ── Modèle lead-gen ── -->
+      <div data-when="leadgen">
+        <div class="field">
+          <label class="lbl" for="calc-value" data-out="value-label">
+            Valeur d'un nouveau client (CHF)
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-value" aria-label="Aide : valeur d'un nouveau client">?</button>
+              <span role="tooltip" id="tip-value" class="tip-bubble" data-out="value-tip">Ce qu'un client typique vous rapporte en chiffre d'affaires. Pour un client récurrent, comptez la première année.</span>
+            </span>
+          </label>
+          <input id="calc-value" name="clientValue" type="number" min="1" step="10" inputmode="numeric" value={input.clientValue} />
+        </div>
+
+        <!-- Bloc valeur à vie : mode expert + client récurrent -->
+        <div class="sub" data-when="recurring" hidden>
+          <div class="row2">
+            <div class="field">
+              <label class="lbl" for="calc-purchases">Achats par an</label>
+              <input id="calc-purchases" name="purchasesPerYear" type="number" min="1" step="1" inputmode="numeric" value={input.purchasesPerYear} />
+            </div>
+            <div class="field">
+              <label class="lbl" for="calc-loyalty">
+                Durée de fidélité (années)
+                <output class="val" data-out="loyalty-val">{input.loyaltyYears}</output>
+              </label>
+              <input id="calc-loyalty" name="loyaltyYears" type="range" min={params.loyaltyYearsMin} max={params.loyaltyYearsMax} step="1" value={input.loyaltyYears} />
+            </div>
+          </div>
+          <p class="ltv">Valeur à vie estimée d'un client : <b data-out="ltv">{fmt(input.clientValue * input.purchasesPerYear * input.loyaltyYears)} CHF</b></p>
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="calc-clients">
+            Nouveaux clients souhaités par mois
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-clients" aria-label="Aide : nombre de clients souhaités">?</button>
+              <span role="tooltip" id="tip-clients" class="tip-bubble">Combien de clients supplémentaires par mois rendraient cet investissement intéressant.</span>
+            </span>
+            <output class="val" data-out="clients-val">{input.clients}</output>
+          </label>
+          <input id="calc-clients" name="clients" type="range" min={params.clientsMin} max={params.clientsMax} step="1" value={input.clients} />
+          <div class="scale"><span>{params.clientsMin}</span><span>{params.clientsMax}</span></div>
+        </div>
+      </div>
+
+      <!-- ── Modèle e-commerce ── -->
+      <div data-when="ecommerce" hidden>
+        <div class="row2">
+          <div class="field">
+            <label class="lbl" for="calc-revenue">
+              Chiffre d'affaires mensuel visé via les pubs (CHF)
+              <span class="tip">
+                <button type="button" class="tip-btn" aria-describedby="tip-revenue" aria-label="Aide : chiffre d'affaires visé">?</button>
+                <span role="tooltip" id="tip-revenue" class="tip-bubble">Les ventes supplémentaires que la publicité doit générer chaque mois.</span>
+              </span>
+            </label>
+            <input id="calc-revenue" name="revenue" type="number" min="1" step="500" inputmode="numeric" value={input.revenue} />
+          </div>
+          <div class="field">
+            <label class="lbl" for="calc-basket">Panier moyen (CHF)</label>
+            <input id="calc-basket" name="basket" type="number" min="1" step="5" inputmode="numeric" value={input.basket} />
+          </div>
+        </div>
+        <div class="field">
+          <label class="lbl" for="calc-roas">
+            ROAS minimum acceptable
+            <span class="tip">
+              <button type="button" class="tip-btn" aria-describedby="tip-roas" aria-label="Aide : ROAS minimum acceptable">?</button>
+              <span role="tooltip" id="tip-roas" class="tip-bubble">Le retour en dessous duquel la campagne ne vous intéresse plus : 4 = chaque franc investi doit rapporter au moins 4 francs de ventes. Plus vous êtes exigeant, plus le budget que vous pouvez engager est faible.</span>
+            </span>
+            <output class="val" data-out="roas-val">{fmtDec(input.roas)}</output>
+          </label>
+          <input id="calc-roas" name="roas" type="range" min={params.roasMin} max={params.roasMax} step="0.5" value={input.roas} />
+          <div class="scale"><span>{params.roasMin}</span><span>{params.roasMax}</span></div>
+        </div>
+      </div>
+
+      <!-- Zone : agit sur le coût du clic -->
+      <div class="field" data-when="leadgen">
+        <label class="lbl" for="calc-zone">
+          Zone principale
+          <span class="tip">
+            <button type="button" class="tip-btn" aria-describedby="tip-zone" aria-label="Aide : zone principale">?</button>
+            <span role="tooltip" id="tip-zone" class="tip-bubble">La concurrence publicitaire est plus forte dans les grandes agglomérations.</span>
+          </span>
+        </label>
+        <select id="calc-zone" name="urban">
+          <option value="0" selected>Reste de la Suisse romande</option>
+          <option value="1">Grandes agglomérations (Genève, Lausanne)</option>
+        </select>
+      </div>
+
+      <!-- ── Mode expert : hypothèses déverrouillées ── -->
+      <div class="expert" data-expert hidden>
+        <p class="expert-head">Hypothèses du calcul</p>
+
+        <div data-when="leadgen">
+          <div class="pills small" role="radiogroup" aria-label="Type de client">
+            <label class="pill">
+              <input type="radio" name="recurring" value="0" checked />
+              <span>Client ponctuel</span>
+            </label>
+            <label class="pill">
+              <input type="radio" name="recurring" value="1" />
+              <span>Client récurrent</span>
+            </label>
+          </div>
+          <div class="row2">
+            <div class="field"><label class="lbl" for="calc-cpcmin">CPC min (CHF)</label><input id="calc-cpcmin" name="cpcMin" type="number" min="0.1" step="0.1" value={input.cpcMin} /></div>
+            <div class="field"><label class="lbl" for="calc-cpcmax">CPC max (CHF)</label><input id="calc-cpcmax" name="cpcMax" type="number" min="0.1" step="0.1" value={input.cpcMax} /></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label class="lbl" for="calc-conv">Conversion du site (%)</label><input id="calc-conv" name="conv" type="number" min="0.1" step="0.1" value={Math.round(input.conv * 1000) / 10} /></div>
+            <div class="field"><label class="lbl" for="calc-closing">Taux de closing (%)</label><input id="calc-closing" name="closing" type="number" min="1" step="1" value={Math.round(input.closing * 100)} /></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label class="lbl" for="calc-marge">Marge sur la valeur client (%)</label><input id="calc-marge" name="marge" type="number" min="1" max="100" step="1" value={Math.round(input.marge * 100)} /></div>
+            <div class="field"><label class="lbl" for="calc-safety">Facteur de sécurité</label><input id="calc-safety" name="safety" type="number" min="1" max="2" step="0.05" value={input.safety} /></div>
+          </div>
+        </div>
+
+        <div data-when="ecommerce" hidden>
+          <div class="field">
+            <label class="lbl" for="calc-repeat">Taux de réachat annuel (%)</label>
+            <input id="calc-repeat" name="repeatRate" type="number" min="0" max="200" step="5" value={Math.round(input.repeatRate * 100)} />
+          </div>
+        </div>
+
+        <button type="button" class="reset" data-reset>Réinitialiser sur les valeurs du secteur</button>
+      </div>
+
+      <button type="button" class="expert-toggle" data-expert-toggle aria-expanded="false">
+        <span data-out="expert-label">Mode expert</span>
+      </button>
+    </form>
+
+    <!-- ── Résultat ── -->
+    <aside class="calc-result" data-result>
+      <span class="eyebrow" data-out="eyebrow">Budget publicitaire recommandé</span>
+
+      <p class="amount">
+        <span class="flash-word" data-out="reco">{fmt(result.budgetReco)}</span>
+        <span class="unit">CHF/mois</span>
+      </p>
+      <p class="band" data-out="band">{copy.band}</p>
+
+      <p class="detail" data-out="detail">{copy.detail}</p>
+      <p class="marge-line" data-out="marge-line">{copy.margeLine}</p>
+
+      <p class="msg" data-msg data-tone={copy.tone} hidden={copy.tone === "none"}>{copy.message}</p>
+
+      <!-- Pack recommandé : dérivé du seul chiffre recommandé, donc toujours aligné -->
+      <div class="pack" data-pack hidden={!tier}>
+        <div class="pack-top">
+          <span class="pack-tier" data-out="pack-name">{tier?.name}</span>
+          <span class="pack-price" data-out="pack-price">{tier ? `${tier.price}${tier.unit}` : ""}</span>
+        </div>
+        <p class="pack-line" data-out="pack-line">{copy.packLine}</p>
+        <a class="btn btn-primary pack-cta" href={packHref} data-out="pack-cta" data-pack-cta>
+          {tier?.ctaLabel}<span class="arrow" aria-hidden="true">→</span>
+        </a>
+        <p class="pack-overflow" data-out="pack-overflow" hidden={!copy.packOverflow}>{copy.packOverflow}</p>
+        <p class="pack-note">{pricingNotes.budgetSeparate}</p>
+      </div>
+
+      {variant === "compact" && (
+        <a class="full-link" href={fullHref}>Version complète du calculateur de budget<span class="arrow" aria-hidden="true">→</span></a>
+      )}
+
+      <p class="sr-only" role="status" aria-live="polite" data-out="live">{copy.live}</p>
+    </aside>
+  </div>
+
+  <p class="disclaimer">{disclaimerShort}</p>
+
+  <!-- Explication du calcul : transparence + signal GEO -->
+  <details class="how">
+    <summary>Comment ce calcul fonctionne</summary>
+    <div class="how-body">
+      <p>
+        Les coûts par clic viennent des prévisions d'enchères de Google (Keyword Planner, août 2026),
+        croisées avec les données agrégées et anonymisées des comptes que nous gérons en Suisse romande
+        sur 12 mois. Rien n'est inventé, et rien n'est promis : ce sont des ordres de grandeur.
+      </p>
+      <p>
+        Le raisonnement est simple. Pour signer un client, il faut plusieurs demandes entrantes (tout
+        le monde ne signe pas). Pour obtenir une demande, il faut plusieurs visites sur votre site
+        (tout le monde ne remplit pas le formulaire). Chaque visite est un clic payé à Google. On
+        remonte cette chaîne à l'envers depuis votre objectif de clients, on multiplie par le coût
+        central du clic dans votre secteur, et on ajoute une marge de sécurité de {fmtDec(params.safety)}
+        parce que les premières semaines coûtent toujours plus cher que la vitesse de croisière.
+      </p>
+      <p>
+        La rentabilité, elle, ne se juge pas sur le chiffre d'affaires d'un client mais sur la marge
+        qu'il vous laisse : c'est elle qui doit couvrir le coût d'acquisition.
+      </p>
+      <p data-out="assumptions">{assumptions}</p>
+      <p>
+        Ces hypothèses sont des moyennes de secteur. Le mode expert, en bas du calculateur, permet de
+        les remplacer par vos chiffres réels si vous les connaissez.
+      </p>
+    </div>
+  </details>
+</div>
+
+<style>
+  /* Les blocs masqués (modèle inactif, panneau expert) portent [hidden] :
+     il doit gagner sur les display: flex/grid déclarés plus bas. */
+  .calc [hidden] { display: none !important; }
+
+  .calc { display: flex; flex-direction: column; gap: 24px; }
+  /* La grille est le bloc conteneur du sticky : le disclaimer et le bloc
+     « Comment ce calcul fonctionne » restent en dehors, sinon la carte
+     résultat glisserait par-dessus eux au scroll. */
+  .calc-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── Formulaire ── */
+  .calc-form {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .field { display: flex; flex-direction: column; gap: 8px; border: 0; padding: 0; margin: 0; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .lbl {
+    position: relative; /* ancre des bulles de tooltip : borne leur largeur au label */
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0;
+  }
+  .val {
+    margin-left: auto;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  select, input[type="number"] {
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 11px 13px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    background: var(--paper);
+    color: var(--ink);
+    width: 100%;
+  }
+  select:focus, input:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: var(--ring-accent);
+  }
+  .scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--faint);
+    margin-top: -2px;
+  }
+
+  /* Slider : cible tactile confortable */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 26px;
+    background: transparent;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-runnable-track { height: 5px; border-radius: 999px; background: var(--fa-smoke); }
+  input[type="range"]::-moz-range-track { height: 5px; border-radius: 999px; background: var(--fa-smoke); }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; margin-top: -8.5px;
+    border-radius: 50%; background: var(--accent);
+    border: 3px solid #fff; box-shadow: var(--shadow-accent);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent); border: 3px solid #fff; box-shadow: var(--shadow-accent);
+  }
+  input[type="range"]:focus-visible { outline: none; }
+  input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: var(--ring-accent); }
+  input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: var(--ring-accent); }
+
+  /* Pills (type d'activité, ponctuel / récurrent) */
+  .pills { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pill { position: relative; }
+  .pill input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .pill span {
+    display: block;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 11px 10px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color var(--dur-normal) var(--ease-out), color var(--dur-normal) var(--ease-out), background var(--dur-normal) var(--ease-out);
+  }
+  .pill input:checked + span { border-color: var(--accent); color: var(--accent); background: rgba(37, 99, 255, .06); }
+  .pill input:focus-visible + span { box-shadow: var(--ring-accent); }
+  .pills.small span { font-size: 12.5px; padding: 9px; }
+
+  /* Tooltips */
+  .tip { display: inline-flex; }
+  .tip-btn {
+    width: 16px; height: 16px; padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    background: var(--surface-subtle);
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 10px; font-weight: 700; line-height: 1;
+    cursor: help;
+  }
+  .tip-btn:hover, .tip-btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+  .tip-bubble {
+    /* Positionnée sur le label, pas sur l'icône : la bulle ne peut donc jamais
+       déborder de la colonne, y compris sur les petits écrans. */
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    max-width: 320px;
+    background: var(--surface-dark);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur-fast) var(--ease-out);
+    z-index: 5;
+  }
+  .tip:hover .tip-bubble,
+  .tip-btn:focus-visible + .tip-bubble { opacity: 1; visibility: visible; }
+
+  /* Bloc récurrent + mode expert */
+  .sub, .expert {
+    background: var(--surface-subtle);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .expert > div { display: flex; flex-direction: column; gap: 14px; }
+  .expert-head {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .ltv { font-size: 13.5px; color: var(--body); }
+  .ltv b { font-family: var(--font-display); color: var(--ink); }
+  .reset {
+    align-self: flex-start;
+    background: none; border: 0; padding: 0;
+    font-family: var(--font-display); font-size: 12.5px; font-weight: 600;
+    color: var(--accent); cursor: pointer; text-decoration: underline;
+  }
+  .expert-toggle {
+    align-self: flex-start;
+    background: none; border: 0; padding: 4px 0;
+    font-family: var(--font-display); font-size: 12.5px; font-weight: 600;
+    color: var(--muted); cursor: pointer;
+  }
+  .expert-toggle:hover, .expert-toggle:focus-visible { color: var(--accent); }
+
+  /* ── Résultat ── */
+  .calc-result {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 96px;
+    /* Filet de sécurité : une carte plus haute que l'écran reste consultable. */
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  .amount {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(38px, 5.2vw, 52px);
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    margin-top: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .amount .unit { display: block; font-size: 14px; font-weight: 500; letter-spacing: 0; color: var(--muted); margin-top: 6px; }
+  .band {
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--body);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--hairline-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+  .detail { font-size: 15px; color: var(--body); margin-top: 14px; }
+  .marge-line { font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+  .msg {
+    font-size: 14px;
+    line-height: 1.6;
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    margin-top: 16px;
+    background: var(--surface-subtle);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--muted);
+    color: var(--body);
+  }
+  .msg[data-tone="warn"] { border-left-color: var(--fa-pink); background: rgba(255, 46, 139, .05); }
+  .msg[data-tone="stop"] { border-left-color: var(--ink); background: var(--surface-subtle); }
+
+  .pack {
+    margin-top: 20px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+  }
+  .pack-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .pack-tier {
+    font-family: var(--font-display);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--faint);
+  }
+  .pack-price { font-family: var(--font-display); font-weight: 700; font-size: 22px; letter-spacing: -.02em; color: var(--ink); }
+  .pack-line { font-size: 13.5px; color: var(--body); margin-top: 10px; }
+  .pack-cta { width: 100%; margin-top: 14px; }
+  .pack-overflow { font-size: 12px; color: var(--body); margin-top: 12px; line-height: 1.5; }
+  .pack-note { font-size: 11.5px; color: var(--muted); margin-top: 12px; line-height: 1.5; }
+  .full-link {
+    display: inline-flex; align-items: center; gap: 7px;
+    margin-top: 16px;
+    font-family: var(--font-display); font-size: 13.5px; font-weight: 600;
+    color: var(--accent); text-decoration: none;
+  }
+  .full-link:hover .arrow { transform: translateX(3px); }
+  .full-link .arrow { transition: transform .18s ease; }
+
+  .disclaimer { font-size: 11.5px; color: var(--muted); line-height: 1.6; max-width: 80ch; }
+
+  /* ── Explication ── */
+  .how { border-top: 1px solid var(--hairline); padding-top: 18px; }
+  .how summary {
+    list-style: none;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .how summary::-webkit-details-marker { display: none; }
+  .how summary::after { content: " +"; }
+  .how[open] summary::after { content: " –"; }
+  .how summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .how-body { margin-top: 14px; display: flex; flex-direction: column; gap: 12px; max-width: 68ch; }
+  .how-body p { font-size: 14.5px; color: var(--muted); }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+
+  /* Variante compacte : une colonne plus dense, tient dans une section */
+  .calc.compact .calc-form, .calc.compact .calc-result { padding: 22px; }
+  .calc.compact .calc-result { position: static; max-height: none; }
+  .calc.compact .amount { font-size: clamp(32px, 4.2vw, 40px); }
+  .calc.compact .disclaimer { display: none; }
+
+  @media (max-width: 900px) {
+    .calc-main { grid-template-columns: 1fr; }
+    .calc-result { position: static; max-height: none; overflow: visible; }
+  }
+  @media (max-width: 480px) {
+    .calc-form, .calc-result { padding: 20px; }
+    .row2 { grid-template-columns: 1fr; }
+    .pills { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import {
+    applySector,
+    compute,
+    defaultInput,
+    resultCopy,
+    assumptionsCopy,
+    getSector,
+    fmt,
+    fmtDec,
+    type CalcInput,
+  } from "../../lib/calculator";
+  import { tiers } from "../../data/tarifs";
+
+  /** Événements analytics, sans dépendance à un outil précis (dataLayer + CustomEvent). */
+  function track(event: string, payload: Record<string, unknown> = {}) {
+    const w = window as unknown as { dataLayer?: unknown[] };
+    w.dataLayer = w.dataLayer || [];
+    w.dataLayer.push({ event, ...payload });
+    document.dispatchEvent(new CustomEvent("flashads:analytics", { detail: { event, ...payload } }));
+  }
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelectorAll<HTMLElement>("[data-calc]").forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>(".calc-form");
+    if (!form) return;
+
+    const out = (key: string) => root.querySelector<HTMLElement>(`[data-out="${key}"]`);
+    const field = <T extends HTMLElement>(name: string) => form.querySelector<T>(`[name="${name}"]`);
+    const num = (name: string, fallback: number) => {
+      const el = field<HTMLInputElement>(name);
+      const v = el ? Number(el.value) : NaN;
+      return Number.isFinite(v) && v > 0 ? v : fallback;
+    };
+    const setText = (key: string, value: string) => {
+      const el = out(key);
+      if (el) el.textContent = value;
+    };
+
+    let state: CalcInput = defaultInput();
+    let expert = false;
+    let started = false;
+    let sectorTouched = false;
+    let resultTimer = 0;
+
+    /* ── Lecture du formulaire ── */
+    // Valeurs de repli si un champ est vidé pendant la saisie.
+    const base = defaultInput();
+
+    function read(): CalcInput {
+      const activity =
+        form!.querySelector<HTMLInputElement>('[name="activity"]:checked')?.value === "ecommerce"
+          ? "ecommerce"
+          : "leadgen";
+      const sectorId = field<HTMLSelectElement>("sector")?.value ?? base.sector;
+      const sector = getSector(sectorId);
+      const recurring = form!.querySelector<HTMLInputElement>('[name="recurring"]:checked')?.value === "1";
+
+      return {
+        activity,
+        sector: sector.id,
+        urban: field<HTMLSelectElement>("urban")?.value === "1",
+        clientValue: num("clientValue", base.clientValue),
+        clients: num("clients", base.clients),
+        recurring: expert && recurring,
+        purchasesPerYear: num("purchasesPerYear", base.purchasesPerYear),
+        loyaltyYears: num("loyaltyYears", base.loyaltyYears),
+        revenue: num("revenue", base.revenue),
+        basket: num("basket", base.basket),
+        roas: num("roas", base.roas),
+        repeatRate: expert ? num("repeatRate", 0) / 100 : 0,
+        cpcMin: expert ? num("cpcMin", sector.cpcMin) : sector.cpcMin,
+        cpcMax: expert ? num("cpcMax", sector.cpcMax) : sector.cpcMax,
+        conv: expert ? num("conv", sector.conv * 100) / 100 : sector.conv,
+        closing: expert ? num("closing", sector.closing * 100) / 100 : sector.closing,
+        // La marge du secteur s'applique aussi en mode simple : la rentabilité
+        // se juge sur la marge, pas sur le chiffre d'affaires.
+        marge: expert ? num("marge", sector.marge * 100) / 100 : sector.marge,
+        safety: expert ? num("safety", base.safety) : base.safety,
+      };
+    }
+
+    /* ── Animation des chiffres (respecte prefers-reduced-motion) ── */
+    const animations = new WeakMap<HTMLElement, number>();
+    function setNumber(el: HTMLElement | null, value: number) {
+      if (!el) return;
+      const from = Number(el.dataset.raw ?? value);
+      el.dataset.raw = String(value);
+      const previous = animations.get(el);
+      if (previous) cancelAnimationFrame(previous);
+      if (reduceMotion || from === value) {
+        el.textContent = fmt(value);
+        return;
+      }
+      const start = performance.now();
+      const duration = 320;
+      const step = (now: number) => {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = fmt(from + (value - from) * eased);
+        if (t < 1) animations.set(el, requestAnimationFrame(step));
+      };
+      animations.set(el, requestAnimationFrame(step));
+    }
+
+    /* ── Visibilité des blocs selon le modèle et le mode expert ── */
+    function syncVisibility() {
+      root.querySelectorAll<HTMLElement>("[data-when]").forEach((el) => {
+        const when = el.dataset.when;
+        const show =
+          when === "recurring" ? expert && state.recurring : when === state.activity;
+        el.toggleAttribute("hidden", !show);
+      });
+      const panel = root.querySelector<HTMLElement>("[data-expert]");
+      panel?.toggleAttribute("hidden", !expert);
+      const toggle = root.querySelector<HTMLButtonElement>("[data-expert-toggle]");
+      toggle?.setAttribute("aria-expanded", String(expert));
+      setText("expert-label", expert ? "Masquer le mode expert" : "Mode expert");
+      setText(
+        "eyebrow",
+        state.activity === "ecommerce"
+          ? "Budget publicitaire à prévoir"
+          : "Budget publicitaire recommandé",
+      );
+
+      // En mode récurrent, le champ « valeur client » devient la valeur par achat.
+      const valueLabel = out("value-label");
+      const valueTip = out("value-tip");
+      if (valueLabel?.firstChild) {
+        valueLabel.firstChild.textContent = state.recurring
+          ? "Valeur moyenne par achat ou mission (CHF) "
+          : "Valeur d'un nouveau client (CHF) ";
+      }
+      if (valueTip) {
+        valueTip.textContent = state.recurring
+          ? "Ce qu'un client dépense à chaque visite ou mandat. Exemples : un patient de cabinet dentaire, un mandat annuel de fiduciaire, une visite en institut de beauté."
+          : "Ce qu'un client typique vous rapporte en chiffre d'affaires. Pour un client récurrent, comptez la première année.";
+      }
+    }
+
+    /* ── Rendu ── */
+    function render() {
+      state = read();
+      const r = compute(state);
+      const copy = resultCopy(state, r);
+
+      syncVisibility();
+
+      setNumber(out("reco"), r.budgetReco);
+      setText("band", copy.band);
+      setText("detail", copy.detail);
+      setText("marge-line", copy.margeLine);
+
+      const msg = root.querySelector<HTMLElement>("[data-msg]");
+      if (msg) {
+        msg.textContent = copy.message;
+        msg.dataset.tone = copy.tone;
+        msg.toggleAttribute("hidden", copy.tone === "none");
+      }
+
+      const pack = root.querySelector<HTMLElement>("[data-pack]");
+      const tier = r.tier ? tiers.find((t) => t.id === r.tier!.id) : null;
+      pack?.toggleAttribute("hidden", !tier);
+      if (tier) {
+        setText("pack-name", tier.name);
+        setText("pack-price", `${tier.price}${tier.unit}`);
+        setText("pack-line", copy.packLine);
+        const cta = root.querySelector<HTMLAnchorElement>("[data-pack-cta]");
+        if (cta) {
+          cta.href = tier.stripeLink || `/contact?pack=${tier.id}`;
+          cta.innerHTML = `${tier.ctaLabel}<span class="arrow" aria-hidden="true">→</span>`;
+        }
+        const overflow = out("pack-overflow");
+        if (overflow) {
+          overflow.textContent = copy.packOverflow;
+          overflow.toggleAttribute("hidden", !copy.packOverflow);
+        }
+      }
+
+      // Valeurs affichées des sliders + LTV.
+      setText("clients-val", String(Math.round(state.clients)));
+      setText("roas-val", fmtDec(state.roas));
+      setText("loyalty-val", String(Math.round(state.loyaltyYears)));
+      setText("ltv", `${fmt(r.ltv)} CHF`);
+      setText("assumptions", assumptionsCopy(state, r));
+      setText("live", copy.live);
+
+      // Analytics : un seul calc_result par salve de réglages.
+      window.clearTimeout(resultTimer);
+      resultTimer = window.setTimeout(() => {
+        track("calc_result", {
+          calc_activity: state.activity,
+          calc_sector: state.sector,
+          calc_budget: r.budgetReco,
+          calc_budget_low: r.budgetLow,
+          calc_budget_high: r.budgetHigh,
+          calc_pack: r.tier?.id ?? "none",
+          calc_expert: expert,
+        });
+        if (r.status === "floor") track("calc_floor_hit", { calc_sector: state.sector });
+      }, 700);
+    }
+
+    /** Recopie les hypothèses du secteur dans les champs experts. */
+    function syncExpertInputs() {
+      const s = getSector(state.sector);
+      const set = (name: string, value: string) => {
+        const el = field<HTMLInputElement>(name);
+        if (el) el.value = value;
+      };
+      set("cpcMin", String(s.cpcMin));
+      set("cpcMax", String(s.cpcMax));
+      set("conv", String(Math.round(s.conv * 1000) / 10));
+      set("closing", String(Math.round(s.closing * 100)));
+      set("marge", String(Math.round(s.marge * 100)));
+    }
+
+    /* ── Écoute ── */
+    form.addEventListener("input", (e) => {
+      if (!started) {
+        started = true;
+        track("calc_start");
+      }
+      const target = e.target as HTMLElement;
+      // Changer de secteur réapplique ses hypothèses (CPC, taux, marge).
+      if (target instanceof HTMLSelectElement && target.name === "sector") {
+        sectorTouched = true;
+        state = applySector(state, target.value);
+        syncExpertInputs();
+      }
+      // Passage en e-commerce : secteur par défaut du modèle, tant que le
+      // visiteur n'a pas choisi le sien.
+      if (target instanceof HTMLInputElement && target.name === "activity" && !sectorTouched) {
+        const select = field<HTMLSelectElement>("sector");
+        const wanted = defaultInput(target.value === "ecommerce" ? "ecommerce" : "leadgen").sector;
+        if (select && select.value !== wanted) {
+          select.value = wanted;
+          state = applySector(state, wanted);
+          syncExpertInputs();
+        }
+      }
+      render();
+    });
+    form.addEventListener("change", () => render());
+
+    root.querySelector<HTMLButtonElement>("[data-expert-toggle]")?.addEventListener("click", () => {
+      expert = !expert;
+      if (expert) syncExpertInputs();
+      render();
+    });
+
+    root.querySelector<HTMLButtonElement>("[data-reset]")?.addEventListener("click", () => {
+      syncExpertInputs();
+      const safety = field<HTMLInputElement>("safety");
+      if (safety) safety.value = String(defaultInput().safety);
+      render();
+    });
+
+    root.querySelector<HTMLElement>("[data-pack]")?.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("[data-pack-cta]")) {
+        track("calc_pack_click", { calc_pack: compute(state).tier?.id ?? "none" });
+      }
+    });
+
+    // Mode expert via ?pro=1 (outil de vente, non indexé : la page pose son canonique sans paramètre).
+    if (new URLSearchParams(location.search).get("pro") === "1") {
+      expert = true;
+      syncExpertInputs();
+    }
+
+    render();
+  });
+</script>

@@ -34,6 +34,12 @@ export type Tier = {
   unit: "/mois";
   /** Tranche de budget publicitaire affichée sur la carte. */
   forBudget: string;
+  /**
+   * Même tranche, en valeurs numériques (CHF/mois) : source unique du mapping
+   * budget -> pack utilisé par le calculateur (`tierForBudget`). `max: null` =
+   * pas de plafond. Doit rester cohérent avec `forBudget`.
+   */
+  budgetRange: { min: number; max: number | null };
   featured: boolean;
   /** Badge affiché sur la carte (Croissance : « Le plus choisi »). */
   badge?: string;
@@ -66,6 +72,7 @@ export const tiers: Tier[] = [
     priceIsFrom: false,
     unit: "/mois",
     forBudget: "Budget pub de 500 à 1 200 CHF/mois",
+    budgetRange: { min: 500, max: 1200 },
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Search" },
@@ -88,6 +95,7 @@ export const tiers: Tier[] = [
     priceIsFrom: false,
     unit: "/mois",
     forBudget: "Budget pub de 1 200 à 5 000 CHF/mois",
+    budgetRange: { min: 1200, max: 5000 },
     featured: true,
     badge: "Le plus choisi",
     attributes: [
@@ -111,6 +119,7 @@ export const tiers: Tier[] = [
     priceIsFrom: false,
     unit: "/mois",
     forBudget: "Budget pub de 5 000 à 15 000 CHF/mois",
+    budgetRange: { min: 5000, max: 15000 },
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Search, Display, Shopping" },
@@ -133,6 +142,7 @@ export const tiers: Tier[] = [
     priceIsFrom: true,
     unit: "/mois",
     forBudget: "Budget pub de 15 000 CHF/mois et plus",
+    budgetRange: { min: 15000, max: null },
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Tous" },
@@ -216,3 +226,18 @@ export const specialCampaignsNote =
  */
 export const budgetFloorNote =
   "En dessous de 500 CHF par mois de budget publicitaire, les campagnes ne génèrent pas assez de données pour être optimisées : les résultats sont aléatoires et vous paieriez des frais de gestion pour rien. Nous préférons vous le dire d'entrée : mieux vaut attendre d'avoir ce budget que de tester trop petit.";
+
+/**
+ * Pack correspondant à un budget publicitaire mensuel (CHF).
+ * Renvoie `null` sous le plancher de 500.-/mois : aucun pack n'est proposé,
+ * c'est le message de refus pédagogique qui s'affiche (cf. budgetFloorNote).
+ * Utilisé par le calculateur de budget (/calculateur-budget).
+ */
+export function tierForBudget(budget: number): Tier | null {
+  if (!Number.isFinite(budget) || budget < 500) return null;
+  return (
+    tiers.find(
+      (t) => budget >= t.budgetRange.min && (t.budgetRange.max === null || budget < t.budgetRange.max),
+    ) ?? tiers[tiers.length - 1]
+  );
+}
