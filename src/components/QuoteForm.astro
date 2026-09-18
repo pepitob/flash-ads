@@ -15,6 +15,11 @@
  *      l'injecte lui-même dans le HTML statique, mais on le déclare
  *      explicitement : c'est lui qui route la soumission AJAX.
  *
+ * Le message de succès vit HORS du <form> : en cas d'envoi réussi, le
+ * formulaire est masqué (`display: none`), ce qui masquerait aussi un message
+ * placé à l'intérieur. Le message d'erreur, lui, reste dans le formulaire
+ * puisque celui-ci demeure visible dans ce cas.
+ *
  * Anti-spam : honeypot Netlify (`netlify-honeypot`), champ invisible côté humain.
  * Champ budget = pré-qualification du pack (tranches alignées sur la grille tarifaire).
  * « Moins de 500 » affiche un message expliquant qu'on ne prend pas ces budgets.
@@ -27,7 +32,8 @@ import { budgetFloorNote } from "../data/tarifs";
 const FORM_NAME = "devis";
 ---
 
-<form
+<div class="quote-wrap">
+  <form
   class="lead-form"
   id="quote-form"
   name={FORM_NAME}
@@ -74,16 +80,20 @@ const FORM_NAME = "devis";
 
   <button type="submit" class="btn btn-primary">{ui.form.submit} <span class="arrow" aria-hidden="true">→</span></button>
 
-  <p class="form-success" id="quote-success" hidden role="status">
-    <strong>{ui.form.successTitle}</strong><br />{ui.form.successBody}
-  </p>
   <p class="form-error" id="quote-error" hidden role="alert">
     Une erreur est survenue. Réessayez ou écrivez-nous directement.
   </p>
-</form>
+  </form>
+
+  <!-- Hors du <form> : il est masqué au moment où ce message s'affiche. -->
+  <p class="form-success" id="quote-success" hidden role="status" tabindex="-1">
+    <strong>{ui.form.successTitle}</strong><br />{ui.form.successBody}
+  </p>
+</div>
 
 <style>
-  .lead-form { display: flex; flex-direction: column; gap: 16px; max-width: 620px; }
+  .quote-wrap { max-width: 620px; }
+  .lead-form { display: flex; flex-direction: column; gap: 16px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--ink); }
   input, select, textarea {
@@ -105,6 +115,7 @@ const FORM_NAME = "devis";
   .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .lead-form .btn { align-self: flex-start; margin-top: 4px; }
   .form-success { background: rgba(37, 99, 255, .06); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
+  .form-success:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .form-error { color: #b00020; font-size: 14px; }
   .budget-min { font-size: 12px; font-weight: 400; color: var(--muted); }
   .budget-floor {
@@ -158,7 +169,15 @@ const FORM_NAME = "devis";
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
         });
-        if (res.ok) { form.reset(); form.style.display = "none"; ok?.removeAttribute("hidden"); }
+        if (res.ok) {
+          form.reset();
+          form.style.display = "none";
+          ok?.removeAttribute("hidden");
+          // Le focus était sur le bouton d'envoi, qui vient d'être masqué :
+          // sans cela il retombe sur <body> et la confirmation passe inaperçue
+          // au clavier comme au lecteur d'écran.
+          ok?.focus();
+        }
         else throw new Error("bad response");
       } catch {
         err?.removeAttribute("hidden");

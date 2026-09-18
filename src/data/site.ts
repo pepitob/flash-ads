@@ -25,6 +25,8 @@ export const site = {
   foundingYear: 2024,
   // Baseline reprise du site actuel.
   baseline: "Simple. Transparent. Efficace.",
+  // Conteneur Google Tag Manager. Vide = aucun script de mesure chargé.
+  gtmId: "GTM-N7DZJWFZ",
   // Badge Google Partner officiel (ID agence fourni).
   googlePartner: {
     id: "9907170973",
