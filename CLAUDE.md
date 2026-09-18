@@ -51,13 +51,18 @@ Comprendre ces flux transversaux avant d'éditer :
   fichiers est neutralisé à l'affichage par `mix-blend-mode: multiply` : ne pas détourer les
   blancs, cela percerait les blancs intérieurs des logos. Ajouter un logo = déposer le WebP
   traité et compléter `clientLogos` dans `src/data/temoignages.ts`.
-- **Formulaires** : devis (`/contact`) via **Netlify Forms**, liste d'attente via Formspree.
+- **Formulaires** : devis (`/contact`) et demande d'accès ChatGPT Ads
+  (`/services/chatgpt-ads`), tous deux via **Netlify Forms**. Plus aucune dépendance Formspree.
 - **Mesure d'audience** : Google Tag Manager, injecté par `BaseLayout.astro` depuis `site.gtmId`
   (snippet en tête de `<head>`, `noscript` juste après `<body>`). Le `is:inline` est indispensable :
   sans lui Astro en ferait un module différé, ce que GTM ne supporte pas. Le `dataLayer` qu'il crée
-  est le même que celui où le calculateur pousse ses événements (`calc_start`, `calc_result`,
-  `calc_floor_hit`, `calc_low_margin`, `calc_pack_click`) : ils sont donc exploitables comme
-  déclencheurs dans le conteneur, sans code supplémentaire.
+  est le même que celui où le site pousse ses événements, exploitables comme déclencheurs dans le
+  conteneur sans code supplémentaire : le calculateur émet `calc_start`, `calc_result`,
+  `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent un **unique**
+  `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis` ou
+  `chatgpt-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
+  événement par formulaire : une seule balise de conversion suffit, la condition se met sur le
+  paramètre.
 - **Calculateur de budget** (`/calculateur-budget`) : un seul moteur pur, `src/lib/calculator.ts`,
   appelé au build (rendu statique de l'état par défaut : SEO, pas de layout shift, résultat lisible
   sans JS) puis repris par l'îlot client de `src/components/calculator/BudgetCalculator.astro`.
@@ -124,6 +129,13 @@ Comprendre ces flux transversaux avant d'éditer :
   budget, et `budgetRange` de chaque pack (consommé par le calculateur).
   Prix validés (`pricingValidated: true`, brief pricing 2026-08). Un `stripeLink`
   vide = le CTA du pack renvoie vers `/contact?pack=<id>` (pré-sélection du budget).
+- **ChatGPT Ads** : offre séparée (`chatgptAds` dans `tarifs.ts`), un seul pack tout compris, sans
+  rapport avec la grille Google Ads qui se choisit sur le budget. Le tarif de lancement est une
+  **remise à durée limitée** : 240.-/mois et 150.- de setup jusqu'au 31.12.2026, puis 480.-/mois et
+  300.- de setup. Ce doublement doit rester écrit noir sur blanc partout où l'offre est présentée
+  (page, `/pricing.txt`, `llms.txt`), sinon l'offre devient déloyale. Deux mentions obligatoires,
+  `chatgptPromoNote` et `chatgptBetaNote` : le canal est récent, **aucun résultat n'est garanti** et
+  aucun chiffre de performance ne doit être promis.
 - **Ton** : langage simple, sans jargon marketing, sur les pages principales. Le conserver.
   Le lecteur est **toujours vouvoyé**, y compris dans les aides du calculateur : ne jamais le
   désigner à la troisième personne (« le client », « le prospect »), même dans le mode expert qui
@@ -141,7 +153,7 @@ Planner (juil. 2026) :
 
 | Page | Mot-clé principal | Vol. · concurrence |
 |---|---|---|
-| `/services/chatgpt-ads` | **chatgpt ads** (priorité #1, drapeau early-mover) | 40/mo · faible · +400 %/an |
+| `/services/chatgpt-ads` | **chatgpt ads** (priorité #1, page de destination des annonces payantes) | 40/mo · faible · +400 %/an |
 | `/services/google-ads` | **gestion google ads** | 20/mo · faible |
 | `/` (accueil) | **agence google ads** + « Suisse romande » | 10/mo (+ cluster « publicité google » 20/mo) |
 | `/calculateur-budget` | **calculateur budget google ads** (+ « budget google ads suisse ») | non chiffré · intention outil |
@@ -175,8 +187,9 @@ sans redirection), ce qui impose trois choses à ne pas casser : poster sur un c
 le champ caché `form-name` qui route la soumission. Anti-spam : honeypot Netlify
 (`netlify-honeypot="bot-field"`).
 
-**Liste d'attente (`/services/chatgpt-ads`) : Formspree**, via `PUBLIC_FORMSPREE_WAITLIST_ID`
-dans `.env`. ID vide = le formulaire affiche un avertissement et n'envoie rien.
+**Demande d'accès ChatGPT Ads (`/services/chatgpt-ads`) : Netlify Forms** également,
+`name="chatgpt-ads"` (`EarlyBirdForm.astro`). Mêmes contraintes que ci-dessus. Les deux formulaires
+doivent apparaître dans « Forms » côté Netlify après le déploiement.
 
 ## Déploiement
 
@@ -198,7 +211,6 @@ resterait possible, mais il faudrait rebrancher ce formulaire. Définir l'URL de
 - [ ] Renseigner le **numéro de téléphone** réel (`src/data/site.ts`).
 - [ ] Activer **Forms > Enable form detection** sur le site Netlify, puis envoyer une
       soumission de test depuis `/contact` pour vérifier qu'elle arrive bien.
-- [ ] Configurer l'**endpoint Formspree** de la liste d'attente (`.env`).
 - [ ] Exporter une **OG image PNG 1200×630** (compatibilité LinkedIn/X) et remplacer le défaut
       `public/og-default.svg` dans `src/components/seo/SEOHead.astro`.
 

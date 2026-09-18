@@ -173,6 +173,14 @@ const FORM_NAME = "devis";
           form.reset();
           form.style.display = "none";
           ok?.removeAttribute("hidden");
+          // Conversion : un seul événement pour tous les formulaires du site, le
+          // formulaire concerné étant porté par un paramètre. GTM peut ainsi
+          // déclencher une seule balise et distinguer les cas dans la condition.
+          // Le nom vient de l'attribut `name` du <form> : pas de second endroit à
+          // maintenir, et c'est déjà celui sous lequel Netlify range la soumission.
+          const w = window as unknown as { dataLayer?: unknown[] };
+          w.dataLayer = w.dataLayer || [];
+          w.dataLayer.push({ event: "form_submit", form_name: form.getAttribute("name") });
           // Le focus était sur le bouton d'envoi, qui vient d'être masqué :
           // sans cela il retombe sur <body> et la confirmation passe inaperçue
           // au clavier comme au lecteur d'écran.

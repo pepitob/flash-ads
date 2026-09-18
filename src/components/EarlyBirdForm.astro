@@ -1,0 +1,132 @@
+---
+/**
+ * Demande d'accès ChatGPT Ads - Netlify Forms.
+ *
+ * Même mécanique que `QuoteForm.astro` : détection par Netlify sur le HTML
+ * statique (`data-netlify` + `name` unique), envoi en AJAX pour garder la
+ * confirmation en ligne, corps url-encodé et champ caché `form-name` qui route
+ * la soumission. Voir CLAUDE.md §Formulaires pour les points à ne pas casser.
+ *
+ * Le message de succès vit HORS du <form> : celui-ci est masqué à l'envoi, un
+ * message placé à l'intérieur disparaîtrait avec lui.
+ */
+import { ui } from "../i18n/fr";
+
+const FORM_NAME = "chatgpt-ads";
+---
+
+<div class="eb-wrap">
+  <form
+    class="eb-form"
+    id="chatgpt-form"
+    name={FORM_NAME}
+    method="POST"
+    action="/"
+    data-netlify="true"
+    netlify-honeypot="bot-field"
+    novalidate
+  >
+    <input type="hidden" name="form-name" value={FORM_NAME} />
+    <input type="hidden" name="offre" value="chatgpt-ads-early-bird" />
+
+    <div class="grid2">
+      <label>{ui.form.name}*<input type="text" name="nom" required autocomplete="name" /></label>
+      <label>{ui.form.company}<input type="text" name="entreprise" autocomplete="organization" /></label>
+    </div>
+    <div class="grid2">
+      <label>{ui.form.email}*<input type="email" name="email" required autocomplete="email" /></label>
+      <label>{ui.form.phone}<input type="tel" name="telephone" autocomplete="tel" /></label>
+    </div>
+    <label>{ui.form.website}<input type="url" name="site_web" placeholder="https://" /></label>
+    <label>
+      Ce que vous vendez, en une phrase
+      <textarea name="message" rows="3" placeholder="Pour préparer le premier échange."></textarea>
+    </label>
+
+    <p class="gotcha" aria-hidden="true">
+      <label>Ne remplissez pas ce champ<input type="text" name="bot-field" tabindex="-1" autocomplete="off" /></label>
+    </p>
+
+    <button type="submit" class="btn btn-primary">Demander l'accès Early Bird <span class="arrow" aria-hidden="true">→</span></button>
+
+    <p class="form-error" id="chatgpt-error" hidden role="alert">
+      Une erreur est survenue. Réessayez ou écrivez-nous directement.
+    </p>
+  </form>
+
+  <p class="form-success" id="chatgpt-success" hidden role="status" tabindex="-1">
+    <strong>Merci, votre demande est bien partie.</strong><br />
+    Nous revenons vers vous sous un jour ouvré pour vérifier que ChatGPT Ads a du sens pour votre activité.
+  </p>
+</div>
+
+<style>
+  .eb-wrap { max-width: 620px; }
+  .eb-form { display: flex; flex-direction: column; gap: 16px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--ink); }
+  input, textarea {
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    background: var(--paper);
+    color: var(--ink);
+    width: 100%;
+  }
+  input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring-accent); }
+  textarea { resize: vertical; }
+  .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .eb-form .btn { align-self: flex-start; margin-top: 4px; }
+  .form-success {
+    background: rgba(37, 99, 255, .06);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 15px;
+  }
+  .form-success:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .form-error { color: #b00020; font-size: 14px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const form = document.getElementById("chatgpt-form") as HTMLFormElement | null;
+  const ok = document.getElementById("chatgpt-success");
+  const err = document.getElementById("chatgpt-error");
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    err?.setAttribute("hidden", "");
+    try {
+      // Netlify Forms en AJAX : corps url-encodé, posté sur un chemin du site.
+      // Le champ caché `form-name` (présent dans le FormData) fait le routage.
+      const res = await fetch(form.getAttribute("action") || "/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
+      });
+      if (!res.ok) throw new Error("bad response");
+      form.reset();
+      form.style.display = "none";
+      ok?.removeAttribute("hidden");
+      // Conversion : un seul événement pour tous les formulaires du site, le
+      // formulaire concerné étant porté par un paramètre. GTM peut ainsi
+      // déclencher une seule balise et distinguer les cas dans la condition.
+      // Le nom vient de l'attribut `name` du <form> : pas de second endroit à
+      // maintenir, et c'est déjà celui sous lequel Netlify range la soumission.
+      const w = window as unknown as { dataLayer?: unknown[] };
+      w.dataLayer = w.dataLayer || [];
+      w.dataLayer.push({ event: "form_submit", form_name: form.getAttribute("name") });
+
+      // Le focus était sur le bouton, qui vient d'être masqué : sans cela il
+      // retombe sur <body> et la confirmation passe inaperçue au clavier.
+      ok?.focus();
+    } catch {
+      err?.removeAttribute("hidden");
+    }
+  });
+</script>
