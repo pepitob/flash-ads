@@ -62,7 +62,12 @@ Comprendre ces flux transversaux avant d'éditer :
   `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis` ou
   `chatgpt-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
   événement par formulaire : une seule balise de conversion suffit, la condition se met sur le
-  paramètre.
+  paramètre. **Côté GTM, brancher la conversion sur l'événement personnalisé `form_submit`, jamais
+  sur le déclencheur « Form Submission » intégré** : celui-ci écoute l'événement natif `submit` et
+  se déclenche donc à CHAQUE tentative, y compris celles refusées par la validation et celles dont
+  la requête échoue. Notre `form_submit`, lui, n'est poussé qu'après acceptation par Netlify. Les
+  deux formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
+  donc ni deux leads ni deux conversions.
 - **Calculateur de budget** (`/calculateur-budget`) : un seul moteur pur, `src/lib/calculator.ts`,
   appelé au build (rendu statique de l'état par défaut : SEO, pas de layout shift, résultat lisible
   sans JS) puis repris par l'îlot client de `src/components/calculator/BudgetCalculator.astro`.
@@ -190,6 +195,19 @@ le champ caché `form-name` qui route la soumission. Anti-spam : honeypot Netlif
 **Demande d'accès ChatGPT Ads (`/services/chatgpt-ads`) : Netlify Forms** également,
 `name="chatgpt-ads"` (`EarlyBirdForm.astro`). Mêmes contraintes que ci-dessus. Les deux formulaires
 doivent apparaître dans « Forms » côté Netlify après le déploiement.
+
+**Si des soumissions n'arrivent plus.** La détection ne tourne qu'au moment du build : toute
+modification d'un formulaire (champ renommé, nouveau formulaire, balise changée) exige un
+**redéploiement**, sinon Netlify continue d'accepter l'ancienne définition et ignore la nouvelle.
+Deux cas se distinguent sans outil :
+
+- le visiteur voit le **message d'erreur** : Netlify n'a pas reconnu le formulaire. La console
+  affiche `[Flash Ads] Envoi du formulaire refusé : 404`. Vérifier « Forms > Form detection »,
+  la réactiver, puis **redéployer**.
+- le visiteur voit la **confirmation** mais rien n'apparaît dans « Verified submissions » :
+  la soumission est partie et Netlify l'a acceptée. Regarder l'onglet **Spam**, Akismet filtre
+  agressivement les envois de test (adresses du type `test@test.com`, textes sans phrases réelles,
+  envois répétés depuis la même IP).
 
 ## Déploiement
 
