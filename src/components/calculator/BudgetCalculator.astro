@@ -26,11 +26,13 @@ import {
   resultCopy,
   assumptionsCopy,
   disclaimerShort,
+  cpaLine,
   params,
   fmt,
   fmtDec,
 } from "../../lib/calculator";
 import { pricingNotes } from "../../data/tarifs";
+import FieldTip from "./FieldTip.astro";
 
 interface Props {
   variant?: "full" | "compact";
@@ -43,6 +45,8 @@ const input = defaultInput();
 const result = compute(input);
 const copy = resultCopy(input, result);
 const assumptions = assumptionsCopy(input, result);
+const expertCpa = cpaLine(result);
+const roasDerived = Math.round((100 / input.margePct) * 10) / 10;
 const tier = result.tier;
 const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contact";
 ---
@@ -65,14 +69,13 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
         </div>
       </fieldset>
 
-      <!-- Secteur : commun aux deux modèles -->
-      <div class="field">
+      <!-- Secteur : modèle leads uniquement (l'e-commerce raisonne en marge) -->
+      <div class="field" data-when="leadgen">
         <label class="lbl" for="calc-sector">
           Secteur d'activité
-          <span class="tip">
-            <button type="button" class="tip-btn" aria-describedby="tip-sector" aria-label="Aide : secteur d'activité">?</button>
-            <span role="tooltip" id="tip-sector" class="tip-bubble">Le secteur détermine le coût par clic moyen observé en Suisse romande.</span>
-          </span>
+          <FieldTip id="tip-sector" label="secteur d'activité">
+            Le secteur détermine le coût par clic moyen observé en Suisse romande.
+          </FieldTip>
         </label>
         <select id="calc-sector" name="sector">
           {sectors.map((s) => (
@@ -81,96 +84,86 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
         </select>
       </div>
 
-      <!-- ── Modèle lead-gen ── -->
+      <!-- ── Modèle lead-gen : deux questions, aucune hypothèse exposée ── -->
       <div data-when="leadgen">
-        <div class="field">
-          <label class="lbl" for="calc-value" data-out="value-label">
-            Valeur d'un nouveau client (CHF)
-            <span class="tip">
-              <button type="button" class="tip-btn" aria-describedby="tip-value" aria-label="Aide : valeur d'un nouveau client">?</button>
-              <span role="tooltip" id="tip-value" class="tip-bubble" data-out="value-tip">Ce qu'un client typique vous rapporte en chiffre d'affaires. Pour un client récurrent, comptez la première année.</span>
-            </span>
-          </label>
-          <input id="calc-value" name="clientValue" type="number" min="1" step="10" inputmode="numeric" value={input.clientValue} />
-        </div>
-
-        <!-- Bloc valeur à vie : mode expert + client récurrent -->
-        <div class="sub" data-when="recurring" hidden>
-          <div class="row2">
-            <div class="field">
-              <label class="lbl" for="calc-purchases">Achats par an</label>
-              <input id="calc-purchases" name="purchasesPerYear" type="number" min="1" step="1" inputmode="numeric" value={input.purchasesPerYear} />
-            </div>
-            <div class="field">
-              <label class="lbl" for="calc-loyalty">
-                Durée de fidélité (années)
-                <output class="val" data-out="loyalty-val">{input.loyaltyYears}</output>
-              </label>
-              <input id="calc-loyalty" name="loyaltyYears" type="range" min={params.loyaltyYearsMin} max={params.loyaltyYearsMax} step="1" value={input.loyaltyYears} />
-            </div>
-          </div>
-          <p class="ltv">Valeur à vie estimée d'un client : <b data-out="ltv">{fmt(input.clientValue * input.purchasesPerYear * input.loyaltyYears)} CHF</b></p>
-        </div>
-
         <div class="field">
           <label class="lbl" for="calc-clients">
             Nouveaux clients souhaités par mois
-            <span class="tip">
-              <button type="button" class="tip-btn" aria-describedby="tip-clients" aria-label="Aide : nombre de clients souhaités">?</button>
-              <span role="tooltip" id="tip-clients" class="tip-bubble">Combien de clients supplémentaires par mois rendraient cet investissement intéressant.</span>
-            </span>
+            <FieldTip id="tip-clients" label="nombre de clients souhaités">
+              Combien de clients supplémentaires par mois rendraient cet investissement intéressant.
+            </FieldTip>
             <output class="val" data-out="clients-val">{input.clients}</output>
           </label>
           <input id="calc-clients" name="clients" type="range" min={params.clientsMin} max={params.clientsMax} step="1" value={input.clients} />
           <div class="scale"><span>{params.clientsMin}</span><span>{params.clientsMax}</span></div>
         </div>
+
       </div>
 
       <!-- ── Modèle e-commerce ── -->
       <div data-when="ecommerce" hidden>
-        <div class="row2">
-          <div class="field">
-            <label class="lbl" for="calc-revenue">
-              Chiffre d'affaires mensuel visé via les pubs (CHF)
-              <span class="tip">
-                <button type="button" class="tip-btn" aria-describedby="tip-revenue" aria-label="Aide : chiffre d'affaires visé">?</button>
-                <span role="tooltip" id="tip-revenue" class="tip-bubble">Les ventes supplémentaires que la publicité doit générer chaque mois.</span>
-              </span>
-            </label>
-            <input id="calc-revenue" name="revenue" type="number" min="1" step="500" inputmode="numeric" value={input.revenue} />
-          </div>
-          <div class="field">
-            <label class="lbl" for="calc-basket">Panier moyen (CHF)</label>
-            <input id="calc-basket" name="basket" type="number" min="1" step="5" inputmode="numeric" value={input.basket} />
-          </div>
-        </div>
         <div class="field">
-          <label class="lbl" for="calc-roas">
-            ROAS minimum acceptable
-            <span class="tip">
-              <button type="button" class="tip-btn" aria-describedby="tip-roas" aria-label="Aide : ROAS minimum acceptable">?</button>
-              <span role="tooltip" id="tip-roas" class="tip-bubble">Le retour en dessous duquel la campagne ne vous intéresse plus : 4 = chaque franc investi doit rapporter au moins 4 francs de ventes. Plus vous êtes exigeant, plus le budget que vous pouvez engager est faible.</span>
-            </span>
-            <output class="val" data-out="roas-val">{fmtDec(input.roas)}</output>
+          <label class="lbl" for="calc-basket">
+            Panier moyen (CHF)
+            <FieldTip id="tip-basket" label="panier moyen">
+              Le montant moyen d'une commande sur votre boutique.
+            </FieldTip>
           </label>
-          <input id="calc-roas" name="roas" type="range" min={params.roasMin} max={params.roasMax} step="0.5" value={input.roas} />
-          <div class="scale"><span>{params.roasMin}</span><span>{params.roasMax}</span></div>
+          <input id="calc-basket" name="basket" type="number" min="1" step="5" inputmode="numeric" value={input.basket} />
         </div>
-      </div>
 
-      <!-- Zone : agit sur le coût du clic -->
-      <div class="field" data-when="leadgen">
-        <label class="lbl" for="calc-zone">
-          Zone principale
-          <span class="tip">
-            <button type="button" class="tip-btn" aria-describedby="tip-zone" aria-label="Aide : zone principale">?</button>
-            <span role="tooltip" id="tip-zone" class="tip-bubble">La concurrence publicitaire est plus forte dans les grandes agglomérations.</span>
-          </span>
-        </label>
-        <select id="calc-zone" name="urban">
-          <option value="0" selected>Reste de la Suisse romande</option>
-          <option value="1">Grandes agglomérations (Genève, Lausanne)</option>
-        </select>
+        <div class="field">
+          <label class="lbl" for="calc-marge-pct">
+            Marge brute (%)
+            <FieldTip id="tip-marge-pct" label="marge brute">
+              Ce qui vous reste après le coût des produits, avant frais fixes.
+            </FieldTip>
+          </label>
+          <!-- Champ chiffré et curseur pilotent la même valeur : le champ rend la
+               marge lisible et saisissable au clavier, le curseur reste pour explorer. -->
+          <div class="pair">
+            <div class="pair-num">
+              <input id="calc-marge-pct" name="margePct" type="number" min={params.margePctMin} max={params.margePctMax} step="1" inputmode="numeric" value={input.margePct} />
+              <span class="pair-unit" aria-hidden="true">%</span>
+            </div>
+            <input
+              name="margePctRange"
+              type="range"
+              min={params.margePctMin}
+              max={params.margePctMax}
+              step="1"
+              value={input.margePct}
+              aria-label="Marge brute, curseur"
+            />
+          </div>
+          <div class="scale"><span>{params.margePctMin}%</span><span>{params.margePctMax}%</span></div>
+          <p class="hint" data-out="roas-hint">{`Avec une marge de ${fmt(input.margePct)}%, chaque franc de publicité doit générer au moins ${fmtDec(100 / input.margePct)} francs de ventes pour rentrer dans vos frais.`}</p>
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="calc-orders">
+            Commandes supplémentaires souhaitées par mois
+            <FieldTip id="tip-orders" label="commandes souhaitées">
+              Les commandes que la publicité doit générer en plus chaque mois, au-delà de vos ventes actuelles.
+            </FieldTip>
+          </label>
+          <div class="pair">
+            <div class="pair-num bare">
+              <input id="calc-orders" name="orders" type="number" min={params.ordersMin} max={params.ordersMax} step="1" inputmode="numeric" value={input.orders} />
+            </div>
+            <input
+              name="ordersRange"
+              type="range"
+              min={params.ordersMin}
+              max={params.ordersMax}
+              step="1"
+              value={input.orders}
+              aria-label="Commandes supplémentaires par mois, curseur"
+            />
+          </div>
+          <div class="scale"><span>{params.ordersMin}</span><span>{params.ordersMax}</span></div>
+          <p class="hint" data-out="revenue-hint">{`Soit ${fmt(input.orders * input.basket)} CHF de ventes supplémentaires par mois.`}</p>
+        </div>
       </div>
 
       <!-- ── Mode expert : hypothèses déverrouillées ── -->
@@ -178,33 +171,156 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
         <p class="expert-head">Hypothèses du calcul</p>
 
         <div data-when="leadgen">
-          <div class="pills small" role="radiogroup" aria-label="Type de client">
-            <label class="pill">
-              <input type="radio" name="recurring" value="0" checked />
-              <span>Client ponctuel</span>
+          <!-- Valeur d'un client : sert au seul contrôle de rentabilité, jamais au budget -->
+          <div class="field">
+            <label class="lbl" for="calc-value" data-out="value-label">
+              Valeur d'un nouveau client (CHF)
+              <FieldTip id="tip-value" label="valeur d'un nouveau client" dataOut="value-tip">
+                Ce qu'un client typique vous rapporte en chiffre d'affaires. Pour un client récurrent, comptez la première année.
+              </FieldTip>
             </label>
-            <label class="pill">
-              <input type="radio" name="recurring" value="1" />
-              <span>Client récurrent</span>
+            <input id="calc-value" name="clientValue" type="number" min="1" step="10" inputmode="numeric" placeholder="Laissez vide pour ne pas contrôler" value={input.clientValue || ""} />
+          </div>
+
+          <div class="field">
+            <span class="lbl" id="lbl-type-client">
+              Type de client
+              <FieldTip id="tip-recurring" label="type de client">
+                Un client ponctuel achète une fois, un client récurrent revient. La valeur à vie change alors la lecture de la rentabilité, pas le budget.
+              </FieldTip>
+            </span>
+            <div class="pills small" role="radiogroup" aria-labelledby="lbl-type-client">
+              <label class="pill">
+                <input type="radio" name="recurring" value="0" checked />
+                <span>Client ponctuel</span>
+              </label>
+              <label class="pill">
+                <input type="radio" name="recurring" value="1" />
+                <span>Client récurrent</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Bloc valeur à vie : uniquement si le client est récurrent -->
+          <div class="sub" data-when="recurring" hidden>
+            <div class="row2">
+              <div class="field">
+                <label class="lbl" for="calc-purchases">
+                  Achats par an
+                  <FieldTip id="tip-purchases" label="achats par an">
+                    Combien de fois un client type achète ou fait appel à vous sur une année.
+                  </FieldTip>
+                </label>
+                <input id="calc-purchases" name="purchasesPerYear" type="number" min="1" step="1" inputmode="numeric" value={input.purchasesPerYear} />
+              </div>
+              <div class="field">
+                <label class="lbl" for="calc-loyalty">
+                  Durée de fidélité (années)
+                  <FieldTip id="tip-loyalty" label="durée de fidélité">
+                    Combien d'années un client type reste chez vous avant de partir.
+                  </FieldTip>
+                  <output class="val" data-out="loyalty-val">{input.loyaltyYears}</output>
+                </label>
+                <input id="calc-loyalty" name="loyaltyYears" type="range" min={params.loyaltyYearsMin} max={params.loyaltyYearsMax} step="1" value={input.loyaltyYears} />
+              </div>
+            </div>
+            <p class="ltv">Valeur à vie estimée d'un client : <b data-out="ltv">0 CHF</b></p>
+          </div>
+
+          <div class="row2">
+            <div class="field">
+              <label class="lbl" for="calc-cpcmin">
+                CPC min (CHF)
+                <FieldTip id="tip-cpcmin" label="coût par clic minimum">
+                  Coût par clic : ce que Google facture à chaque visite amenée par une annonce. Ici la borne basse de votre secteur, sur les recherches peu disputées.
+                </FieldTip>
+              </label>
+              <input id="calc-cpcmin" name="cpcMin" type="number" min="0.1" step="0.1" value={input.cpcMin} />
+            </div>
+            <div class="field">
+              <label class="lbl" for="calc-cpcmax">
+                CPC max (CHF)
+                <FieldTip id="tip-cpcmax" label="coût par clic maximum">
+                  La borne haute de votre secteur, sur les mots-clés les plus disputés. Le budget recommandé se calcule sur le coût central entre les deux.
+                </FieldTip>
+              </label>
+              <input id="calc-cpcmax" name="cpcMax" type="number" min="0.1" step="0.1" value={input.cpcMax} />
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label class="lbl" for="calc-conv">
+                Conversion du site (%)
+                <FieldTip id="tip-conv" label="taux de conversion du site">
+                  Part des visiteurs qui vous laissent une demande. 5 % veut dire 5 demandes pour 100 visites amenées par la publicité.
+                </FieldTip>
+              </label>
+              <input id="calc-conv" name="conv" type="number" min="0.1" step="0.1" value={Math.round(input.conv * 1000) / 10} />
+            </div>
+            <div class="field">
+              <label class="lbl" for="calc-closing">
+                Taux de closing (%)
+                <FieldTip id="tip-closing" label="taux de closing">
+                  Part des demandes reçues qui deviennent des clients. 50 % veut dire un client signé pour deux demandes.
+                </FieldTip>
+              </label>
+              <input id="calc-closing" name="closing" type="number" min="1" step="1" value={Math.round(input.closing * 100)} />
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label class="lbl" for="calc-marge">
+                Marge sur la valeur client (%)
+                <FieldTip id="tip-marge" label="marge sur la valeur client">
+                  Ce qu'il vous reste sur la valeur d'un client une fois vos coûts déduits. C'est cette marge qui doit couvrir le coût d'acquisition, pas le chiffre d'affaires.
+                </FieldTip>
+              </label>
+              <input id="calc-marge" name="marge" type="number" min="1" max="100" step="1" value={Math.round(input.marge * 100)} />
+            </div>
+            <div class="field">
+              <label class="lbl" for="calc-safety">
+                Facteur de sécurité
+                <FieldTip id="tip-safety" label="facteur de sécurité">
+                  Marge de prudence ajoutée au budget : les premières semaines coûtent toujours plus cher que la vitesse de croisière.
+                </FieldTip>
+              </label>
+              <input id="calc-safety" name="safety" type="number" min="1" max="2" step="0.05" value={input.safety} />
+            </div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="calc-zone">
+              Zone principale
+              <FieldTip id="tip-zone" label="zone principale">
+                La concurrence publicitaire est plus forte dans les grandes agglomérations, ce qui renchérit le clic de 15 %.
+              </FieldTip>
             </label>
+            <select id="calc-zone" name="urban">
+              <option value="0" selected>Reste de la Suisse romande</option>
+              <option value="1">Grandes agglomérations (Genève, Lausanne)</option>
+            </select>
           </div>
-          <div class="row2">
-            <div class="field"><label class="lbl" for="calc-cpcmin">CPC min (CHF)</label><input id="calc-cpcmin" name="cpcMin" type="number" min="0.1" step="0.1" value={input.cpcMin} /></div>
-            <div class="field"><label class="lbl" for="calc-cpcmax">CPC max (CHF)</label><input id="calc-cpcmax" name="cpcMax" type="number" min="0.1" step="0.1" value={input.cpcMax} /></div>
-          </div>
-          <div class="row2">
-            <div class="field"><label class="lbl" for="calc-conv">Conversion du site (%)</label><input id="calc-conv" name="conv" type="number" min="0.1" step="0.1" value={Math.round(input.conv * 1000) / 10} /></div>
-            <div class="field"><label class="lbl" for="calc-closing">Taux de closing (%)</label><input id="calc-closing" name="closing" type="number" min="1" step="1" value={Math.round(input.closing * 100)} /></div>
-          </div>
-          <div class="row2">
-            <div class="field"><label class="lbl" for="calc-marge">Marge sur la valeur client (%)</label><input id="calc-marge" name="marge" type="number" min="1" max="100" step="1" value={Math.round(input.marge * 100)} /></div>
-            <div class="field"><label class="lbl" for="calc-safety">Facteur de sécurité</label><input id="calc-safety" name="safety" type="number" min="1" max="2" step="0.05" value={input.safety} /></div>
-          </div>
+          <p class="expert-cpa" data-out="expert-cpa">{expertCpa}</p>
         </div>
 
         <div data-when="ecommerce" hidden>
           <div class="field">
-            <label class="lbl" for="calc-repeat">Taux de réachat annuel (%)</label>
+            <label class="lbl" for="calc-roas">
+              ROAS imposé
+              <FieldTip id="tip-roas" label="ROAS imposé">
+                Le curseur affiche le ROAS que votre marge impose. Le déplacer vous permet de fixer votre propre objectif et de voir aussitôt ce qu'il change au budget. Dès que vous modifiez la marge, il revient sur la valeur déduite.
+              </FieldTip>
+              <output class="val" data-out="roas-override-val">{fmtDec(roasDerived)} (déduit de la marge)</output>
+            </label>
+            <input id="calc-roas" name="roasOverride" type="range" min={params.roasMin} max={params.roasMax} step="0.1" value={roasDerived} />
+            <div class="scale"><span>{params.roasMin}</span><span>{params.roasMax}</span></div>
+          </div>
+          <div class="field">
+            <label class="lbl" for="calc-repeat">
+              Taux de réachat annuel (%)
+              <FieldTip id="tip-repeat" label="taux de réachat annuel">
+                Part de vos clients qui recommandent dans l'année. Plus ils reviennent, plus un ROAS de campagne bas reste tenable.
+              </FieldTip>
+            </label>
             <input id="calc-repeat" name="repeatRate" type="number" min="0" max="200" step="5" value={Math.round(input.repeatRate * 100)} />
           </div>
         </div>
@@ -219,6 +335,9 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
 
     <!-- ── Résultat ── -->
     <aside class="calc-result" data-result>
+      <!-- Cadrage : l'ordre de grandeur du marché avant que le montant tombe -->
+      <p class="anchor" data-out="anchor">{copy.anchor}</p>
+
       <span class="eyebrow" data-out="eyebrow">Budget publicitaire recommandé</span>
 
       <p class="amount">
@@ -227,8 +346,26 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
       </p>
       <p class="band" data-out="band">{copy.band}</p>
 
-      <p class="detail" data-out="detail">{copy.detail}</p>
-      <p class="marge-line" data-out="marge-line">{copy.margeLine}</p>
+      <!-- Détail chiffré : mode expert uniquement. Le calculateur public s'en
+           tient au budget, pour ne pas multiplier les chiffres à retenir. -->
+      <div class="figures" data-when="expert-only" hidden>
+        <div class="fig" data-row="cost" hidden={!copy.costValue}>
+          <span class="fig-k" data-out="cost-label">{copy.costLabel}</span>
+          <span class="fig-v" data-out="cost-value">{copy.costValue}</span>
+        </div>
+        <p class="fig-note" data-out="cost-allin" hidden={!copy.costAllIn}>{copy.costAllIn}</p>
+        <div class="fig" data-row="revenue" hidden={!copy.revenueValue}>
+          <span class="fig-k">Chiffre d'affaires généré</span>
+          <span class="fig-v" data-out="revenue-value">{copy.revenueValue}</span>
+        </div>
+        <div class="fig" data-row="roi" hidden={!copy.roiValue}>
+          <span class="fig-k">Retour</span>
+          <span class="fig-v" data-out="roi-value">{copy.roiValue}</span>
+        </div>
+        <p class="fig-note" data-out="marge-line" hidden={!copy.margeLine}>{copy.margeLine}</p>
+      </div>
+
+      <p class="source" data-out="source">{copy.source}</p>
 
       <p class="msg" data-msg data-tone={copy.tone} hidden={copy.tone === "none"}>{copy.message}</p>
 
@@ -315,7 +452,7 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
   .field { display: flex; flex-direction: column; gap: 8px; border: 0; padding: 0; margin: 0; }
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .lbl {
-    position: relative; /* ancre des bulles de tooltip : borne leur largeur au label */
+    position: relative; /* ancre des bulles d'aide (FieldTip.astro) */
     font-family: var(--font-display);
     font-size: 13px;
     font-weight: 600;
@@ -402,44 +539,6 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
   .pill input:focus-visible + span { box-shadow: var(--ring-accent); }
   .pills.small span { font-size: 12.5px; padding: 9px; }
 
-  /* Tooltips */
-  .tip { display: inline-flex; }
-  .tip-btn {
-    width: 16px; height: 16px; padding: 0;
-    border-radius: 50%;
-    border: 1px solid var(--hairline);
-    background: var(--surface-subtle);
-    color: var(--muted);
-    font-family: var(--font-display);
-    font-size: 10px; font-weight: 700; line-height: 1;
-    cursor: help;
-  }
-  .tip-btn:hover, .tip-btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
-  .tip-bubble {
-    /* Positionnée sur le label, pas sur l'icône : la bulle ne peut donc jamais
-       déborder de la colonne, y compris sur les petits écrans. */
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 0;
-    right: 0;
-    max-width: 320px;
-    background: var(--surface-dark);
-    color: #fff;
-    font-family: var(--font-body);
-    font-size: 12.5px;
-    font-weight: 400;
-    line-height: 1.5;
-    padding: 9px 12px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--dur-fast) var(--ease-out);
-    z-index: 5;
-  }
-  .tip:hover .tip-bubble,
-  .tip-btn:focus-visible + .tip-bubble { opacity: 1; visibility: visible; }
-
   /* Bloc récurrent + mode expert */
   .sub, .expert {
     background: var(--surface-subtle);
@@ -460,6 +559,48 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
     color: var(--faint);
   }
   .ltv { font-size: 13.5px; color: var(--body); }
+  .hint { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+
+  /* Couple champ chiffré + curseur, pour une valeur à la fois lisible et explorable */
+  .pair { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: center; }
+  .pair-num { position: relative; }
+  .pair-num input {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 17px;
+    text-align: right;
+    padding: 10px 26px 10px 10px;
+    color: var(--accent);
+  }
+  .pair-num input::-webkit-outer-spin-button,
+  .pair-num input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .pair-num input { -moz-appearance: textfield; appearance: textfield; }
+  .pair-num.bare input { padding-right: 10px; }
+  .pair-unit {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    pointer-events: none;
+  }
+  @media (max-width: 480px) {
+    .pair { grid-template-columns: 84px minmax(0, 1fr); gap: 10px; }
+  }
+  .expert-cpa {
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent);
+    background: rgba(37, 99, 255, .06);
+    border-radius: var(--radius-md);
+    padding: 9px 12px;
+    line-height: 1.5;
+  }
+
   .ltv b { font-family: var(--font-display); color: var(--ink); }
   .reset {
     align-self: flex-start;
@@ -508,8 +649,38 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
     border-top: 1px solid var(--hairline-subtle);
     font-variant-numeric: tabular-nums;
   }
-  .detail { font-size: 15px; color: var(--body); margin-top: 14px; }
-  .marge-line { font-size: 13.5px; color: var(--muted); margin-top: 6px; }
+  .anchor {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--body);
+    background: var(--surface-subtle);
+    border-radius: var(--radius-md);
+    padding: 10px 13px;
+    margin-bottom: 18px;
+  }
+
+  /* Bloc chiffré du mode expert : un libellé à gauche, une valeur à droite. */
+  .figures {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .fig { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .fig-k { font-size: 13.5px; color: var(--muted); }
+  .fig-v {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .fig-note { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-top: -4px; }
+
+  .source { font-size: 12px; color: var(--faint); line-height: 1.5; margin-top: 16px; }
   .msg {
     font-size: 14px;
     line-height: 1.6;
@@ -600,7 +771,10 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
     defaultInput,
     resultCopy,
     assumptionsCopy,
+    cpaLine,
     getSector,
+    zoneCpc,
+    params,
     fmt,
     fmtDec,
     type CalcInput,
@@ -636,7 +810,10 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
     let state: CalcInput = defaultInput();
     let expert = false;
     let started = false;
-    let sectorTouched = false;
+    // Le curseur ROAS du mode expert affiche par défaut le ROAS déduit de la
+    // marge. Il ne devient une surcharge qu'une fois déplacé à la main, et il
+    // repasse en mode déduit dès que la marge brute change.
+    let roasTouched = false;
     let resultTimer = 0;
 
     /* ── Lecture du formulaire ── */
@@ -655,16 +832,17 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
       return {
         activity,
         sector: sector.id,
-        urban: field<HTMLSelectElement>("urban")?.value === "1",
-        clientValue: num("clientValue", base.clientValue),
         clients: num("clients", base.clients),
+        // Facultatif : vide (donc 0) signifie « pas de contrôle de rentabilité ».
+        clientValue: num("clientValue", 0),
         recurring: expert && recurring,
         purchasesPerYear: num("purchasesPerYear", base.purchasesPerYear),
         loyaltyYears: num("loyaltyYears", base.loyaltyYears),
-        revenue: num("revenue", base.revenue),
         basket: num("basket", base.basket),
-        roas: num("roas", base.roas),
-        repeatRate: expert ? num("repeatRate", 0) / 100 : 0,
+        margePct: num("margePct", base.margePct),
+        orders: num("orders", base.orders),
+        // La zone n'existe plus qu'en mode expert : sinon, pas de majoration.
+        urban: expert && field<HTMLSelectElement>("urban")?.value === "1",
         cpcMin: expert ? num("cpcMin", sector.cpcMin) : sector.cpcMin,
         cpcMax: expert ? num("cpcMax", sector.cpcMax) : sector.cpcMax,
         conv: expert ? num("conv", sector.conv * 100) / 100 : sector.conv,
@@ -673,6 +851,8 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
         // se juge sur la marge, pas sur le chiffre d'affaires.
         marge: expert ? num("marge", sector.marge * 100) / 100 : sector.marge,
         safety: expert ? num("safety", base.safety) : base.safety,
+        roasOverride: expert && roasTouched ? num("roasOverride", 0) : 0,
+        repeatRate: expert ? num("repeatRate", 0) / 100 : 0,
       };
     }
 
@@ -704,7 +884,11 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
       root.querySelectorAll<HTMLElement>("[data-when]").forEach((el) => {
         const when = el.dataset.when;
         const show =
-          when === "recurring" ? expert && state.recurring : when === state.activity;
+          when === "recurring"
+            ? expert && state.recurring
+            : when === "expert-only"
+              ? expert
+              : when === state.activity;
         el.toggleAttribute("hidden", !show);
       });
       const panel = root.querySelector<HTMLElement>("[data-expert]");
@@ -744,8 +928,25 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
 
       setNumber(out("reco"), r.budgetReco);
       setText("band", copy.band);
-      setText("detail", copy.detail);
-      setText("marge-line", copy.margeLine);
+      // Une ligne vide est une ligne masquée : évite les blancs dans le bloc.
+      const line = (key: string, value: string, row?: string) => {
+        setText(key, value);
+        const el = row
+          ? root.querySelector<HTMLElement>(`[data-row="${row}"]`)
+          : out(key);
+        el?.toggleAttribute("hidden", !value);
+      };
+      // En expert côté leads, le bloc chiffré donne la projection exacte : garder
+      // en plus la fourchette du secteur remettrait deux chiffres pour la même
+      // notion, ce qui était précisément la source de confusion.
+      line("anchor", expert && state.activity === "leadgen" ? "" : copy.anchor);
+      line("cost-value", copy.costValue, "cost");
+      setText("cost-label", copy.costLabel);
+      line("cost-allin", copy.costAllIn);
+      line("revenue-value", copy.revenueValue, "revenue");
+      line("roi-value", copy.roiValue, "roi");
+      line("marge-line", copy.margeLine);
+      setText("source", copy.source);
 
       const msg = root.querySelector<HTMLElement>("[data-msg]");
       if (msg) {
@@ -773,11 +974,20 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
         }
       }
 
-      // Valeurs affichées des sliders + LTV.
+      // Valeurs affichées des sliders et lignes pédagogiques.
       setText("clients-val", String(Math.round(state.clients)));
-      setText("roas-val", fmtDec(state.roas));
       setText("loyalty-val", String(Math.round(state.loyaltyYears)));
       setText("ltv", `${fmt(r.ltv)} CHF`);
+      setText(
+        "roas-hint",
+        `Avec une marge de ${fmt(state.margePct)}%, chaque franc de publicité doit générer au moins ${fmtDec(100 / state.margePct)} francs de ventes pour rentrer dans vos frais.`,
+      );
+      setText("revenue-hint", `Soit ${fmt(r.revenue)} CHF de ventes supplémentaires par mois.`);
+      setText(
+        "roas-override-val",
+        roasTouched ? `${fmtDec(r.roasTarget)} (imposé)` : `${fmtDec(r.roasTarget)} (déduit de la marge)`,
+      );
+      setText("expert-cpa", cpaLine(r));
       setText("assumptions", assumptionsCopy(state, r));
       setText("live", copy.live);
 
@@ -786,7 +996,7 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
       resultTimer = window.setTimeout(() => {
         track("calc_result", {
           calc_activity: state.activity,
-          calc_sector: state.sector,
+          calc_sector: state.activity === "leadgen" ? state.sector : "ecommerce",
           calc_budget: r.budgetReco,
           calc_budget_low: r.budgetLow,
           calc_budget_high: r.budgetHigh,
@@ -794,6 +1004,7 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
           calc_expert: expert,
         });
         if (r.status === "floor") track("calc_floor_hit", { calc_sector: state.sector });
+        if (r.status === "lowMargin") track("calc_low_margin", { calc_marge: state.margePct });
       }, 700);
     }
 
@@ -804,11 +1015,35 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
         const el = field<HTMLInputElement>(name);
         if (el) el.value = value;
       };
-      set("cpcMin", String(s.cpcMin));
-      set("cpcMax", String(s.cpcMax));
+      // Le coût du clic affiché intègre la majoration de zone : c'est bien lui
+      // que la concurrence des agglomérations fait monter, pas le budget final.
+      const cpc = zoneCpc(s, field<HTMLSelectElement>("urban")?.value === "1");
+      set("cpcMin", String(cpc.min));
+      set("cpcMax", String(cpc.max));
       set("conv", String(Math.round(s.conv * 1000) / 10));
       set("closing", String(Math.round(s.closing * 100)));
       set("marge", String(Math.round(s.marge * 100)));
+      syncRoas();
+    }
+
+    /** Recopie la valeur entre le champ chiffré et le curseur d'un même réglage. */
+    function syncPair(boxName: string, rangeName: string, min: number, max: number, from: string) {
+      const box = field<HTMLInputElement>(boxName);
+      const range = field<HTMLInputElement>(rangeName);
+      if (!box || !range) return;
+      if (from === rangeName) box.value = range.value;
+      else if (box.value !== "") {
+        range.value = String(Math.min(Math.max(Number(box.value) || min, min), max));
+      }
+    }
+
+    /** Recale le curseur ROAS sur la valeur déduite de la marge et du réachat. */
+    function syncRoas() {
+      const el = field<HTMLInputElement>("roasOverride");
+      if (!el) return;
+      const margePct = num("margePct", defaultInput().margePct);
+      const repeat = 1 + (expert ? num("repeatRate", 0) / 100 : 0);
+      el.value = String(Math.round((100 / margePct / repeat) * 10) / 10);
     }
 
     /* ── Écoute ── */
@@ -820,20 +1055,30 @@ const packHref = tier ? tier.stripeLink || `/contact?pack=${tier.id}` : "/contac
       const target = e.target as HTMLElement;
       // Changer de secteur réapplique ses hypothèses (CPC, taux, marge).
       if (target instanceof HTMLSelectElement && target.name === "sector") {
-        sectorTouched = true;
         state = applySector(state, target.value);
         syncExpertInputs();
       }
-      // Passage en e-commerce : secteur par défaut du modèle, tant que le
-      // visiteur n'a pas choisi le sien.
-      if (target instanceof HTMLInputElement && target.name === "activity" && !sectorTouched) {
-        const select = field<HTMLSelectElement>("sector");
-        const wanted = defaultInput(target.value === "ecommerce" ? "ecommerce" : "leadgen").sector;
-        if (select && select.value !== wanted) {
-          select.value = wanted;
-          state = applySector(state, wanted);
-          syncExpertInputs();
+      // Changer de zone recalcule le coût du clic, donc les champs experts.
+      if (target instanceof HTMLSelectElement && target.name === "urban") syncExpertInputs();
+      if (target instanceof HTMLInputElement) {
+        // Champ chiffré et curseur pilotent la même valeur : on recopie l'un
+        // dans l'autre. Le champ libre peut recevoir n'importe quoi, on le
+        // borne donc sur la plage du curseur avant de recopier.
+        if (target.name === "margePct" || target.name === "margePctRange") {
+          syncPair("margePct", "margePctRange", params.margePctMin, params.margePctMax, target.name);
+          // La marge vient de changer : le ROAS redevient celui qu'elle impose.
+          roasTouched = false;
+          syncRoas();
         }
+        if (target.name === "orders" || target.name === "ordersRange") {
+          syncPair("orders", "ordersRange", params.ordersMin, params.ordersMax, target.name);
+        }
+        // Le réachat change lui aussi le ROAS exigé : même recalage.
+        if (target.name === "repeatRate") {
+          roasTouched = false;
+          syncRoas();
+        }
+        if (target.name === "roasOverride") roasTouched = true;
       }
       render();
     });

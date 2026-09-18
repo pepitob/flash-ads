@@ -22,31 +22,113 @@
     "loyaltyYearsMin": 1,
     "loyaltyYearsMax": 10,
     "ecommerceSector": "commerce_electromenager",
-    "defaultRevenue": 20000,
     "defaultBasket": 120,
-    "defaultRoas": 4,
-    "roasMin": 2,
-    "roasMax": 8,
-    "defaultRepeatRate": 0
+    "defaultRoas": 0,
+    "roasMin": 1,
+    "roasMax": 15,
+    "defaultRepeatRate": 0,
+    "_note_cpa": "Le cout par client (CPA) affiche en mode simple n'est pas une table separee : il derive de cpc.json et des taux ci-dessous (cpc / (conv x closing), arrondi a 5). Modifier un taux met donc le benchmark a jour automatiquement, sans risque de derive.",
+    "defaultMargePct": 35,
+    "margePctMin": 10,
+    "margePctMax": 95,
+    "margeFloorPct": 15,
+    "roasCushion": 1.3,
+    "defaultOrders": 150,
+    "cpaRoundTo": 5,
+    "ordersMin": 1,
+    "ordersMax": 1000
   },
   "sectors": {
-    "dentaire": { "conv": 0.05, "closing": 0.5, "marge": 0.4 },
-    "sante_therapie": { "conv": 0.06, "closing": 0.6, "marge": 0.55 },
-    "plomberie_chauffage": { "conv": 0.08, "closing": 0.6, "marge": 0.3 },
-    "electricite": { "conv": 0.07, "closing": 0.5, "marge": 0.3 },
-    "construction_renovation": { "conv": 0.05, "closing": 0.3, "marge": 0.2 },
-    "stores_fenetres_portes": { "conv": 0.05, "closing": 0.35, "marge": 0.25 },
-    "nettoyage": { "conv": 0.07, "closing": 0.4, "marge": 0.35 },
-    "menuiserie_bois": { "conv": 0.05, "closing": 0.3, "marge": 0.25 },
-    "transport_demenagement": { "conv": 0.08, "closing": 0.35, "marge": 0.3 },
-    "juridique": { "conv": 0.05, "closing": 0.4, "marge": 0.6 },
-    "fiduciaire_comptabilite": { "conv": 0.05, "closing": 0.4, "marge": 0.55 },
-    "immobilier": { "conv": 0.03, "closing": 0.2, "marge": 0.7 },
-    "garage_auto": { "conv": 0.06, "closing": 0.6, "marge": 0.35 },
-    "beaute_bienetre": { "conv": 0.06, "closing": 0.7, "marge": 0.6 },
-    "evenementiel": { "conv": 0.05, "closing": 0.3, "marge": 0.3 },
-    "tourisme_loisirs": { "conv": 0.04, "closing": 0.5, "marge": 0.4 },
-    "commerce_electromenager": { "conv": 0.05, "closing": 0.4, "marge": 0.2, "ecommerceDefault": true },
-    "b2b_conseil": { "conv": 0.03, "closing": 0.25, "marge": 0.55 }
+    "dentaire": {
+      "conv": 0.05,
+      "closing": 0.5,
+      "marge": 0.4
+    },
+    "sante_therapie": {
+      "conv": 0.06,
+      "closing": 0.6,
+      "marge": 0.55
+    },
+    "plomberie_chauffage": {
+      "conv": 0.08,
+      "closing": 0.6,
+      "marge": 0.3
+    },
+    "electricite": {
+      "conv": 0.07,
+      "closing": 0.5,
+      "marge": 0.3
+    },
+    "construction_renovation": {
+      "conv": 0.05,
+      "closing": 0.3,
+      "marge": 0.2
+    },
+    "stores_fenetres_portes": {
+      "conv": 0.05,
+      "closing": 0.35,
+      "marge": 0.25
+    },
+    "nettoyage": {
+      "conv": 0.07,
+      "closing": 0.4,
+      "marge": 0.35
+    },
+    "menuiserie_bois": {
+      "conv": 0.05,
+      "closing": 0.3,
+      "marge": 0.25
+    },
+    "transport_demenagement": {
+      "conv": 0.08,
+      "closing": 0.35,
+      "marge": 0.3
+    },
+    "juridique": {
+      "conv": 0.05,
+      "closing": 0.4,
+      "marge": 0.6
+    },
+    "fiduciaire_comptabilite": {
+      "conv": 0.05,
+      "closing": 0.4,
+      "marge": 0.55
+    },
+    "immobilier": {
+      "conv": 0.03,
+      "closing": 0.2,
+      "marge": 0.7
+    },
+    "garage_auto": {
+      "conv": 0.06,
+      "closing": 0.6,
+      "marge": 0.35
+    },
+    "beaute_bienetre": {
+      "conv": 0.06,
+      "closing": 0.7,
+      "marge": 0.6
+    },
+    "evenementiel": {
+      "conv": 0.05,
+      "closing": 0.3,
+      "marge": 0.3
+    },
+    "tourisme_loisirs": {
+      "conv": 0.04,
+      "closing": 0.5,
+      "marge": 0.4
+    },
+    "commerce_electromenager": {
+      "conv": 0.05,
+      "closing": 0.4,
+      "marge": 0.2,
+      "ecommerceDefault": true
+    },
+    "b2b_conseil": {
+      "conv": 0.03,
+      "closing": 0.25,
+      "marge": 0.55
+    }
   }
 }

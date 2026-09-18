@@ -241,3 +241,57 @@ export function tierForBudget(budget: number): Tier | null {
     ) ?? tiers[tiers.length - 1]
   );
 }
+
+/* ──────────────────────────────────────────────────────────────
+   ChatGPT Ads : offre de lancement.
+
+   Service distinct de la gestion Google Ads : un seul pack, tout compris,
+   d'où un export séparé plutôt qu'une entrée de `tiers` (la grille Google Ads
+   se choisit sur le budget publicitaire, ce qui n'a pas de sens ici).
+
+   Remise de lancement à durée limitée : les tarifs remisés s'appliquent
+   jusqu'au 31.12.2026, puis le tarif plein prend le relais. Ce doublement doit
+   rester écrit noir sur blanc partout où l'offre est présentée.
+   ────────────────────────────────────────────────────────────── */
+
+export const chatgptAds = {
+  name: "Early Bird",
+  /** Frais de gestion mensuels pendant la période de lancement. */
+  price: "240.-",
+  priceValue: 240,
+  /** Tarif plein, appliqué dès la fin de la remise. */
+  regularPrice: "480.-",
+  regularPriceValue: 480,
+  unit: "/mois",
+  /** Dernier jour de la remise (inclus). */
+  promoEndsISO: "2026-12-31",
+  promoEndsLabel: "31 décembre 2026",
+  /** Frais de setup uniques, remisés eux aussi. */
+  setup: "150.-",
+  setupValue: 150,
+  regularSetup: "300.-",
+  regularSetupValue: 300,
+  /** Budget publicitaire minimum, payé directement à OpenAI. */
+  minBudgetDaily: 20,
+  minBudgetMonthly: 600,
+  attributes: [
+    { label: "Canal", value: "ChatGPT Ads (annonces sponsorisées)" },
+    { label: "Gestion", value: "Création, ciblage et optimisation en continu" },
+    { label: "Budget publicitaire", value: "20.-/jour minimum, soit environ 600.-/mois" },
+    { label: "Setup", value: "Compte, tracking et première campagne inclus" },
+    { label: "Reporting", value: "Dashboard + point mensuel" },
+    { label: "Support", value: "E-mail, réponse sous 48 h" },
+  ],
+  ctaLabel: "Demander l'accès Early Bird",
+} as const;
+
+/**
+ * Mention obligatoire : ChatGPT Ads est un canal jeune. Ne jamais présenter
+ * l'offre sans elle, et ne jamais promettre de résultat chiffré.
+ */
+export const chatgptBetaNote =
+  "ChatGPT Ads est un canal récent, encore en phase de test et d'apprentissage. Les volumes, les coûts et les performances ne sont pas stabilisés : aucun résultat n'est garanti. Nous nous engageons sur le travail et la transparence des chiffres, pas sur une promesse de retour.";
+
+/** Mention obligatoire sous le prix : la remise est limitée dans le temps. */
+export const chatgptPromoNote =
+  "Tarif de lancement valable jusqu'au 31 décembre 2026. À partir du 1er janvier 2027, les frais de gestion passent à 480.-/mois. Budget publicitaire payé directement à OpenAI, en plus des frais de gestion.";

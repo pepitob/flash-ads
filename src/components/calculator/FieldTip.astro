@@ -1,0 +1,65 @@
+---
+/**
+ * Bulle d'aide accolée au libellé d'un champ du calculateur.
+ *
+ * Accessible sans souris : le déclencheur est un vrai <button>, la bulle est
+ * liée par `aria-describedby` et s'affiche aussi au focus clavier.
+ *
+ * Positionnement : la bulle est en absolu et son ancre est le `.lbl` parent
+ * (qui porte `position: relative`), pas la petite icône. Sa largeur est donc
+ * bornée par la colonne du formulaire, ce qui l'empêche de déborder de l'écran
+ * sur mobile.
+ */
+interface Props {
+  /** Identifiant unique de la bulle (cible de `aria-describedby`). */
+  id: string;
+  /** Sujet du champ, repris dans le libellé accessible du bouton. */
+  label: string;
+  /** Renseigné quand le script client réécrit le texte de la bulle. */
+  dataOut?: string;
+}
+const { id, label, dataOut } = Astro.props;
+---
+
+<span class="tip">
+  <button type="button" class="tip-btn" aria-describedby={id} aria-label={`Aide : ${label}`}>?</button>
+  <span role="tooltip" id={id} class="tip-bubble" data-out={dataOut}><slot /></span>
+</span>
+
+<style>
+  .tip { display: inline-flex; }
+  .tip-btn {
+    width: 16px; height: 16px; padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    background: var(--surface-subtle);
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 10px; font-weight: 700; line-height: 1;
+    cursor: help;
+  }
+  .tip-btn:hover, .tip-btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+
+  .tip-bubble {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    width: max-content;
+    max-width: 240px;
+    background: var(--surface-dark);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.5;
+    padding: 9px 12px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur-fast) var(--ease-out);
+    z-index: 5;
+  }
+  .tip:hover .tip-bubble,
+  .tip-btn:focus-visible + .tip-bubble { opacity: 1; visibility: visible; }
+</style>

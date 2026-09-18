@@ -16,7 +16,6 @@ export const ui = {
     seePricing: "Voir nos prix",
     learnMore: "En savoir plus",
     discoverAgency: "Découvrir l'agence",
-    joinWaitlist: "Rejoindre la liste d'attente",
   },
   nav: {
     skipToContent: "Aller au contenu",
@@ -40,7 +39,6 @@ export const ui = {
     budget: "Budget publicitaire mensuel envisagé",
     message: "Votre message",
     submit: "Envoyer ma demande",
-    submitWaitlist: "M'inscrire sur la liste",
     required: "Champ requis",
     sending: "Envoi…",
     successTitle: "Merci, votre demande est bien partie.",

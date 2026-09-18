@@ -51,20 +51,59 @@ Comprendre ces flux transversaux avant d'éditer :
   fichiers est neutralisé à l'affichage par `mix-blend-mode: multiply` : ne pas détourer les
   blancs, cela percerait les blancs intérieurs des logos. Ajouter un logo = déposer le WebP
   traité et compléter `clientLogos` dans `src/data/temoignages.ts`.
-- **Formulaires** : devis (`/contact`) via **Netlify Forms**, liste d'attente via Formspree.
+- **Formulaires** : devis (`/contact`) et demande d'accès ChatGPT Ads
+  (`/services/chatgpt-ads`), tous deux via **Netlify Forms**. Plus aucune dépendance Formspree.
+- **Mesure d'audience** : Google Tag Manager, injecté par `BaseLayout.astro` depuis `site.gtmId`
+  (snippet en tête de `<head>`, `noscript` juste après `<body>`). Le `is:inline` est indispensable :
+  sans lui Astro en ferait un module différé, ce que GTM ne supporte pas. Le `dataLayer` qu'il crée
+  est le même que celui où le site pousse ses événements, exploitables comme déclencheurs dans le
+  conteneur sans code supplémentaire : le calculateur émet `calc_start`, `calc_result`,
+  `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent un **unique**
+  `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis` ou
+  `chatgpt-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
+  événement par formulaire : une seule balise de conversion suffit, la condition se met sur le
+  paramètre.
 - **Calculateur de budget** (`/calculateur-budget`) : un seul moteur pur, `src/lib/calculator.ts`,
   appelé au build (rendu statique de l'état par défaut : SEO, pas de layout shift, résultat lisible
   sans JS) puis repris par l'îlot client de `src/components/calculator/BudgetCalculator.astro`.
   Données éditables sans toucher au code : `src/data/calculator/cpc.json` (18 secteurs, CPC min/max,
   Keyword Planner 08/2026 croisé avec des comptes réels : ne jamais modifier ces valeurs) et
   `src/data/calculator/defaults.json` (conversion, closing, **marge par secteur**, facteurs,
-  plancher). Règles produit à ne pas casser : un chiffre recommandé unique calculé sur le CPC
-  central du secteur (moyenne géométrique), une fourchette resserrée à plus ou moins 25 % autour,
+  plancher, paramètres e-commerce). **Le mode simple n'expose aucune hypothèse** : côté leads,
+  conversion et closing sont absorbés dans un coût par client dérivé (`cpc / (conv x closing)`,
+  arrondi à 5, calculé dans `sectors` et jamais saisi en dur) ; côté e-commerce, le ROAS est
+  déduit de la marge brute (`100 / marge`) et non plus demandé. Le mode
+  expert réexpose et laisse éditer toute la chaîne, plus la zone géographique, et affiche le coût
+  par client recalculé en direct à côté du benchmark sectoriel. **Hiérarchie de la carte de
+  résultat** : le calculateur public ne montre QUE le budget, sa fourchette, une ligne de source et
+  le pack. Tout le chiffré (coût par client ou par commande, coût tout compris frais de gestion
+  inclus, chiffre d'affaires généré, retour sur investissement) vit dans le bloc `[data-when=
+  "expert-only"]` : un seul chiffre à retenir côté prospect. Ne jamais réintroduire deux fois la
+  même notion (l'ancien ancrage sectoriel doublonnait le coût par client et semait la confusion).
+  Le budget affiché reste toujours le **seul budget publicitaire**, jamais frais de gestion inclus.
+  **La zone géographique agit sur le CPC**, pas sur le budget : `zoneCpc()` majore les coûts par
+  clic, qui sont donc réécrits dans les champs experts quand on change de zone. Aucun
+  multiplicateur caché dans la formule. Règles produit à ne pas casser : un chiffre recommandé
+  unique calculé sur le coût par client central du secteur (moyenne géométrique), une
+  fourchette resserrée à plus ou moins 25 % autour,
   un budget recommandé **jamais sous le plancher de 500.-** (en dessous : message, aucun pack), et
   un pack dérivé du seul chiffre recommandé via `tierForBudget()` dans `tarifs.ts` (`budgetRange`
   par pack), jamais d'une grille dupliquée, pour qu'il reste toujours aligné sur le montant affiché.
-  La rentabilité se compare à la **marge** du client (`valeur x marge`), pas à son chiffre
-  d'affaires. Les 18 marges de `defaults.json` sont des estimations à valider. Le composant accepte `variant="compact"` pour être posé dans une section d'une
+  Le contrôle de rentabilité est **réservé au mode expert** : il repose sur la valeur d'un client,
+  que le mode simple ne demande pas (deux questions, pas une de plus). Quand il s'applique, il se
+  compare à la **marge** du client (`valeur x marge`), jamais à son chiffre d'affaires, et reste
+  facultatif : aucun message tant que la valeur n'est pas renseignée. En e-commerce, une marge
+  sous 15 % coupe la recommandation de pack. **Sens du coussin de rentabilité** : le budget
+  e-commerce se calcule sur le SEUIL d'équilibre, jamais sur un objectif plus ambitieux. Viser un
+  meilleur ROAS ferait *baisser* le budget, donc sous-provisionnerait la campagne en pariant sur sa
+  performance. Le chiffre affiché est le plafond à engager (dépenser plus ferait passer le retour
+  sous le seuil), et le coussin de 30 % sert à l'autre bout, pour chiffrer ce que coûterait une
+  campagne qui surperforme. Le **taux de réachat** (mode expert) agit sur le
+  calcul, pas seulement sur le texte : un client qui rachète rapportant au-delà de sa première
+  commande, il abaisse le ROAS exigé sur l'acquisition (`100 / marge / (1 + réachat)`) et relève
+  donc le budget engageable. C'est aussi lui qui peut lever le garde-fou de marge faible, exactement
+  l'échappatoire que le message de ce garde-fou désigne. Le ROAS du mode expert se recale sur la
+  valeur déduite dès qu'on touche à la marge ou au réachat. Les 18 marges de `defaults.json` sont des estimations à valider. Le composant accepte `variant="compact"` pour être posé dans une section d'une
   page existante. Mode expert : `?pro=1` ou le bouton en bas (outil de vente, non indexé via le
   canonique sans paramètre).
 
@@ -90,7 +129,17 @@ Comprendre ces flux transversaux avant d'éditer :
   budget, et `budgetRange` de chaque pack (consommé par le calculateur).
   Prix validés (`pricingValidated: true`, brief pricing 2026-08). Un `stripeLink`
   vide = le CTA du pack renvoie vers `/contact?pack=<id>` (pré-sélection du budget).
+- **ChatGPT Ads** : offre séparée (`chatgptAds` dans `tarifs.ts`), un seul pack tout compris, sans
+  rapport avec la grille Google Ads qui se choisit sur le budget. Le tarif de lancement est une
+  **remise à durée limitée** : 240.-/mois et 150.- de setup jusqu'au 31.12.2026, puis 480.-/mois et
+  300.- de setup. Ce doublement doit rester écrit noir sur blanc partout où l'offre est présentée
+  (page, `/pricing.txt`, `llms.txt`), sinon l'offre devient déloyale. Deux mentions obligatoires,
+  `chatgptPromoNote` et `chatgptBetaNote` : le canal est récent, **aucun résultat n'est garanti** et
+  aucun chiffre de performance ne doit être promis.
 - **Ton** : langage simple, sans jargon marketing, sur les pages principales. Le conserver.
+  Le lecteur est **toujours vouvoyé**, y compris dans les aides du calculateur : ne jamais le
+  désigner à la troisième personne (« le client », « le prospect »), même dans le mode expert qui
+  sert d'outil de vente. Le mot « client » n'y désigne que les clients du lecteur.
 - **Jamais d'em-dash (le caractère « — »)** : interdit partout, sans exception : contenus des
   pages, FAQ, meta descriptions, données (`src/data/`), `llms.txt`, articles de blog, CGV,
   commentaires de code et docs. Reformuler avec un deux-points, une virgule, un point ou des
@@ -104,7 +153,7 @@ Planner (juil. 2026) :
 
 | Page | Mot-clé principal | Vol. · concurrence |
 |---|---|---|
-| `/services/chatgpt-ads` | **chatgpt ads** (priorité #1, drapeau early-mover) | 40/mo · faible · +400 %/an |
+| `/services/chatgpt-ads` | **chatgpt ads** (priorité #1, page de destination des annonces payantes) | 40/mo · faible · +400 %/an |
 | `/services/google-ads` | **gestion google ads** | 20/mo · faible |
 | `/` (accueil) | **agence google ads** + « Suisse romande » | 10/mo (+ cluster « publicité google » 20/mo) |
 | `/calculateur-budget` | **calculateur budget google ads** (+ « budget google ads suisse ») | non chiffré · intention outil |
@@ -138,8 +187,9 @@ sans redirection), ce qui impose trois choses à ne pas casser : poster sur un c
 le champ caché `form-name` qui route la soumission. Anti-spam : honeypot Netlify
 (`netlify-honeypot="bot-field"`).
 
-**Liste d'attente (`/services/chatgpt-ads`) : Formspree**, via `PUBLIC_FORMSPREE_WAITLIST_ID`
-dans `.env`. ID vide = le formulaire affiche un avertissement et n'envoie rien.
+**Demande d'accès ChatGPT Ads (`/services/chatgpt-ads`) : Netlify Forms** également,
+`name="chatgpt-ads"` (`EarlyBirdForm.astro`). Mêmes contraintes que ci-dessus. Les deux formulaires
+doivent apparaître dans « Forms » côté Netlify après le déploiement.
 
 ## Déploiement
 
@@ -155,10 +205,12 @@ resterait possible, mais il faudrait rebrancher ce formulaire. Définir l'URL de
       mesures réelles : ce sont aujourd'hui des ordres de grandeur d'illustration.
 - [ ] Compléter les **bios des associés** (`src/pages/agence.astro`).
 - [ ] Compléter **mentions légales** et **politique de confidentialité** (IDE, hébergeur, juriste).
+- [ ] Mettre en place le **bandeau de consentement** avant la mise en ligne : Google Tag Manager
+      (`site.gtmId`) est chargé sur toutes les pages, la politique de confidentialité l'annonce et
+      renvoie à ce bandeau. Vider `gtmId` désactive tout le chargement.
 - [ ] Renseigner le **numéro de téléphone** réel (`src/data/site.ts`).
 - [ ] Activer **Forms > Enable form detection** sur le site Netlify, puis envoyer une
       soumission de test depuis `/contact` pour vérifier qu'elle arrive bien.
-- [ ] Configurer l'**endpoint Formspree** de la liste d'attente (`.env`).
 - [ ] Exporter une **OG image PNG 1200×630** (compatibilité LinkedIn/X) et remplacer le défaut
       `public/og-default.svg` dans `src/components/seo/SEOHead.astro`.
 
