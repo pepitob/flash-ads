@@ -94,7 +94,7 @@ import { ui } from "../i18n/fr";
     z-index: 50;
     backdrop-filter: saturate(180%) blur(12px);
     background: rgba(255, 255, 255, .9);
-    border-bottom: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--rule, var(--hairline));
   }
   .nav {
     display: flex;
@@ -110,7 +110,7 @@ import { ui } from "../i18n/fr";
   .nav-links > a,
   .nav-trigger {
     text-decoration: none;
-    color: var(--ink);
+    color: var(--on-strong, var(--ink));
     font-size: 15px;
     font-weight: 500;
     opacity: .78;
@@ -140,10 +140,10 @@ import { ui } from "../i18n/fr";
     top: calc(100% + 12px);
     left: -14px;
     min-width: 232px;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--surface-on, var(--paper));
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: 14px;
-    box-shadow: var(--shadow);
+    box-shadow: var(--shadow-header);
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -170,7 +170,7 @@ import { ui } from "../i18n/fr";
   }
   .dropdown a {
     text-decoration: none;
-    color: var(--ink);
+    color: var(--on-strong, var(--ink));
     font-size: 14.5px;
     font-weight: 500;
     opacity: .82;
@@ -188,9 +188,9 @@ import { ui } from "../i18n/fr";
     gap: 5px;
     width: 42px;
     height: 42px;
-    border: 1px solid var(--hairline);
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: 11px;
-    background: var(--paper);
+    background: var(--surface-on, var(--paper));
     cursor: pointer;
   }
   .burger span {
@@ -206,7 +206,7 @@ import { ui } from "../i18n/fr";
   .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
   .burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-  .mobile-menu { border-bottom: 1px solid var(--hairline); background: var(--paper); }
+  .mobile-menu { border-bottom: 1px solid var(--rule, var(--hairline)); background: var(--surface-on, var(--paper)); }
   .mobile-menu nav {
     display: flex;
     flex-direction: column;
@@ -215,13 +215,13 @@ import { ui } from "../i18n/fr";
     margin: 0 auto;
     padding: 12px 28px 22px;
   }
-  .mobile-menu a {
+  .mobile-menu a:not(.btn) {
     text-decoration: none;
-    color: var(--ink);
+    color: var(--on-strong, var(--ink));
     font-size: 16px;
     font-weight: 500;
     padding: 12px 4px;
-    border-bottom: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--rule, var(--hairline));
   }
   .mobile-sub { display: flex; flex-direction: column; }
   .mobile-sub .sub-link {
@@ -229,9 +229,9 @@ import { ui } from "../i18n/fr";
     font-weight: 500;
     opacity: .72;
     padding: 11px 4px 11px 18px;
-    border-bottom: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--rule, var(--hairline));
   }
-  .mobile-sub .sub-link::before { content: "↳"; margin-right: 9px; color: var(--flash-deep); opacity: .8; }
+  .mobile-sub .sub-link::before { content: "↳"; margin-right: 9px; color: var(--accent-on, var(--accent)); opacity: .8; }
   .mobile-menu .mobile-cta {
     border-bottom: none;
     justify-content: center;

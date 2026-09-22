@@ -18,7 +18,7 @@ const { googlePartner } = site;
   href={googlePartner.url}
   target="_blank"
   rel="noopener noreferrer"
-  class:list={["gp-badge", className]}
+  class:list={["gp-badge", "edge-sm", className]}
   style={`--gp-h:${height}px`}
   aria-label="Flash Ads est une agence Google Partner, voir le profil officiel"
 >
@@ -32,6 +32,6 @@ const { googlePartner } = site;
 </a>
 
 <style>
-  .gp-badge { display: inline-flex; line-height: 0; }
+  .gp-badge { display: inline-flex; line-height: 0; border-radius: var(--r); background: var(--fa-white); padding: 4px; }
   .gp-badge img { height: var(--gp-h, 96px); width: auto; }
 </style>

@@ -64,15 +64,15 @@ const FORM_NAME = "chatgpt-ads";
   .eb-wrap { max-width: 620px; }
   .eb-form { display: flex; flex-direction: column; gap: 16px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--ink); }
+  label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--on-strong, var(--ink)); }
   input, textarea {
     font-family: var(--font-body);
     font-size: 15px;
     padding: 12px 14px;
-    border: 1px solid var(--hairline);
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: 11px;
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--surface-on, var(--paper));
+    color: var(--on-strong, var(--ink));
     width: 100%;
   }
   input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring-accent); }
@@ -81,7 +81,7 @@ const FORM_NAME = "chatgpt-ads";
   .eb-form .btn { align-self: flex-start; margin-top: 4px; }
   .form-success {
     background: rgba(37, 99, 255, .06);
-    border: 1px solid var(--hairline);
+    border: 1px solid var(--rule, var(--hairline));
     border-left: 3px solid var(--accent);
     border-radius: 12px;
     padding: 16px 18px;

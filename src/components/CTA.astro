@@ -1,7 +1,7 @@
 ---
 /**
- * Bloc CTA final - le SEUL moment gradient "bold" autorisé (fond encre +
- * lueur violette). Réutilisé en bas des pages.
+ * Bloc CTA final. C'est la bande bleue de fin de page : le fond porte la
+ * couleur, le bloc intérieur n'est plus une carte posée dessus.
  */
 import { ui } from "../i18n/fr";
 
@@ -23,9 +23,9 @@ const {
 } = Astro.props;
 ---
 
-<section class="cta-section">
+<section class="cta-section band band--night">
   <div class="wrap">
-    <div class="final reveal">
+    <div class="final">
       <h2 class="display">{title}</h2>
       <p>{text}</p>
       <div class="cta-row">
@@ -37,5 +37,5 @@ const {
 </section>
 
 <style>
-  .cta-section { padding-top: 0; }
+  .cta-section { text-align: center; }
 </style>

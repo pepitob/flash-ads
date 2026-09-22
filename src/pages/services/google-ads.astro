@@ -90,7 +90,7 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
-  <section class="page-hero">
+  <section class="page-hero band band--tint">
     <div class="wrap">
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité Google</span>
@@ -117,7 +117,7 @@ const jsonLd = [
   </section>
 
   <!-- BÉNÉFICES -->
-  <section>
+  <section class="band band--paper">
     <div class="wrap">
       <SectionHead
         eyebrow="Ce que vous y gagnez"
@@ -125,17 +125,17 @@ const jsonLd = [
         text="On pilote vos campagnes sur ce qui compte vraiment : combien de clients ça vous amène, et à quel prix."
       />
       <div class="cards3">
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 17l6-6 4 4 8-8" /><path d="M21 7v6h-6" /></svg></div>
           <h3>Plus de demandes</h3>
           <p>Vos annonces apparaissent au moment exact où les gens cherchent ce que vous proposez. Vous touchez des personnes vraiment intéressées.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg></div>
           <h3>Un coût maîtrisé</h3>
           <p>On surveille combien vous coûte chaque nouvelle demande, et on coupe ce qui ne rapporte pas. Votre argent va là où il fait venir des clients.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" /></svg></div>
           <h3>Tout est clair</h3>
           <p>Rapports simples, accès à votre compte, prix affiché. Vous savez ce qu'on fait, ce que ça coûte, et ce que ça vous rapporte.</p>
@@ -145,9 +145,9 @@ const jsonLd = [
   </section>
 
   <!-- COMMENT ON FAIT -->
-  <section class="process">
+  <section class="process band band--night">
     <div class="wrap process-grid">
-      <div class="reveal">
+      <div>
         <span class="eyebrow">Comment on fait</span>
         <h2 class="display">On regarde, on installe, on lance, on améliore.</h2>
         <p class="muted">
@@ -157,7 +157,7 @@ const jsonLd = [
         </p>
         <a href="/agence#methode" class="btn btn-ghost process-link">{ui.cta.discoverAgency} <span class="arrow" aria-hidden="true">→</span></a>
       </div>
-      <ul class="proc-list reveal">
+      <ul class="proc-list">
         <li><span class="mono no">01</span> On regarde votre situation, gratuitement</li>
         <li><span class="mono no">02</span> On installe de quoi voir ce qui marche</li>
         <li><span class="mono no">03</span> On crée et on lance vos annonces</li>
@@ -167,7 +167,7 @@ const jsonLd = [
   </section>
 
   <!-- TARIFS -->
-  <section id="tarifs">
+  <section id="tarifs" class="band band--paper">
     <div class="wrap">
       <SectionHead
         eyebrow="Nos prix"
@@ -183,7 +183,7 @@ const jsonLd = [
   </section>
 
   <!-- RÉSULTATS CLIENTS -->
-  <section>
+  <section class="band band--tint">
     <div class="wrap">
       <SectionHead
         eyebrow="Résultats clients"
@@ -212,7 +212,7 @@ const jsonLd = [
   </section>
 
   <!-- FAQ -->
-  <FAQ items={faqItems} title="Vos questions sur la publicité Google" eyebrow="FAQ · Publicité Google" />
+  <FAQ items={faqItems} title="Vos questions sur la publicité Google" eyebrow="FAQ · Publicité Google" band="paper" />
 
   <CTA
     title="On regarde votre situation, gratuitement ?"
@@ -221,30 +221,30 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
-  .pricing-tool { font-size: 14px; color: var(--muted); text-align: center; margin-top: 22px; }
-  .pricing-tool a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .pricing-tool { font-size: 14px; color: var(--muted-on, var(--muted)); text-align: center; margin-top: 22px; }
+  .pricing-tool a { color: var(--accent-on, var(--accent)); text-decoration: none; font-weight: 500; }
   .pricing-tool a:hover { text-decoration: underline; }
   .page-hero { padding: 72px 0 20px; }
-  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
-  .crumbs a { text-decoration: none; color: var(--muted); }
-  .crumbs a:hover { color: var(--flash-deep); }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
+  .crumbs a:hover { color: var(--accent-on, var(--accent)); }
   .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 16em; }
   .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
   .hero-badge { display: flex; align-items: center; gap: 14px; margin-top: 28px; }
-  .hero-badge .mono { font-size: 12px; letter-spacing: .06em; color: var(--muted); }
+  .hero-badge .mono { font-size: 12px; letter-spacing: .06em; color: var(--muted-on, var(--muted)); }
 
-  .muted { color: var(--muted); font-size: 16px; margin-top: 14px; max-width: 34em; }
+  .muted { color: var(--muted-on, var(--muted)); font-size: 16px; margin-top: 14px; max-width: 34em; }
   .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
   .process h2 { font-size: clamp(26px, 3vw, 38px); font-weight: 600; margin-top: 16px; }
   .process-link { margin-top: 24px; }
   .proc-list { list-style: none; display: flex; flex-direction: column; }
   .proc-list li {
     display: flex; gap: 16px; align-items: baseline;
-    padding: 18px 0; border-top: 1px solid var(--hairline);
+    padding: 18px 0; border-top: 1px solid var(--rule, var(--hairline));
     font-size: 16px;
   }
-  .proc-list li:last-child { border-bottom: 1px solid var(--hairline); }
-  .proc-list .no { color: var(--flash-deep); font-size: 13px; flex: 0 0 auto; }
+  .proc-list li:last-child { border-bottom: 1px solid var(--rule, var(--hairline)); }
+  .proc-list .no { color: var(--accent-on, var(--accent)); font-size: 13px; flex: 0 0 auto; }
 
   @media (max-width: 900px) {
     .process-grid { grid-template-columns: 1fr; gap: 36px; }

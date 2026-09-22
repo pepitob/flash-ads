@@ -13,7 +13,7 @@ interface Props {
 const { metric, who, context, action } = Astro.props;
 ---
 
-<div class="case reveal">
+<div class="case">
   <div class="metric">{metric}</div>
   <div class="who">{who}</div>
   <p><slot /></p>
@@ -22,6 +22,6 @@ const { metric, who, context, action } = Astro.props;
 </div>
 
 <style>
-  .detail { font-size: 13.5px; color: var(--muted); margin-top: 8px; }
-  .detail b { color: var(--ink); font-weight: 600; }
+  .detail { font-size: 13.5px; color: var(--muted-on, var(--muted)); margin-top: 8px; }
+  .detail b { color: var(--on-strong, var(--ink)); font-weight: 600; }
 </style>

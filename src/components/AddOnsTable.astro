@@ -35,6 +35,8 @@ import { addOns } from "../data/tarifs";
 </div>
 
 <style>
+  /* Pas de cadre : c'est une liste de compléments, pas un quatrième objet à
+     mettre en concurrence avec les cartes de packs au-dessus. */
   .addons { max-width: 720px; margin: 44px auto 0; }
   .addons h3 {
     font-family: var(--font-display);
@@ -44,12 +46,12 @@ import { addOns } from "../data/tarifs";
     margin-bottom: 6px;
   }
   .addons-list { list-style: none; margin: 0; padding: 0; }
-  .addons-list li { padding: 14px 0; border-bottom: 1px solid var(--hairline); }
-  .addons-list li:first-child { border-top: 1px solid var(--hairline); }
+  .addons-list li { padding: 14px 0; border-bottom: 1px solid var(--rule, var(--hairline)); }
+  .addons-list li:first-child { border-top: 1px solid var(--rule, var(--hairline)); }
   .addon-main { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
   .addon-label {
     font-size: 14.5px;
-    color: var(--ink);
+    color: var(--on-strong, var(--ink));
     font-weight: 500;
     display: inline-flex;
     align-items: center;
@@ -71,9 +73,9 @@ import { addOns } from "../data/tarifs";
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 14.5px;
-    color: var(--ink);
+    color: var(--on-strong, var(--ink));
     white-space: nowrap;
   }
-  .addon-price small { font-weight: 500; font-size: 12px; color: var(--muted); }
-  .addon-note { font-size: 12.5px; color: var(--muted); margin-top: 5px; max-width: 44em; line-height: 1.55; }
+  .addon-price small { font-weight: 500; font-size: 12px; color: var(--muted-on, var(--muted)); }
+  .addon-note { font-size: 12.5px; color: var(--muted-on, var(--muted)); margin-top: 5px; max-width: 44em; line-height: 1.55; }
 </style>

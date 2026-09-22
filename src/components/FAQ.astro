@@ -9,21 +9,23 @@ interface Props {
   items: FaqItem[];
   title?: string;
   eyebrow?: string;
+  /** Fond de la bande. À régler pour que l'alternance de la page reste juste. */
+  band?: "paper" | "tint";
 }
-const { items, title = "Questions fréquentes", eyebrow = "FAQ" } = Astro.props;
+const { items, title = "Questions fréquentes", eyebrow = "FAQ", band = "tint" } = Astro.props;
 const schema = faqSchema(items);
 ---
 
-<section class="faq-section">
+<section class:list={["faq-section", "band", `band--${band}`]}>
   <div class="wrap faq-layout">
-    <div class="faq-intro reveal">
+    <div class="faq-intro">
       <span class="eyebrow">{eyebrow}</span>
       <h2 class="display">{title}</h2>
     </div>
     <div class="faq-list">
       {
         items.map((it) => (
-          <details class="faq-item reveal">
+          <details class="faq-item">
             <summary>
               <span>{it.question}</span>
               <span class="chev" aria-hidden="true">+</span>
@@ -48,8 +50,20 @@ const schema = faqSchema(items);
   }
   .faq-intro h2 { font-size: clamp(28px, 3.4vw, 42px); font-weight: 600; margin-top: 16px; }
   .faq-list { width: 100%; }
-  .faq-item { border-bottom: 1px solid var(--hairline); }
-  .faq-item:first-child { border-top: 1px solid var(--hairline); }
+  .faq-item { border-bottom: 1px solid var(--rule, var(--hairline)); }
+  .faq-item:first-child { border-top: 1px solid var(--rule, var(--hairline)); }
+  /* Seul l'item OUVERT prend le trait et l'ombre : fermée, une liste de dix
+     questions encadrées ferait dix boîtes empilées. */
+  .faq-item[open] {
+    background: var(--surface-on, var(--paper));
+    border: var(--edge-w) solid var(--edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-edge);
+    padding: 0 18px;
+    margin: 10px 0;
+  }
+  .faq-item[open] + .faq-item { border-top: 1px solid var(--rule, var(--hairline)); }
+  .faq-item summary:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
   .faq-item summary {
     list-style: none;
     cursor: pointer;
@@ -64,18 +78,17 @@ const schema = faqSchema(items);
     letter-spacing: -.01em;
   }
   .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary:focus-visible { outline: 2px solid var(--flash-deep); outline-offset: 4px; border-radius: 6px; }
   .chev {
     flex: 0 0 auto;
     font-family: var(--font-mono);
     font-size: 22px;
-    color: var(--flash-deep);
+    color: var(--accent-on, var(--accent));
     transition: transform .2s ease;
     line-height: 1;
   }
   .faq-item[open] .chev { transform: rotate(45deg); }
   .faq-answer { padding: 0 4px 22px; }
-  .faq-answer p { color: var(--muted); font-size: 16px; max-width: 70ch; }
+  .faq-answer p { font-size: 16px; max-width: 70ch; }
 
   @media (max-width: 900px) {
     .faq-layout { grid-template-columns: 1fr; gap: 32px; }

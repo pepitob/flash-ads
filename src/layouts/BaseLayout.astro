@@ -67,23 +67,5 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`}
     </main>
     <Footer />
 
-    <!-- Reveal au scroll (IntersectionObserver). Respecte prefers-reduced-motion via CSS. -->
-    <script>
-      const els = document.querySelectorAll<HTMLElement>(".reveal");
-      if (els.length) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                e.target.classList.add("in");
-                io.unobserve(e.target);
-              }
-            });
-          },
-          { threshold: 0.12 },
-        );
-        els.forEach((el) => io.observe(el));
-      }
-    </script>
   </body>
 </html>
