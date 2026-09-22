@@ -127,11 +127,30 @@ jamais un seuil élevé.
 - **Design system verrouillé** (Flash Ads Design System, fondations dans
   `src/styles/global.css` ; re-synchronisation via le skill `/design-sync`) : accent uni
   **Flash Blue `#2563FF`** ; **rose `#FF2E8B`** réservé aux eyebrows, coches, badge « Le plus
-  choisi » et point « en direct » ; gradient signature bleu→rose (vertical sur l'éclair,
-  horizontal sur mots et chiffres) **sans jamais s'attarder dans le violet** (look
-  « IA/crypto » à éviter). Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
-  **pas de monospace**. Sections sombres : midnight `#0d1020` avec lueur rose. Cartes 16px,
-  boutons 8px.
+  choisi » et point « en direct », et **ne porte jamais de texte blanc** (ratio 3,5:1 : son
+  texte est `--fa-navy`). Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
+  **pas de monospace**. **Aucun dégradé dans le système** : le gradient bleu→rose ne subsiste
+  que dans le `<linearGradient>` interne au SVG du logo (`Brand.astro`). Ne jamais réintroduire
+  un `linear-gradient` sur un texte, un fond, un filet ou une bordure. **Aucune ombre** non
+  plus, sauf sous le header collant (`--shadow-header`) : la séparation se fait par une bordure
+  1px `--rule`. **Tous les rayons à 4px**, seule la pilule (`--radius-pill`) fait exception.
+- **Rythme par bandes de section** : la page alterne des fonds (`.band` + `.band--paper` /
+  `--tint` / `--blue` / `--night`) au lieu d'être une nappe blanche. `.band` porte le rythme
+  vertical, le modificateur porte la couleur : un bloc interne peut donc prendre un
+  `band--night` seul. Chaque bande expose ses couleurs en variables (`--on`, `--on-strong`,
+  `--on-faint`, `--muted-on`, `--accent-on`, `--eyebrow-on`, `--rule`, `--surface-on`) et
+  **les composants lisent ces variables**, jamais un littéral ni un token brut :
+  `color: var(--muted-on, var(--muted))`. Le repli garde le rendu identique hors bande
+  (header). Un îlot clair posé sur une bande colorée prend `.surface-paper`, qui redéclare
+  ces variables pour lui-même (aperçu d'annonce du hero, carte du formulaire de contact).
+  Contrastes imposés : sur `--fa-blue` et `--fa-midnight`, texte blanc ou `#d2dfff`, jamais
+  `--fa-blue` ; l'accent sur fond sombre est `--fa-blue-light`. Cartographie de la home :
+  header paper, hero blue, stats night, logos paper, réponse directe tint, problème paper
+  (diptyque night / blue), pourquoi night, services paper, tarifs tint, méthode blue,
+  témoignages paper, résultats night, FAQ tint, CTA blue, footer night. Jamais deux bandes
+  identiques qui se suivent, sauf hero + stats (bloc sombre continu voulu).
+- **Pas d'animation d'apparition au scroll** : ce sont les bandes qui structurent la page.
+  Seules subsistent les micro-transitions de survol (200 ms au plus).
 - **Contenu publié** : les prix (`pricingValidated`), les **avis Google** et les **logos clients**
   (`src/data/temoignages.ts` + `public/logos/`) sont réels. Les **chiffres de la section
   Résultats** (home + page Publicité Google) sont en revanche des ordres de grandeur

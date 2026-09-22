@@ -26,22 +26,18 @@
   --font-display: "Space Grotesk Variable", system-ui, sans-serif;
   --font-body: "Inter Variable", system-ui, sans-serif;
 
-  --radius-card: 16px;
+  --radius-card: 4px;
 }
 
 :root {
   /* ── Brand primaries ── */
   --fa-blue: #2563ff;
-  --fa-blue-bright: #2e6bff;
-  --fa-blue-light: #5b9cff;
+  --fa-blue-light: #5b9cff;   /* accent sur fond sombre, jamais --fa-blue */
   --fa-pink: #ff2e8b;
-  --fa-pink-deep: #ff1e84;
-  --fa-pink-light: #ff6bb0;
+  --fa-tint: #dce6ff;         /* bleu de marque dilué : fond clair coloré */
 
-  /* ── Signature gradient (blue → pink, no purple) ── */
-  --grad: linear-gradient(180deg, #2563ff 0%, #2e6bff 40%, #ff2e8b 60%, #ff1e84 100%);
-  --grad-h: linear-gradient(90deg, #2563ff 0%, #2e6bff 40%, #ff2e8b 60%, #ff1e84 100%);
-  --grad-bright: linear-gradient(180deg, #5b9cff 0%, #6aa0ff 40%, #ff6bb0 60%, #ff5aa6 100%);
+  /* Aucun dégradé dans le système : le seul qui subsiste est le <linearGradient>
+     interne au SVG du logo (Brand.astro). Ne pas réintroduire de token ici. */
 
   /* ── Neutrals ── */
   --fa-navy: #161a28;
@@ -49,7 +45,7 @@
   --fa-slate: #8a90a0;
   --fa-slate-light: #9aa0b4;
   --fa-smoke: #eceef2;
-  --fa-mist: #f0f1f4;
+  --fa-white: #ffffff;
   --fa-offwhite: #f6f7fa;
 
   /* ── Semantic (+ back-compat aliases used across components/pages) ── */
@@ -74,21 +70,21 @@
   --blue: #2563ff;
   --pink: #ff2e8b;
 
-  /* ── Shadows (cool navy-tinted) ── */
-  --shadow: 0 1px 3px rgba(20, 24, 40, .10), 0 10px 30px rgba(20, 24, 40, .05);
-  --shadow-lg: 0 4px 12px rgba(20, 24, 40, .08), 0 24px 48px rgba(20, 24, 40, .08);
-  --shadow-accent: 0 8px 24px rgba(37, 99, 255, .22);
-  --shadow-flash: 0 8px 24px rgba(37, 99, 255, .22); /* back-compat */
+  /* ── Ombres ──
+     Une seule subsiste, et uniquement sous le header collant : ailleurs, la
+     séparation se fait par une bordure 1px --fa-smoke. --ring-accent reste
+     pour le focus clavier, c'est un indicateur d'accessibilité, pas un effet. */
+  --shadow-header: 0 1px 3px rgba(20, 24, 40, .10), 0 10px 30px rgba(20, 24, 40, .05);
   --ring-accent: 0 0 0 3px rgba(37, 99, 255, .25);
 
-  /* ── Radii ── */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
+  /* ── Rayons : tous à 4px, seule la pilule fait exception ── */
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 4px;
   --radius-pill: 999px;
-  --r: 16px;                  /* back-compat: card radius */
+  --r: 4px;                   /* back-compat: card radius */
 
   /* ── Motion ── */
   --ease-out: cubic-bezier(.16, 1, .3, 1);
@@ -110,14 +106,14 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
   background: var(--canvas);
-  color: var(--body);
+  color: var(--on, var(--body));
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 a { color: inherit; }
 img { display: block; max-width: 100%; }
-h1, h2, h3, h4, .display { color: var(--ink); }
+h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 
 /* ── Layout helpers ─────────────────────────────────────────── */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
@@ -132,17 +128,14 @@ h1, h2, h3, h4, .display { color: var(--ink); }
   font-weight: 600;
   letter-spacing: var(--ls-wide);
   text-transform: uppercase;
-  color: var(--fa-pink);
+  color: var(--eyebrow-on, var(--fa-pink));
   display: inline-block;
 }
 
-/* Signature gradient - ONLY via these classes (blue → pink) */
+/* Mot mis en avant : aplat, jamais un dégradé. La couleur vient de la bande
+   (--accent-on), pour rester lisible aussi bien sur fond clair que sombre. */
 .flash-word,
-.text-gradient {
-  background: var(--grad-h);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.bg-gradient-signature { background: var(--grad); }
+.text-gradient { color: var(--accent-on, var(--accent)); }
 
 /* ── Buttons - rounded rectangles (radius-md), not pills ─────── */
 .btn {
@@ -153,84 +146,189 @@ h1, h2, h3, h4, .display { color: var(--ink); }
   transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-normal) var(--ease-out), background var(--dur-normal) var(--ease-out), color var(--dur-normal) var(--ease-out);
 }
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-accent); transform: translateY(-1px); }
-.btn-primary:active { transform: scale(.98); }
-.btn-ghost { background: transparent; color: var(--ink); border-color: #d6dae3; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:active { opacity: .9; }
+.btn-ghost { background: transparent; color: var(--on-strong, var(--ink)); border-color: #d6dae3; }
 .btn-ghost:hover { border-color: var(--ink); background: var(--surface-subtle); }
 .btn .arrow { transition: transform .18s ease; }
 .btn:hover .arrow { transform: translateX(3px); }
 
+
+/* ── Bandes de section ─────────────────────────────────────────
+   Le rythme de la page vient du fond, plus de l'espace blanc. Chaque bande
+   expose ses couleurs en variables ; les composants enfants s'y branchent et
+   restent donc lisibles dans les quatre bandes sans classe supplémentaire.
+
+     --on          texte courant (paragraphes)
+     --on-strong   titres
+     --on-faint    labels, méta
+     --accent-on   accent lisible SUR cette bande
+     --eyebrow-on  eyebrow (rose du design system, sauf sur bleu)
+     --rule        bordures et filets
+     --surface-on  fond d'une carte posée sur la bande
+
+   Contrastes imposés : sur blue et night le texte est blanc ou #d2dfff, et
+   l'accent est --fa-blue-light, jamais --fa-blue (illisible sur du bleu).
+
+   `.band` ne porte QUE le rythme vertical, les modificateurs ne portent que la
+   couleur : un bloc interne (une carte du duo problème/solution) peut ainsi
+   prendre un `band--night` seul, sans hériter du padding d'une section.
+
+   Densité : environ 30 % de moins que les 84px d'avant. Le clamp plafonne à
+   64px, volontairement sous le 7vw du brief qui aurait AUGMENTÉ le padding
+   desktop (89px à 1280px) au lieu de le réduire. */
+.band { padding-block: clamp(40px, 4.6vw, 64px); }
+
+.band--paper {
+  background: var(--fa-white);
+  --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
+  --rule: var(--fa-smoke); --surface-on: var(--fa-white);
+  color: var(--on);
+}
+.band--tint {
+  background: var(--fa-tint);
+  --on: var(--body); --on-strong: var(--ink); --on-faint: #6b7590;
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: #6b7590;
+  --rule: #c3d3fb; --surface-on: var(--fa-white);
+  color: var(--on);
+}
+.band--blue {
+  background: var(--fa-blue);
+  --on: #d2dfff; --on-strong: #fff; --on-faint: #a9c0ff;
+  --accent-on: #fff; --eyebrow-on: #fff; --muted-on: #c3d6ff;
+  --rule: rgba(255, 255, 255, .24); --surface-on: rgba(255, 255, 255, .08);
+  color: var(--on);
+}
+.band--night {
+  background: var(--fa-midnight);
+  --on: var(--fa-slate-light); --on-strong: #fff; --on-faint: var(--fa-slate);
+  --accent-on: var(--fa-blue-light); --eyebrow-on: var(--fa-pink); --muted-on: var(--fa-slate);
+  --rule: var(--border-dark); --surface-on: var(--surface-dark-card);
+  color: var(--on);
+}
+
 /* ── Sections ───────────────────────────────────────────────── */
-section { padding: 84px 0; }
-.sec-head { max-width: 34em; margin-bottom: 44px; }
+section { padding-block: clamp(40px, 4.6vw, 64px); }
+.sec-head { max-width: 34em; margin-bottom: 32px; }
 .sec-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 14px; }
-.sec-head p { color: var(--muted); font-size: 17px; margin-top: 14px; }
+.sec-head p { color: var(--muted-on, var(--muted)); font-size: 17px; margin-top: 14px; }
 
 /* ── Cards (3-up grids: services, cases) ────────────────────── */
 .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .card {
-  background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 32px;
+  background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--radius-xl); padding: 32px;
   transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out), border-color .2s var(--ease-out); position: relative;
 }
-.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: transparent; }
+.card:hover { border-color: var(--ink); }
 .card .ico { width: 44px; height: 44px; border-radius: var(--radius-md); display: grid; place-items: center; background: rgba(37, 99, 255, .10); margin-bottom: 16px; }
-.card .ico svg { width: 20px; height: 20px; stroke: var(--accent); }
+.card .ico svg { width: 20px; height: 20px; stroke: var(--accent-on, var(--accent)); }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 19px; letter-spacing: -.01em; }
-.card p { color: var(--muted); font-size: 14.5px; margin-top: 9px; }
-.card .lnk { display: inline-flex; gap: 7px; align-items: center; margin-top: 16px; font-family: var(--font-display); font-weight: 600; font-size: 13.5px; color: var(--accent); text-decoration: none; }
+.card p { color: var(--muted-on, var(--muted)); font-size: 14.5px; margin-top: 9px; }
+.card .lnk { display: inline-flex; gap: 7px; align-items: center; margin-top: 16px; font-family: var(--font-display); font-weight: 600; font-size: 13.5px; color: var(--accent-on, var(--accent)); text-decoration: none; }
 .card .lnk .arrow { transition: transform .18s; }
 .card:hover .lnk .arrow { transform: translateX(3px); }
 
 /* ── Pricing ────────────────────────────────────────────────── */
 .price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
-.price { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 26px 24px; display: flex; flex-direction: column; position: relative; }
-.price.feat { border: 1.5px solid var(--accent); box-shadow: var(--shadow-lg); }
-.price .badge { position: absolute; top: 18px; right: 18px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
-.price .tier { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
-.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--ink); }
-.price .amt small { font-size: 14px; font-weight: 500; color: var(--muted); }
-.price .for { font-size: 13px; color: var(--muted); min-height: 40px; }
+.price { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--radius-xl); padding: 26px 24px; display: flex; flex-direction: column; position: relative; }
+.price.feat { border: 1.5px solid var(--accent); }
+.price .badge { position: absolute; top: 18px; right: 18px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fa-navy); background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
+.price .tier { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--on-faint, var(--faint)); }
+.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--on-strong, var(--ink)); }
+.price .amt small { font-size: 14px; font-weight: 500; color: var(--muted-on, var(--muted)); }
+.price .for { font-size: 13px; color: var(--muted-on, var(--muted)); min-height: 40px; }
 .price .rows { margin-top: 16px; display: flex; flex-direction: column; }
-.price .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--hairline-subtle); }
-.price .row .k { font-size: 12px; color: var(--muted); flex-shrink: 0; }
-.price .row .k sup { color: var(--fa-pink); cursor: help; }
-.price .row .v { font-size: 13px; color: var(--body); text-align: right; }
+.price .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rule, var(--hairline-subtle)); }
+.price .row .k { font-size: 12px; color: var(--muted-on, var(--muted)); flex-shrink: 0; }
+.price .row .k sup { color: var(--eyebrow-on, var(--fa-pink)); cursor: help; }
+.price .row .v { font-size: 13px; color: var(--on, var(--body)); text-align: right; }
 .price .btn { justify-content: center; margin-top: auto; }
-.price-note { font-size: 13px; color: var(--muted); text-align: center; margin-top: 24px; }
-.price-note b { color: var(--ink); }
+.price-note { font-size: 13px; color: var(--muted-on, var(--muted)); text-align: center; margin-top: 24px; }
+.price-note b { color: var(--on-strong, var(--ink)); }
 
 /* ── Method (numbered 01→04) ────────────────────────────────── */
 .method { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: start; }
 .steps { display: flex; flex-direction: column; }
-.step { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid var(--hairline); }
+.step { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid var(--rule, var(--hairline)); }
 .step:first-child { border-top: none; }
-.step .no { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--accent); padding-top: 2px; min-width: 24px; }
+.step .no { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--accent-on, var(--accent)); padding-top: 2px; min-width: 24px; }
 .step h4 { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
-.step p { color: var(--muted); font-size: 14px; margin-top: 5px; }
+.step p { color: var(--muted-on, var(--muted)); font-size: 14px; margin-top: 5px; }
 
 /* ── Case studies ───────────────────────────────────────────── */
 .cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.case { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 32px; box-shadow: var(--shadow); }
-.case .metric { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -.03em; line-height: 1; background: var(--grad-h); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.case .who { font-family: var(--font-display); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-top: 10px; }
-.case p { font-size: 14px; color: var(--muted); margin-top: 12px; }
+.case { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--radius-xl); padding: 32px; }
+.case .metric { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -.03em; line-height: 1; color: var(--accent-on, var(--accent)); }
+.case .who { font-family: var(--font-display); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--on-faint, var(--faint)); margin-top: 10px; }
+.case p { font-size: 14px; color: var(--muted-on, var(--muted)); margin-top: 12px; }
 
-/* ── Final CTA - midnight + pink glow (the one bold moment) ──── */
-.final { background: var(--surface-dark); border-radius: var(--radius-2xl); padding: 72px 48px; text-align: center; position: relative; overflow: hidden; }
-.final::before { content: ""; position: absolute; width: 480px; height: 480px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 46, 139, .18), transparent 65%); bottom: -260px; left: 50%; transform: translateX(-50%); }
-.final h2 { color: #fff; font-size: clamp(30px, 4vw, 42px); font-weight: 700; letter-spacing: -.025em; position: relative; max-width: 18em; margin: 0 auto; }
-.final p { color: var(--fa-slate-light); margin: 16px auto 0; max-width: 34em; position: relative; }
-.final .cta-row { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; justify-content: center; position: relative; }
-.final .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, .2); }
-.final .btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .06); }
+/* ── CTA final ──────────────────────────────────────────────────
+   Ce n'est plus une carte sombre posée sur du blanc : la bande qui l'englobe
+   porte la couleur, le bloc ne fait plus que centrer son contenu. */
+.final { text-align: center; }
+.final h2 { font-size: clamp(30px, 4vw, 42px); font-weight: 700; letter-spacing: -.025em; max-width: 18em; margin: 0 auto; }
+.final p { margin: 16px auto 0; max-width: 34em; }
+.final .cta-row { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; justify-content: center; }
 
-/* ── Reveal animations ──────────────────────────────────────────
-   Le contenu est visible PAR DÉFAUT : il n'est masqué que si le JavaScript est
-   là pour le révéler (classe `js` posée sur <html> par BaseLayout). Sans cette
-   garde, un script bloqué, en erreur ou simplement désactivé laissait toute la
-   page à `opacity: 0`, donc entièrement blanche. */
-.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
-.js .reveal.in { opacity: 1; transform: none; }
+/* Les animations d'apparition au scroll ont été retirées : ce sont les bandes
+   de couleur qui structurent désormais la page, et masquer le contenu en
+   attendant un observateur ne faisait que retarder sa lecture. La classe
+   `.reveal` reste posée sur le balisage mais n'a plus aucun effet. */
+
+/* ── Ce que l'indirection par variable ne sait pas dire ─────────
+   Presque tout se règle dans les composants (`var(--muted-on, var(--muted))`
+   et consorts). Ne restent ici que les cas où une bande change la NATURE d'un
+   élément, pas seulement sa teinte. */
+.band--tint, .band--blue, .band--night {
+  .card, .case, .price, .answer { background: var(--surface-on); }
+}
+.band--blue, .band--night {
+  .card .ico { background: rgba(255, 255, 255, .12); }
+  .card:hover { border-color: var(--on-strong); }
+  .price .row .k { opacity: .75; }
+  .answer-body :global(p), .answer-body :global(b) { color: var(--on-strong); }
+}
+
+/* Boutons sur bande colorée ou sombre. */
+.band--blue .btn-primary { background: #fff; color: var(--fa-blue); }
+.band--blue .btn-primary:hover { background: #e6edff; }
+.band--night .btn-primary { background: var(--fa-blue); color: #fff; }
+.band--night .btn-primary:hover { background: var(--fa-blue-light); color: var(--fa-navy); }
+.band--blue .btn-ghost, .band--night .btn-ghost { color: #fff; border-color: var(--rule); }
+.band--blue .btn-ghost:hover, .band--night .btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .10); }
+
+/* Îlot clair posé sur une bande colorée (l'aperçu d'annonce du hero, une carte
+   de formulaire) : il redéclare les variables pour lui-même, tout ce qu'il
+   contient redevient donc lisible sur blanc sans règle au cas par cas. */
+.surface-paper {
+  background: var(--fa-white);
+  --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
+  --rule: var(--fa-smoke); --surface-on: var(--fa-white);
+  color: var(--on);
+}
+
+/* Un îlot clair annule aussi l'inversion des boutons : sans cela, le bouton
+   blanc d'une bande bleue resterait blanc sur la carte blanche. */
+.surface-paper .btn-primary { background: var(--fa-blue); color: #fff; }
+.surface-paper .btn-primary:hover { background: var(--accent-hover); }
+.surface-paper .btn-ghost { color: var(--ink); border-color: #d6dae3; }
+.surface-paper .btn-ghost:hover { border-color: var(--ink); background: transparent; }
+
+/* Mot mis en avant sur une bande bleue : le titre y est déjà blanc, une simple
+   couleur ne le distinguerait plus. L'inversion (plaque blanche, texte bleu)
+   reste un aplat, pas un dégradé, et garde le couple de marque. */
+.band--blue .flash-word {
+  background: #fff;
+  color: var(--fa-blue);
+  padding: 0 .14em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Deux bandes de même famille qui se suivent : un filet évite la soudure. */
+.band--paper + .band--paper, .band--tint + .band--tint { border-top: 1px solid var(--rule); }
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1100px) {
@@ -239,7 +337,7 @@ section { padding: 84px 0; }
 @media (max-width: 900px) {
   .cards3, .cases { grid-template-columns: 1fr; }
   .method { grid-template-columns: 1fr; gap: 36px; }
-  section { padding: 60px 0; }
+  section, .band { padding-block: 40px; }
 }
 @media (max-width: 640px) {
   .price-grid { grid-template-columns: 1fr; }
@@ -248,6 +346,5 @@ section { padding: 84px 0; }
 /* ── Accessibility: respect reduced-motion ─────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .js .reveal { opacity: 1; transform: none; }
   html { scroll-behavior: auto; }
 }

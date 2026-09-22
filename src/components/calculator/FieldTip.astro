@@ -31,14 +31,14 @@ const { id, label, dataOut } = Astro.props;
   .tip-btn {
     width: 16px; height: 16px; padding: 0;
     border-radius: 50%;
-    border: 1px solid var(--hairline);
+    border: 1px solid var(--rule, var(--hairline));
     background: var(--surface-subtle);
-    color: var(--muted);
+    color: var(--muted-on, var(--muted));
     font-family: var(--font-display);
     font-size: 10px; font-weight: 700; line-height: 1;
     cursor: help;
   }
-  .tip-btn:hover, .tip-btn:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+  .tip-btn:hover, .tip-btn:focus-visible { border-color: var(--accent); color: var(--accent-on, var(--accent)); outline: none; }
 
   .tip-bubble {
     position: absolute;
@@ -54,7 +54,6 @@ const { id, label, dataOut } = Astro.props;
     line-height: 1.5;
     padding: 9px 12px;
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
     opacity: 0;
     visibility: hidden;
     transition: opacity var(--dur-fast) var(--ease-out);

@@ -8,11 +8,15 @@ const description =
 ---
 
 <BaseLayout title={title} description={description} path="/confidentialite" noindex>
-  <section class="legal">
+  <section class="legal-hero band band--blue">
     <div class="wrap">
       <span class="eyebrow">Protection des données</span>
       <h1 class="display">Politique de confidentialité</h1>
+    </div>
+  </section>
 
+  <section class="legal band band--paper">
+    <div class="wrap">
       <h2>Responsable du traitement</h2>
       <p>
         {site.name}, {site.city} ({site.region}), Suisse. Contact :
@@ -64,10 +68,12 @@ const description =
 </BaseLayout>
 
 <style>
-  .legal { padding: 72px 0; }
-  .legal h1 { font-size: clamp(32px, 4vw, 48px); font-weight: 600; margin: 16px 0 28px; }
+  .legal-hero { padding: 48px 0; }
+  .legal-hero h1 { font-size: clamp(32px, 4vw, 48px); font-weight: 600; margin-top: 14px; }
+  .legal { padding: 48px 0 56px; }
+  .legal h2:first-of-type { margin-top: 0; }
   .legal h2 { font-family: var(--font-display); font-size: 21px; font-weight: 600; margin: 34px 0 10px; }
-  .legal p { color: var(--ink); font-size: 16px; max-width: 60ch; line-height: 1.7; }
-  .legal a { color: var(--flash-deep); }
+  .legal p { color: var(--on-strong, var(--ink)); font-size: 16px; max-width: 60ch; line-height: 1.7; }
+  .legal a { color: var(--accent-on, var(--accent)); }
   .back { margin-top: 40px; }
 </style>

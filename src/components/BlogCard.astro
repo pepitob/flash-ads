@@ -12,7 +12,7 @@ const dateStr = pubDate.toLocaleDateString("fr-CH", { year: "numeric", month: "l
 const iso = pubDate.toISOString().slice(0, 10);
 ---
 
-<a href={href} class="blog-card reveal">
+<a href={href} class="blog-card">
   {category && <span class="cat mono">{category}</span>}
   <h3 class="display">{title}</h3>
   <p>{description}</p>
@@ -26,20 +26,20 @@ const iso = pubDate.toISOString().slice(0, 10);
   .blog-card {
     display: flex;
     flex-direction: column;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--surface-on, var(--paper));
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: var(--r);
     padding: 26px;
     text-decoration: none;
-    color: var(--ink);
+    color: var(--on-strong, var(--ink));
     transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
   }
-  .blog-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: transparent; }
-  .cat { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--flash-deep); }
+  .blog-card:hover { border-color: var(--ink); }
+  .cat { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-on, var(--accent)); }
   .blog-card h3 { font-size: 20px; font-weight: 600; margin-top: 12px; }
-  .blog-card p { color: var(--muted); font-size: 15px; margin-top: 9px; flex: 1; }
+  .blog-card p { color: var(--muted-on, var(--muted)); font-size: 15px; margin-top: 9px; flex: 1; }
   .meta { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; }
-  .meta time { font-size: 11px; color: var(--muted); letter-spacing: .06em; }
-  .meta .arrow { color: var(--flash-deep); transition: transform .18s; }
+  .meta time { font-size: 11px; color: var(--muted-on, var(--muted)); letter-spacing: .06em; }
+  .meta .arrow { color: var(--accent-on, var(--accent)); transition: transform .18s; }
   .blog-card:hover .meta .arrow { transform: translateX(3px); }
 </style>

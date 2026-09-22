@@ -5,15 +5,13 @@
  *
  * Affichage : rail à défilement horizontal (scroll-snap), 2-3 cartes visibles
  * à la fois + amorce de la suivante pour signaler qu'on peut faire défiler.
- * Le `.reveal` est porté par le conteneur, PAS par les cartes : une carte hors
- * du rail n'intersecte jamais le viewport et resterait invisible.
  */
 import { testimonials, googleReviews } from "../data/temoignages";
 
 const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
 ---
 
-<div class="tm-carousel reveal">
+<div class="tm-carousel">
   <div class="tm-bar">
     <a
       class="tm-rating"
@@ -76,11 +74,11 @@ const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
     align-items: center;
     gap: 9px;
     font-size: 14px;
-    color: var(--muted);
+    color: var(--muted-on, var(--muted));
     text-decoration: none;
   }
-  .tm-rating strong { color: var(--ink); font-family: var(--font-display); }
-  .tm-rating:hover { color: var(--ink); }
+  .tm-rating strong { color: var(--on-strong, var(--ink)); font-family: var(--font-display); }
+  .tm-rating:hover { color: var(--on-strong, var(--ink)); }
 
   .tm-nav { display: flex; gap: 8px; flex-shrink: 0; }
   .tm-btn {
@@ -89,14 +87,14 @@ const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
     display: grid;
     place-items: center;
     border-radius: 50%;
-    border: 1px solid var(--hairline);
-    background: var(--paper);
-    color: var(--ink);
+    border: 1px solid var(--rule, var(--hairline));
+    background: var(--surface-on, var(--paper));
+    color: var(--on-strong, var(--ink));
     cursor: pointer;
     transition: border-color .2s, color .2s, opacity .2s;
   }
   .tm-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .tm-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .tm-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-on, var(--accent)); }
   .tm-btn:disabled { opacity: .35; cursor: default; }
 
   /* ── Rail ───────────────────────────────────────────────────── */
@@ -112,7 +110,7 @@ const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
     /* la carte snappée s'aligne sur le bord du conteneur, pas sur le padding */
     scroll-padding-inline-start: 4px;
     scrollbar-width: thin;
-    scrollbar-color: var(--hairline) transparent;
+    scrollbar-color:var(--hairline) transparent;
   }
   .tm-rail::-webkit-scrollbar { height: 6px; }
   .tm-rail::-webkit-scrollbar-track { background: transparent; }
@@ -123,8 +121,8 @@ const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
   .tm {
     flex: 0 0 calc(100% / var(--tm-per-view) - var(--tm-gap));
     scroll-snap-align: start;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--surface-on, var(--paper));
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: var(--r);
     padding: 28px;
     display: flex;
@@ -132,11 +130,11 @@ const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
     gap: 14px;
   }
   .tm-stars { color: #f5a623; font-size: 15px; letter-spacing: 2px; }
-  .tm blockquote { font-size: 16px; line-height: 1.6; color: var(--ink); }
+  .tm blockquote { font-size: 16px; line-height: 1.6; color: var(--on-strong, var(--ink)); }
   /* pousse l'attribution en bas : cartes de hauteur égale, légendes alignées */
   .tm figcaption { display: flex; flex-direction: column; gap: 3px; margin-top: auto; padding-top: 4px; }
   .tm-author { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
-  .tm-meta { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .tm-meta { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); }
 
   @media (max-width: 900px) { .tm-carousel { --tm-per-view: 1.6; } }
   @media (max-width: 560px) {

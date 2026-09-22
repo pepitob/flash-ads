@@ -7,11 +7,11 @@ import { ui } from "../i18n/fr";
 const year = new Date().getFullYear();
 ---
 
-<footer>
+<footer class="band band--night">
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <Brand href="/" />
+        <Brand href="/" light />
         <p>{ui.footer.tagline}</p>
         <div class="foot-badge"><GooglePartnerBadge height={64} /></div>
       </div>
@@ -52,23 +52,24 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  footer { padding: 64px 0 40px; border-top: 1px solid var(--hairline); margin-top: 92px; }
+  /* Le pied de page ferme la page en sombre : ni marge ni filet, la bande
+     précédente s'y arrête net. */
+  footer { padding: 56px 0 32px; }
   .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 36px; }
-  .foot-grid p { color: var(--muted); font-size: 14px; margin-top: 14px; max-width: 24em; }
+  .foot-grid p { font-size: 14px; margin-top: 14px; max-width: 24em; }
   .foot-badge { margin-top: 18px; }
   .foot-col h5 {
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: var(--muted);
     margin-bottom: 14px;
   }
   .foot-col a,
   .foot-col .loc {
     display: block;
     text-decoration: none;
-    color: var(--ink);
+    color: #fff;
     font-size: 14px;
     opacity: .75;
     margin-bottom: 9px;
@@ -81,14 +82,14 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     margin-top: 48px;
     padding-top: 24px;
-    border-top: 1px solid var(--hairline);
+    border-top: 1px solid var(--rule);
     font-size: 13px;
-    color: var(--muted);
+    color: var(--on-faint);
     flex-wrap: wrap;
     gap: 10px;
   }
-  .legal a { text-decoration: none; color: var(--muted); }
-  .legal a:hover { color: var(--ink); }
+  .legal a { text-decoration: none; color: var(--on-faint); }
+  .legal a:hover { color: #fff; }
 
   @media (max-width: 900px) {
     .foot-grid { grid-template-columns: 1fr 1fr; gap: 28px; }

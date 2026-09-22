@@ -14,22 +14,22 @@ const { question, as = "h2" } = Astro.props;
 const Heading = as;
 ---
 
-<div class="answer reveal">
+<div class="answer">
   {question && <Heading class="answer-q display">{question}</Heading>}
   <div class="answer-body"><slot /></div>
 </div>
 
 <style>
   .answer {
-    background: var(--paper);
-    border: 1px solid var(--hairline);
-    border-left: 3px solid var(--flash-deep);
+    background: var(--surface-on, var(--paper));
+    border: 1px solid var(--rule, var(--hairline));
+    border-left: 3px solid var(--accent-on, var(--accent));
     border-radius: var(--r);
     padding: 26px 28px;
     margin: 8px 0 8px;
   }
   .answer-q { font-size: clamp(20px, 2.4vw, 26px); font-weight: 600; margin-bottom: 12px; }
-  .answer-body :global(p) { font-size: 17px; color: var(--ink); }
+  .answer-body :global(p) { font-size: 17px; color: var(--on-strong, var(--ink)); }
   .answer-body :global(p + p) { margin-top: 10px; }
-  .answer-body :global(b) { color: var(--ink); }
+  .answer-body :global(b) { color: var(--on-strong, var(--ink)); }
 </style>

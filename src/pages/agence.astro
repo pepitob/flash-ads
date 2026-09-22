@@ -20,7 +20,7 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
-  <section class="page-hero">
+  <section class="page-hero band band--blue">
     <div class="wrap">
       <span class="eyebrow">L'agence</span>
       <h1 class="display">Un seul métier : la pub en ligne. Et on le fait <span class="flash-word">bien.</span></h1>
@@ -35,7 +35,7 @@ const jsonLd = [
   </section>
 
   <!-- QUI NOUS SOMMES -->
-  <section>
+  <section class="band band--paper">
     <div class="wrap">
       <SectionHead
         eyebrow="Qui nous sommes"
@@ -43,7 +43,7 @@ const jsonLd = [
         text="La complémentarité technique + commerciale est notre force : on construit des systèmes solides et on sait les expliquer simplement."
       />
       <div class="cards2">
-        <div class="founder reveal">
+        <div class="founder">
           <div class="avatar" aria-hidden="true">⚡</div>
           <h3 class="display">Le profil technique & opérationnel</h3>
           <p class="role mono">Campagnes · Automatisation · Mesure</p>
@@ -52,7 +52,7 @@ const jsonLd = [
             L'obsession : que chaque franc dépensé serve à amener des clients.
           </p>
         </div>
-        <div class="founder reveal">
+        <div class="founder">
           <div class="avatar" aria-hidden="true">◆</div>
           <h3 class="display">Le profil commercial & relation client</h3>
           <p class="role mono">Vente · Visibilité · Relation client</p>
@@ -66,7 +66,7 @@ const jsonLd = [
   </section>
 
   <!-- MÉTHODE détaillée -->
-  <section id="methode" class="method-detail">
+  <section id="methode" class="method-detail band band--tint">
     <div class="wrap">
       <SectionHead
         eyebrow="Notre façon de faire"
@@ -74,19 +74,19 @@ const jsonLd = [
         text="Le même déroulé clair pour chaque client. Pas de boîte noire : vous savez ce qu'on fait, quand, et pourquoi."
       />
       <div class="steps-full">
-        <div class="step-full reveal">
+        <div class="step-full">
           <span class="no mono">01</span>
           <div><h3 class="display">On regarde, gratuitement</h3><p>On analyse votre situation ou votre compte existant. On vous dit franchement si la pub Google vaut le coup pour vous. Et si non, on le dit aussi.</p></div>
         </div>
-        <div class="step-full reveal">
+        <div class="step-full">
           <span class="no mono">02</span>
           <div><h3 class="display">On installe la mesure</h3><p>On met en place les outils qui montrent ce qui marche, et on les teste. Sans chiffres fiables, impossible de bien régler les campagnes.</p></div>
         </div>
-        <div class="step-full reveal">
+        <div class="step-full">
           <span class="no mono">03</span>
           <div><h3 class="display">On crée vos annonces</h3><p>On construit vos campagnes et on choisit les bons mots, adaptés à votre métier, sur des méthodes éprouvées.</p></div>
         </div>
-        <div class="step-full reveal">
+        <div class="step-full">
           <span class="no mono">04</span>
           <div><h3 class="display">On améliore et on vous tient au courant</h3><p>On ajuste en continu et on vous envoie un rapport clair : les chiffres clés, ce qu'on a fait, la suite. Suivi de notre côté chaque semaine.</p></div>
         </div>
@@ -95,19 +95,19 @@ const jsonLd = [
   </section>
 
   <!-- VALEURS -->
-  <section class="values">
+  <section class="values band band--night">
     <div class="wrap">
       <SectionHead eyebrow="Nos valeurs" title="Trois principes non négociables." />
       <div class="cards3">
-        <div class="card reveal">
+        <div class="card">
           <h3>Tout est clair</h3>
           <p>Accès à votre compte, rapports simples, aucune zone d'ombre. Vous voyez exactement ce qu'on fait et ce que ça donne.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <h3>Prix affichés</h3>
           <p>Un montant fixe pour la gestion, jamais une commission sur votre budget. Votre argent de pub reste chez vous, versé à Google.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <h3>Engagement court</h3>
           <p>3 mois au départ, le temps que Google Ads produise des données fiables. Ensuite, résiliable chaque mois : vous restez pour les résultats, pas par obligation.</p>
         </div>
@@ -121,28 +121,28 @@ const jsonLd = [
 <style>
   .page-hero { padding: 80px 0 20px; }
   .page-hero h1 { font-size: clamp(34px, 5vw, 60px); font-weight: 600; margin: 18px 0 0; max-width: 16em; }
-  .lead { font-size: 19px; color: var(--muted); max-width: 34em; margin-top: 22px; }
-  .baseline { margin-top: 20px; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+  .lead { font-size: 19px; color: var(--muted-on, var(--muted)); max-width: 34em; margin-top: 22px; }
+  .baseline { margin-top: 20px; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--on-faint, var(--faint)); }
   .hero-badge { display: flex; align-items: center; gap: 14px; margin-top: 24px; }
-  .hero-badge .mono { font-size: 12px; letter-spacing: .06em; color: var(--muted); }
+  .hero-badge .mono { font-size: 12px; letter-spacing: .06em; color: var(--muted-on, var(--muted)); }
 
   .cards2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  .founder { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--r); padding: 30px; }
-  .avatar { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; color: #fff; background: var(--grad); box-shadow: var(--shadow-flash); margin-bottom: 18px; }
+  .founder { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 30px; }
+  .avatar { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; color: #fff; background: var(--fa-blue); margin-bottom: 18px; }
   .founder h3 { font-size: 21px; font-weight: 600; }
-  .founder .role { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--flash-deep); margin: 6px 0 14px; }
-  .founder p { color: var(--muted); font-size: 15px; }
+  .founder .role { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-on, var(--accent)); margin: 6px 0 14px; }
+  .founder p { color: var(--muted-on, var(--muted)); font-size: 15px; }
 
   .method-detail .steps-full {
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 48px;
-    border-bottom: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--rule, var(--hairline));
   }
-  .step-full { display: grid; grid-template-columns: auto 1fr; gap: 28px; padding: 28px 0; border-top: 1px solid var(--hairline); }
-  .step-full .no { font-size: 14px; color: var(--flash-deep); padding-top: 6px; }
+  .step-full { display: grid; grid-template-columns: auto 1fr; gap: 28px; padding: 28px 0; border-top: 1px solid var(--rule, var(--hairline)); }
+  .step-full .no { font-size: 14px; color: var(--accent-on, var(--accent)); padding-top: 6px; }
   .step-full h3 { font-size: 20px; font-weight: 600; }
-  .step-full p { color: var(--muted); font-size: 15px; margin-top: 6px; max-width: 48em; }
+  .step-full p { color: var(--muted-on, var(--muted)); font-size: 15px; margin-top: 6px; max-width: 48em; }
 
   @media (max-width: 900px) {
     .cards2 { grid-template-columns: 1fr; }

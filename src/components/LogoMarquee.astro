@@ -57,13 +57,13 @@ const { duration = "70s", label = "Ils nous font confiance" } = Astro.props;
 </div>
 
 <style>
-  .marquee { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--hairline); }
+  .marquee { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--rule, var(--hairline)); }
   .marquee-lbl {
     display: block;
     font-size: 11px;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--muted);
+    color: var(--muted-on, var(--muted));
     margin-bottom: 16px;
   }
 

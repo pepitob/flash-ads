@@ -13,7 +13,7 @@ import { tiers, pricingNotes, specialCampaignsNote } from "../data/tarifs";
 <div class="price-grid">
   {
     tiers.map((tier) => (
-      <div class:list={["price", "reveal", { feat: tier.featured }]}>
+      <div class:list={["price", { feat: tier.featured }]}>
         {tier.badge && <span class="badge">{tier.badge}</span>}
         <span class="tier">{tier.name}</span>
         <div class="amt">{tier.price}<small> {tier.unit}</small></div>
@@ -54,7 +54,7 @@ import { tiers, pricingNotes, specialCampaignsNote } from "../data/tarifs";
   .price-footnote,
   .price-sub {
     font-size: 12.5px;
-    color: var(--muted);
+    color: var(--muted-on, var(--muted));
     text-align: center;
     margin-top: 14px;
     max-width: 52em;
@@ -63,5 +63,5 @@ import { tiers, pricingNotes, specialCampaignsNote } from "../data/tarifs";
     line-height: 1.6;
   }
   .price-sub { margin-top: 8px; }
-  .price-sub b { color: var(--body); font-weight: 500; }
+  .price-sub b { color: var(--on, var(--body)); font-weight: 500; }
 </style>

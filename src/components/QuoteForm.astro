@@ -95,15 +95,15 @@ const FORM_NAME = "devis";
   .quote-wrap { max-width: 620px; }
   .lead-form { display: flex; flex-direction: column; gap: 16px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--ink); }
+  label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--on-strong, var(--ink)); }
   input, select, textarea {
     font-family: var(--font-body);
     font-size: 15px;
     padding: 12px 14px;
-    border: 1px solid var(--hairline);
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: 11px;
-    background: var(--paper);
-    color: var(--ink);
+    background: var(--surface-on, var(--paper));
+    color: var(--on-strong, var(--ink));
     width: 100%;
   }
   input:focus, select:focus, textarea:focus {
@@ -114,20 +114,20 @@ const FORM_NAME = "devis";
   textarea { resize: vertical; }
   .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .lead-form .btn { align-self: flex-start; margin-top: 4px; }
-  .form-success { background: rgba(37, 99, 255, .06); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
+  .form-success { background: rgba(37, 99, 255, .06); border: 1px solid var(--rule, var(--hairline)); border-left: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
   .form-success:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .form-error { color: #b00020; font-size: 14px; }
   .btn:disabled { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
-  .budget-min { font-size: 12px; font-weight: 400; color: var(--muted); }
+  .budget-min { font-size: 12px; font-weight: 400; color: var(--muted-on, var(--muted)); }
   .budget-floor {
     background: rgba(255, 46, 139, .05);
-    border: 1px solid var(--hairline);
+    border: 1px solid var(--rule, var(--hairline));
     border-left: 3px solid var(--pink);
     border-radius: 12px;
     padding: 14px 18px;
     font-size: 14px;
     line-height: 1.6;
-    color: var(--body);
+    color: var(--on, var(--body));
   }
   @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
 </style>

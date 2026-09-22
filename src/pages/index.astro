@@ -86,7 +86,7 @@ const jsonLd = [
 
 <BaseLayout title={title} description={description} path="/" jsonLd={jsonLd}>
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero band band--blue">
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow">Agence Google Ads pour PME · Suisse romande</span>
@@ -109,7 +109,7 @@ const jsonLd = [
   </section>
 
   <!-- BANDEAU CONFIANCE : badge Google Partner + chiffres + logos -->
-  <div class="trust">
+  <div class="trust band--night">
     <div class="wrap trust-inner">
       <div class="trust-badge">
         <GooglePartnerBadge height={72} />
@@ -121,13 +121,16 @@ const jsonLd = [
         ))}
       </div>
     </div>
+  </div>
+
+  <div class="logos band--paper">
     <div class="wrap">
       <LogoMarquee />
     </div>
   </div>
 
   <!-- BLOC DE RÉPONSE DIRECTE (GEO) - définition extractible par les moteurs IA -->
-  <section class="intro-answer" style="padding: 28px 0 4px;">
+  <section class="intro-answer band band--tint">
     <div class="wrap">
       <AnswerBlock question="Qu'est-ce que Flash Ads ?">
         <p>
@@ -141,10 +144,10 @@ const jsonLd = [
   </section>
 
   <!-- PROBLÈME / SOLUTION + SPÉCIALISTE -->
-  <section class="problem">
+  <section class="problem band band--paper">
     <div class="wrap">
       <div class="problem-grid">
-        <div class="reveal">
+        <div class="tile band--night">
           <span class="eyebrow">Le problème</span>
           <h2 class="display">Avec la plupart des agences, on ne sait pas ce qu'on paie.</h2>
           <p class="muted">
@@ -153,7 +156,7 @@ const jsonLd = [
             vente avant le moindre prix.
           </p>
         </div>
-        <div class="reveal">
+        <div class="tile band--blue">
           <span class="eyebrow">Notre façon de faire</span>
           <h2 class="display">Un seul métier, des prix affichés, zéro mauvaise surprise.</h2>
           <p class="muted">
@@ -167,7 +170,7 @@ const jsonLd = [
   </section>
 
   <!-- POURQUOI FLASH ADS / USP -->
-  <section class="why">
+  <section class="why band band--night">
     <div class="wrap">
       <SectionHead
         eyebrow="Pourquoi nous choisir"
@@ -175,28 +178,28 @@ const jsonLd = [
         text="Vous nous confiez votre publicité, on s'occupe du reste. Voici ce qui fait la différence."
       />
       <div class="cards4">
-        <div class="card reveal">
+        <div class="card">
           <div class="ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 8l-9-5-9 5v8l9 5 9-5z" /><path d="M3 8l9 5 9-5" /><path d="M12 13v8" /></svg>
           </div>
           <h3>Service clé en main</h3>
           <p>On s'occupe de tout, de A à Z : création, réglages et suivi de vos campagnes. Vous n'avez rien à gérer : on vous amène les demandes.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z" /><path d="M9 12l2 2 4-4" /></svg>
           </div>
           <h3>Agence certifiée Google</h3>
           <p>Nous sommes agence certifiée Google Partner. Vos campagnes sont montées par des personnes formées et reconnues par Google.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12a8 8 0 0113-6" /><path d="M20 5v4h-4" /><path d="M20 12a8 8 0 01-13 6" /><path d="M4 19v-4h4" /></svg>
           </div>
           <h3>Optimisation continue</h3>
           <p>On ne lance pas vos annonces pour les oublier. Chaque semaine, on les ajuste pour qu'elles vous rapportent toujours plus.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 18a8 8 0 1116 0" /><path d="M12 18l4-5" /></svg>
           </div>
@@ -208,7 +211,7 @@ const jsonLd = [
   </section>
 
   <!-- SERVICES -->
-  <section id="services">
+  <section id="services" class="band band--paper">
     <div class="wrap">
       <SectionHead
         eyebrow="Ce qu'on fait"
@@ -233,7 +236,7 @@ const jsonLd = [
   </section>
 
   <!-- TARIFS -->
-  <section id="tarifs">
+  <section id="tarifs" class="band band--tint">
     <div class="wrap">
       <SectionHead
         eyebrow="Nos prix"
@@ -249,9 +252,9 @@ const jsonLd = [
   </section>
 
   <!-- MÉTHODE résumée -->
-  <section id="methode">
+  <section id="methode" class="band band--blue">
     <div class="wrap method">
-      <div class="reveal">
+      <div>
         <span class="eyebrow">Comment on travaille</span>
         <h2 class="display method-title">Un déroulé clair, du premier échange au premier client.</h2>
         <p class="muted method-intro">
@@ -259,7 +262,7 @@ const jsonLd = [
         </p>
         <a href="/agence" class="btn btn-ghost method-link">{ui.cta.discoverAgency} <span class="arrow" aria-hidden="true">→</span></a>
       </div>
-      <div class="steps reveal">
+      <div class="steps">
         <div class="step"><span class="no">01</span><div><h4>On regarde, gratuitement</h4><p>On analyse votre situation et on vous dit franchement si la pub Google vaut le coup pour vous.</p></div></div>
         <div class="step"><span class="no">02</span><div><h4>On installe la mesure</h4><p>On met en place les outils qui montrent ce qui marche. Sans ça, impossible de savoir où va votre argent.</p></div></div>
         <div class="step"><span class="no">03</span><div><h4>On crée vos annonces</h4><p>On construit vos campagnes et on choisit les bons mots, adaptés à votre métier.</p></div></div>
@@ -269,7 +272,7 @@ const jsonLd = [
   </section>
 
   <!-- TÉMOIGNAGES -->
-  <section class="proof">
+  <section class="proof band band--paper">
     <div class="wrap">
       <SectionHead eyebrow="Ils en parlent" title="Ce que disent nos clients." />
       <Testimonials />
@@ -277,7 +280,7 @@ const jsonLd = [
   </section>
 
   <!-- RÉSULTATS / CAS -->
-  <section id="cas">
+  <section id="cas" class="band band--night">
     <div class="wrap">
       <SectionHead
         eyebrow="Résultats"
@@ -306,36 +309,44 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
-  .pricing-tool { font-size: 14px; color: var(--muted); text-align: center; margin-top: 22px; }
-  .pricing-tool a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .pricing-tool { font-size: 14px; color: var(--muted-on, var(--muted)); text-align: center; margin-top: 22px; }
+  .pricing-tool a { color: var(--accent-on, var(--accent)); text-decoration: none; font-weight: 500; }
   .pricing-tool a:hover { text-decoration: underline; }
-  .hero { position: relative; padding: 96px 0 56px; }
+  .hero { position: relative; padding: 64px 0 56px; }
   .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
   .hero h1 { font-size: clamp(38px, 5.2vw, 56px); font-weight: 700; letter-spacing: -.035em; line-height: 1.08; margin: 18px 0 0; }
-  .hero .lead { font-size: 19px; color: var(--muted); max-width: 31em; margin-top: 22px; }
+  .hero .lead { font-size: 19px; max-width: 31em; margin-top: 22px; }
   .hero-cta { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
-  .baseline { margin-top: 22px; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); }
+  .baseline { margin-top: 22px; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--on-faint, var(--faint)); }
 
-  /* trust strip */
-  .trust { border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); padding: 28px 0; background: var(--paper); }
+  /* Bandeau de confiance : chiffres et certification, en continuité sombre
+     avec le hero (bandes 2 et 3 du plan, seule répétition voulue). */
+  .trust { padding: 26px 0; }
   .trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
   .trust-badge { display: flex; align-items: center; gap: 16px; }
-  .trust-badge .mono { font-size: 12px; letter-spacing: .08em; color: var(--muted); max-width: 14em; }
+  .trust-badge .mono { font-size: 12px; letter-spacing: .08em; max-width: 14em; }
   .trust-stats { display: flex; gap: 40px; flex-wrap: wrap; }
   .trust-stats div { display: flex; flex-direction: column; gap: 3px; }
   .trust-stats .n { font-weight: 700; font-size: 28px; letter-spacing: -.02em; }
-  .trust-stats .l { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .trust-stats .l { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
 
-  .why { padding-top: 64px; }
+  /* Les logos clients reviennent sur blanc : les fichiers sont en niveaux de
+     gris avec un fond blanc neutralisé par mix-blend-mode, ils ne tiennent pas
+     sur un fond sombre. */
+  .logos { padding: 26px 0; }
+
+  .why :global(.card) { border-radius: var(--r); }
   .cards4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
   .cards4 .card { padding: 26px; }
   .cards4 h3 { font-size: 18px; font-weight: 600; margin-top: 2px; }
-  .cards4 p { color: var(--muted); font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
+  .cards4 p { color: var(--muted-on, var(--muted)); font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
 
-  .problem { padding-top: 56px; }
-  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  /* Les deux moitiés du diptyque portent chacune leur fond : c'est l'opposition
+     de couleur qui dit « voilà le problème / voilà notre réponse ». */
+  .tile { padding: 34px 32px; border-radius: var(--r); }
   .problem-grid h2 { font-size: clamp(23px, 2.7vw, 31px); font-weight: 600; margin-top: 14px; }
-  .muted { color: var(--muted); font-size: 16px; margin-top: 14px; max-width: 33em; }
+  .muted { font-size: 16px; margin-top: 14px; max-width: 33em; }
 
   .method-title { font-size: clamp(28px, 3.4vw, 40px); font-weight: 600; margin-top: 16px; }
   .method-intro { margin-top: 16px; }
@@ -343,10 +354,11 @@ const jsonLd = [
 
   @media (max-width: 900px) {
     .hero-grid { grid-template-columns: 1fr; gap: 40px; }
-    .hero { padding: 64px 0 40px; }
+    .hero { padding: 48px 0 40px; }
     .problem-grid { grid-template-columns: 1fr; }
     .trust-inner { gap: 22px; }
     .cards4 { grid-template-columns: 1fr 1fr; }
+    .tile { padding: 28px 24px; }
   }
 
   /* Sur téléphone, la colonne de texte passe AU-DESSUS de l'aperçu d'annonce.

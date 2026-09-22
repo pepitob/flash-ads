@@ -29,12 +29,6 @@ const allSchemas = [organizationSchema(), ...jsonLd];
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    {/* Marque la présence du JavaScript avant le premier rendu : les animations
-        d'apparition ne masquent le contenu que si quelque chose peut le
-        réafficher. Doit rester `is:inline` et en tête, sinon un flash de
-        contenu masqué apparaît. */}
-    <script is:inline>document.documentElement.classList.add("js");</script>
-
     {/* Google Tag Manager. `is:inline` est indispensable : sans lui, Astro
         transformerait ce snippet en module différé et il ne serait plus chargé
         en tête, ce que GTM demande. `dataLayer` est aussi le canal des
@@ -73,25 +67,5 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe>`}
     </main>
     <Footer />
 
-    <!-- Reveal au scroll (IntersectionObserver). Respecte prefers-reduced-motion via CSS. -->
-    <script>
-      const els = document.querySelectorAll<HTMLElement>(".reveal");
-      if (els.length) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                e.target.classList.add("in");
-                io.unobserve(e.target);
-              }
-            });
-          },
-          // Seuil bas : sur un téléphone, un bloc plus haut que l'écran ne
-          // dépasse jamais un seuil élevé, il resterait donc masqué.
-          { threshold: 0.05 },
-        );
-        els.forEach((el) => io.observe(el));
-      }
-    </script>
   </body>
 </html>

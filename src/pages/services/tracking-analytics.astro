@@ -51,7 +51,7 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
-  <section class="page-hero">
+  <section class="page-hero band band--blue">
     <div class="wrap">
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Savoir ce qui marche</span>
@@ -74,24 +74,24 @@ const jsonLd = [
     </div>
   </section>
 
-  <section>
+  <section class="band band--paper">
     <div class="wrap">
       <SectionHead
         eyebrow="Ce qu'on met en place"
         title="Des chiffres fiables, vérifiés, expliqués."
       />
       <div class="cards3">
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 19V5m4 14V9m4 10V7m4 12v-6m4 6V11" /></svg></div>
           <h3>Les outils de mesure de Google</h3>
           <p>On installe Google Analytics et Tag Manager, réglés pour votre activité, pas un copier-coller générique.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 7h-9M14 17H5M17 3l4 4-4 4M7 21l-4-4 4-4" /></svg></div>
           <h3>Le suivi des demandes</h3>
           <p>Chaque demande qui arrive (formulaire, appel, achat) est comptée, pour savoir d'où elle vient.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg></div>
           <h3>On vérifie tout</h3>
           <p>Avant de lancer, on teste chaque élément (un vrai formulaire, un vrai appel). Pas de « ça devrait marcher ».</p>
@@ -110,9 +110,9 @@ const jsonLd = [
 
 <style>
   .page-hero { padding: 72px 0 20px; }
-  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
-  .crumbs a { text-decoration: none; color: var(--muted); }
-  .crumbs a:hover { color: var(--flash-deep); }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
+  .crumbs a:hover { color: var(--accent-on, var(--accent)); }
   .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 15em; }
   .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
 </style>

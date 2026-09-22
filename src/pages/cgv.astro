@@ -7,11 +7,15 @@ const description =
 ---
 
 <BaseLayout title={title} description={description} path="/cgv">
-  <section class="legal">
+  <section class="legal-hero band band--blue">
     <div class="wrap">
       <span class="eyebrow">Informations légales</span>
       <h1 class="display">Conditions générales et mentions légales</h1>
+    </div>
+  </section>
 
+  <section class="legal band band--paper">
+    <div class="wrap">
       <h2>1. Éditeur du site</h2>
       <p>
         Flash Ads (Bourban Digital), entreprise individuelle<br />
@@ -367,13 +371,15 @@ const description =
 </BaseLayout>
 
 <style>
-  .legal { padding: 72px 0; }
-  .legal h1 { font-size: clamp(32px, 4vw, 48px); font-weight: 600; margin: 16px 0 28px; }
+  .legal-hero { padding: 48px 0; }
+  .legal-hero h1 { font-size: clamp(32px, 4vw, 48px); font-weight: 600; margin-top: 14px; }
+  .legal { padding: 48px 0 56px; }
+  .legal h2:first-of-type { margin-top: 0; }
   .legal h2 { font-family: var(--font-display); font-size: 21px; font-weight: 600; margin: 34px 0 10px; }
-  .legal p { color: var(--ink); font-size: 16px; max-width: 60ch; line-height: 1.7; }
+  .legal p { color: var(--on-strong, var(--ink)); font-size: 16px; max-width: 60ch; line-height: 1.7; }
   .legal ul { max-width: 60ch; margin: 8px 0 4px; padding-left: 1.3em; }
-  .legal li { color: var(--ink); font-size: 16px; line-height: 1.7; margin-bottom: 4px; }
-  .legal li::marker { color: var(--flash-deep); }
-  .legal a { color: var(--flash-deep); }
+  .legal li { color: var(--on-strong, var(--ink)); font-size: 16px; line-height: 1.7; margin-bottom: 4px; }
+  .legal li::marker { color: var(--accent-on, var(--accent)); }
+  .legal a { color: var(--accent-on, var(--accent)); }
   .back { margin-top: 40px; }
 </style>
