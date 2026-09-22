@@ -34,7 +34,7 @@
   --fa-blue: #2563ff;
   --fa-blue-light: #5b9cff;   /* accent sur fond sombre, jamais --fa-blue */
   --fa-pink: #ff2e8b;
-  --fa-tint: #dce6ff;         /* bleu de marque dilué : fond clair coloré */
+  --fa-tint: #eef3ff;         /* bleu de marque dilué : fond clair coloré */
 
   /* Aucun dégradé dans le système : le seul qui subsiste est le <linearGradient>
      interne au SVG du logo (Brand.astro). Ne pas réintroduire de token ici. */
@@ -155,24 +155,31 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 
 
 /* ── Bandes de section ─────────────────────────────────────────
-   Le rythme de la page vient du fond, plus de l'espace blanc. Chaque bande
-   expose ses couleurs en variables ; les composants enfants s'y branchent et
-   restent donc lisibles dans les quatre bandes sans classe supplémentaire.
+   Le rythme de la page vient du fond, plus de l'espace blanc. Trois surfaces
+   seulement, et pas une de plus : c'est ce qui fait tenir l'ensemble.
+
+     paper  blanc, la surface par défaut
+     tint   le bleu de marque dilué, une section sur deux
+     night  midnight, réservé à la clôture de page (CTA + pied de page)
+
+   Le bleu plein reste une couleur d'ACCENT (boutons, liens, chiffres). Il n'est
+   jamais un fond de section : une page qui alterne blanc, bleu clair, bleu vif
+   et noir ressemble à quatre sites collés bout à bout.
+
+   Chaque bande expose ses couleurs en variables ; les composants s'y branchent
+   et restent donc lisibles dans les trois bandes sans classe supplémentaire :
 
      --on          texte courant (paragraphes)
      --on-strong   titres
      --on-faint    labels, méta
+     --muted-on    gris secondaire
      --accent-on   accent lisible SUR cette bande
-     --eyebrow-on  eyebrow (rose du design system, sauf sur bleu)
+     --eyebrow-on  eyebrow (rose du design system)
      --rule        bordures et filets
      --surface-on  fond d'une carte posée sur la bande
 
-   Contrastes imposés : sur blue et night le texte est blanc ou #d2dfff, et
-   l'accent est --fa-blue-light, jamais --fa-blue (illisible sur du bleu).
-
    `.band` ne porte QUE le rythme vertical, les modificateurs ne portent que la
-   couleur : un bloc interne (une carte du duo problème/solution) peut ainsi
-   prendre un `band--night` seul, sans hériter du padding d'une section.
+   couleur : un bloc interne peut ainsi prendre un modificateur seul.
 
    Densité : environ 30 % de moins que les 84px d'avant. Le clamp plafonne à
    64px, volontairement sous le 7vw du brief qui aurait AUGMENTÉ le padding
@@ -188,18 +195,13 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 }
 .band--tint {
   background: var(--fa-tint);
-  --on: var(--body); --on-strong: var(--ink); --on-faint: #6b7590;
-  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: #6b7590;
-  --rule: #c3d3fb; --surface-on: var(--fa-white);
+  --on: var(--body); --on-strong: var(--ink); --on-faint: #7b8298;
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: #6f7793;
+  --rule: #d8e2fb; --surface-on: var(--fa-white);
   color: var(--on);
 }
-.band--blue {
-  background: var(--fa-blue);
-  --on: #d2dfff; --on-strong: #fff; --on-faint: #a9c0ff;
-  --accent-on: #fff; --eyebrow-on: #fff; --muted-on: #c3d6ff;
-  --rule: rgba(255, 255, 255, .24); --surface-on: rgba(255, 255, 255, .08);
-  color: var(--on);
-}
+/* Sur midnight : texte blanc ou --fa-slate-light, accent --fa-blue-light.
+   Jamais --fa-blue, illisible sur ce fond. */
 .band--night {
   background: var(--fa-midnight);
   --on: var(--fa-slate-light); --on-strong: #fff; --on-faint: var(--fa-slate);
@@ -280,27 +282,22 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
    Presque tout se règle dans les composants (`var(--muted-on, var(--muted))`
    et consorts). Ne restent ici que les cas où une bande change la NATURE d'un
    élément, pas seulement sa teinte. */
-.band--tint, .band--blue, .band--night {
+.band--tint, .band--night {
   .card, .case, .price, .answer { background: var(--surface-on); }
 }
-.band--blue, .band--night {
-  .card .ico { background: rgba(255, 255, 255, .12); }
+.band--night {
+  .card .ico { background: rgba(255, 255, 255, .10); }
   .card:hover { border-color: var(--on-strong); }
   .price .row .k { opacity: .75; }
   .answer-body :global(p), .answer-body :global(b) { color: var(--on-strong); }
+  .btn-primary { background: var(--fa-blue); color: #fff; }
+  .btn-primary:hover { background: var(--fa-blue-light); color: var(--fa-navy); }
+  .btn-ghost { color: #fff; border-color: var(--rule); }
+  .btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .10); }
 }
 
-/* Boutons sur bande colorée ou sombre. */
-.band--blue .btn-primary { background: #fff; color: var(--fa-blue); }
-.band--blue .btn-primary:hover { background: #e6edff; }
-.band--night .btn-primary { background: var(--fa-blue); color: #fff; }
-.band--night .btn-primary:hover { background: var(--fa-blue-light); color: var(--fa-navy); }
-.band--blue .btn-ghost, .band--night .btn-ghost { color: #fff; border-color: var(--rule); }
-.band--blue .btn-ghost:hover, .band--night .btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .10); }
-
-/* Îlot clair posé sur une bande colorée (l'aperçu d'annonce du hero, une carte
-   de formulaire) : il redéclare les variables pour lui-même, tout ce qu'il
-   contient redevient donc lisible sur blanc sans règle au cas par cas. */
+/* Îlot clair posé sur une bande sombre : il redéclare les variables pour
+   lui-même, tout ce qu'il contient redevient donc lisible sur blanc. */
 .surface-paper {
   background: var(--fa-white);
   --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
@@ -308,24 +305,8 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
   --rule: var(--fa-smoke); --surface-on: var(--fa-white);
   color: var(--on);
 }
-
-/* Un îlot clair annule aussi l'inversion des boutons : sans cela, le bouton
-   blanc d'une bande bleue resterait blanc sur la carte blanche. */
 .surface-paper .btn-primary { background: var(--fa-blue); color: #fff; }
 .surface-paper .btn-primary:hover { background: var(--accent-hover); }
-.surface-paper .btn-ghost { color: var(--ink); border-color: #d6dae3; }
-.surface-paper .btn-ghost:hover { border-color: var(--ink); background: transparent; }
-
-/* Mot mis en avant sur une bande bleue : le titre y est déjà blanc, une simple
-   couleur ne le distinguerait plus. L'inversion (plaque blanche, texte bleu)
-   reste un aplat, pas un dégradé, et garde le couple de marque. */
-.band--blue .flash-word {
-  background: #fff;
-  color: var(--fa-blue);
-  padding: 0 .14em;
-  box-decoration-break: clone;
-  -webkit-box-decoration-break: clone;
-}
 
 /* Deux bandes de même famille qui se suivent : un filet évite la soudure. */
 .band--paper + .band--paper, .band--tint + .band--tint { border-top: 1px solid var(--rule); }

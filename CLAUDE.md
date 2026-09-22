@@ -134,21 +134,27 @@ jamais un seuil élevé.
   un `linear-gradient` sur un texte, un fond, un filet ou une bordure. **Aucune ombre** non
   plus, sauf sous le header collant (`--shadow-header`) : la séparation se fait par une bordure
   1px `--rule`. **Tous les rayons à 4px**, seule la pilule (`--radius-pill`) fait exception.
-- **Rythme par bandes de section** : la page alterne des fonds (`.band` + `.band--paper` /
-  `--tint` / `--blue` / `--night`) au lieu d'être une nappe blanche. `.band` porte le rythme
-  vertical, le modificateur porte la couleur : un bloc interne peut donc prendre un
-  `band--night` seul. Chaque bande expose ses couleurs en variables (`--on`, `--on-strong`,
-  `--on-faint`, `--muted-on`, `--accent-on`, `--eyebrow-on`, `--rule`, `--surface-on`) et
-  **les composants lisent ces variables**, jamais un littéral ni un token brut :
-  `color: var(--muted-on, var(--muted))`. Le repli garde le rendu identique hors bande
-  (header). Un îlot clair posé sur une bande colorée prend `.surface-paper`, qui redéclare
-  ces variables pour lui-même (aperçu d'annonce du hero, carte du formulaire de contact).
-  Contrastes imposés : sur `--fa-blue` et `--fa-midnight`, texte blanc ou `#d2dfff`, jamais
-  `--fa-blue` ; l'accent sur fond sombre est `--fa-blue-light`. Cartographie de la home :
-  header paper, hero blue, stats night, logos paper, réponse directe tint, problème paper
-  (diptyque night / blue), pourquoi night, services paper, tarifs tint, méthode blue,
-  témoignages paper, résultats night, FAQ tint, CTA blue, footer night. Jamais deux bandes
-  identiques qui se suivent, sauf hero + stats (bloc sombre continu voulu).
+- **Rythme par bandes de section** : la page alterne des fonds (`.band` +
+  `.band--paper` / `--tint` / `--night`) au lieu d'être une nappe blanche.
+  **Trois surfaces, pas une de plus** : `paper` (blanc, surface par défaut),
+  `tint` (`#eef3ff`, une section sur deux) et `night` (midnight, réservé à la
+  clôture de page : CTA final + pied de page, qui forment un seul bloc sombre).
+  **Le bleu plein reste une couleur d'accent** (boutons, liens, chiffres) et
+  n'est jamais un fond de section : une page qui alterne blanc, bleu clair, bleu
+  vif et noir ressemble à quatre sites collés bout à bout. `.band` porte le
+  rythme vertical, le modificateur porte la couleur : un bloc interne peut donc
+  prendre un modificateur seul. Chaque bande expose ses couleurs en variables
+  (`--on`, `--on-strong`, `--on-faint`, `--muted-on`, `--accent-on`,
+  `--eyebrow-on`, `--rule`, `--surface-on`) et **les composants lisent ces
+  variables**, jamais un littéral ni un token brut :
+  `color: var(--muted-on, var(--muted))`. Le repli garde le rendu identique hors
+  bande (header). Un îlot clair posé sur une bande sombre prend `.surface-paper`,
+  qui redéclare ces variables pour lui-même. Sur midnight : texte blanc ou
+  `--fa-slate-light`, accent `--fa-blue-light`, jamais `--fa-blue`.
+  Règle d'assemblage d'une page : hero en `tint`, puis alternance stricte
+  `paper` / `tint`, FAQ (`<FAQ band="paper|tint">`, `tint` par défaut) réglée
+  pour que l'alternance reste juste, puis CTA et pied de page en `night`. Jamais
+  deux bandes identiques qui se suivent, sauf le CTA et le pied de page.
 - **Pas d'animation d'apparition au scroll** : ce sont les bandes qui structurent la page.
   Seules subsistent les micro-transitions de survol (200 ms au plus).
 - **Contenu publié** : les prix (`pricingValidated`), les **avis Google** et les **logos clients**

@@ -86,7 +86,7 @@ const jsonLd = [
 
 <BaseLayout title={title} description={description} path="/" jsonLd={jsonLd}>
   <!-- HERO -->
-  <section class="hero band band--blue">
+  <section class="hero band band--tint">
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow">Agence Google Ads pour PME · Suisse romande</span>
@@ -109,7 +109,7 @@ const jsonLd = [
   </section>
 
   <!-- BANDEAU CONFIANCE : badge Google Partner + chiffres + logos -->
-  <div class="trust band--night">
+  <div class="trust band--paper">
     <div class="wrap trust-inner">
       <div class="trust-badge">
         <GooglePartnerBadge height={72} />
@@ -121,9 +121,6 @@ const jsonLd = [
         ))}
       </div>
     </div>
-  </div>
-
-  <div class="logos band--paper">
     <div class="wrap">
       <LogoMarquee />
     </div>
@@ -147,7 +144,7 @@ const jsonLd = [
   <section class="problem band band--paper">
     <div class="wrap">
       <div class="problem-grid">
-        <div class="tile band--night">
+        <div class="tile">
           <span class="eyebrow">Le problème</span>
           <h2 class="display">Avec la plupart des agences, on ne sait pas ce qu'on paie.</h2>
           <p class="muted">
@@ -156,7 +153,7 @@ const jsonLd = [
             vente avant le moindre prix.
           </p>
         </div>
-        <div class="tile band--blue">
+        <div class="tile">
           <span class="eyebrow">Notre façon de faire</span>
           <h2 class="display">Un seul métier, des prix affichés, zéro mauvaise surprise.</h2>
           <p class="muted">
@@ -170,7 +167,7 @@ const jsonLd = [
   </section>
 
   <!-- POURQUOI FLASH ADS / USP -->
-  <section class="why band band--night">
+  <section class="why band band--tint">
     <div class="wrap">
       <SectionHead
         eyebrow="Pourquoi nous choisir"
@@ -252,7 +249,7 @@ const jsonLd = [
   </section>
 
   <!-- MÉTHODE résumée -->
-  <section id="methode" class="band band--blue">
+  <section id="methode" class="band band--paper">
     <div class="wrap method">
       <div>
         <span class="eyebrow">Comment on travaille</span>
@@ -272,7 +269,7 @@ const jsonLd = [
   </section>
 
   <!-- TÉMOIGNAGES -->
-  <section class="proof band band--paper">
+  <section class="proof band band--tint">
     <div class="wrap">
       <SectionHead eyebrow="Ils en parlent" title="Ce que disent nos clients." />
       <Testimonials />
@@ -280,7 +277,7 @@ const jsonLd = [
   </section>
 
   <!-- RÉSULTATS / CAS -->
-  <section id="cas" class="band band--night">
+  <section id="cas" class="band band--paper">
     <div class="wrap">
       <SectionHead
         eyebrow="Résultats"
@@ -319,9 +316,10 @@ const jsonLd = [
   .hero-cta { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; }
   .baseline { margin-top: 22px; font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--on-faint, var(--faint)); }
 
-  /* Bandeau de confiance : chiffres et certification, en continuité sombre
-     avec le hero (bandes 2 et 3 du plan, seule répétition voulue). */
-  .trust { padding: 26px 0; }
+  /* Bandeau de confiance : certification, chiffres et logos disent la même
+     chose, ils restent donc un seul bloc, sur blanc (les logos sont des WebP
+     gris à fond blanc neutralisé, ils ne tiennent pas sur un fond coloré). */
+  .trust { padding: 30px 0; }
   .trust-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
   .trust-badge { display: flex; align-items: center; gap: 16px; }
   .trust-badge .mono { font-size: 12px; letter-spacing: .08em; max-width: 14em; }
@@ -330,21 +328,20 @@ const jsonLd = [
   .trust-stats .n { font-weight: 700; font-size: 28px; letter-spacing: -.02em; }
   .trust-stats .l { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
 
-  /* Les logos clients reviennent sur blanc : les fichiers sont en niveaux de
-     gris avec un fond blanc neutralisé par mix-blend-mode, ils ne tiennent pas
-     sur un fond sombre. */
-  .logos { padding: 26px 0; }
-
-  .why :global(.card) { border-radius: var(--r); }
   .cards4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
   .cards4 .card { padding: 26px; }
   .cards4 h3 { font-size: 18px; font-weight: 600; margin-top: 2px; }
   .cards4 p { color: var(--muted-on, var(--muted)); font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
 
   .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  /* Les deux moitiés du diptyque portent chacune leur fond : c'est l'opposition
-     de couleur qui dit « voilà le problème / voilà notre réponse ». */
-  .tile { padding: 34px 32px; border-radius: var(--r); }
+  /* Le diptyque problème / réponse : deux cartes identiques. C'est le texte qui
+     les oppose, pas deux fonds différents posés au milieu d'une bande claire. */
+  .tile {
+    background: var(--surface-on, var(--paper));
+    border: 1px solid var(--rule, var(--hairline));
+    border-radius: var(--r);
+    padding: 34px 32px;
+  }
   .problem-grid h2 { font-size: clamp(23px, 2.7vw, 31px); font-weight: 600; margin-top: 14px; }
   .muted { font-size: 16px; margin-top: 14px; max-width: 33em; }
 

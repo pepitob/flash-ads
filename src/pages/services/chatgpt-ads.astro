@@ -129,7 +129,7 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
-  <section class="page-hero band band--blue">
+  <section class="page-hero band band--tint">
     <div class="wrap">
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité ChatGPT</span>
@@ -252,7 +252,7 @@ const jsonLd = [
   </section>
 
   <!-- POURQUOI MAINTENANT -->
-  <section class="why band band--night">
+  <section class="why band band--paper">
     <div class="wrap why-grid">
       <div>
         <span class="eyebrow">Pourquoi maintenant</span>
@@ -282,7 +282,7 @@ const jsonLd = [
   </section>
 
   <!-- DEMANDE D'ACCÈS -->
-  <section id="demande" class="ask band band--paper">
+  <section id="demande" class="ask band band--tint">
     <div class="wrap">
       <div class="ask-box">
         <span class="eyebrow">Demande d'accès</span>
@@ -302,7 +302,7 @@ const jsonLd = [
     </div>
   </section>
 
-  <FAQ items={faqItems} title="Questions fréquentes sur la publicité ChatGPT" eyebrow="FAQ · ChatGPT Ads" />
+  <FAQ items={faqItems} title="Questions fréquentes sur la publicité ChatGPT" eyebrow="FAQ · ChatGPT Ads" band="paper" />
 </BaseLayout>
 
 <style>

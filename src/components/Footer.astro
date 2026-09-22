@@ -52,9 +52,9 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  /* Le pied de page ferme la page en sombre : ni marge ni filet, la bande
-     précédente s'y arrête net. */
-  footer { padding: 56px 0 32px; }
+  /* Le pied de page ferme la page en sombre, dans la continuité du CTA final :
+     un filet suffit à les distinguer, sans rompre le bloc. */
+  footer { padding: 56px 0 32px; border-top: 1px solid var(--rule); }
   .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 36px; }
   .foot-grid p { font-size: 14px; margin-top: 14px; max-width: 24em; }
   .foot-badge { margin-top: 18px; }

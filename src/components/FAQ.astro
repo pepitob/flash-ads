@@ -9,12 +9,14 @@ interface Props {
   items: FaqItem[];
   title?: string;
   eyebrow?: string;
+  /** Fond de la bande. À régler pour que l'alternance de la page reste juste. */
+  band?: "paper" | "tint";
 }
-const { items, title = "Questions fréquentes", eyebrow = "FAQ" } = Astro.props;
+const { items, title = "Questions fréquentes", eyebrow = "FAQ", band = "tint" } = Astro.props;
 const schema = faqSchema(items);
 ---
 
-<section class="faq-section band band--tint">
+<section class:list={["faq-section", "band", `band--${band}`]}>
   <div class="wrap faq-layout">
     <div class="faq-intro">
       <span class="eyebrow">{eyebrow}</span>

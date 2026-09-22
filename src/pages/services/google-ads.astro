@@ -90,7 +90,7 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
-  <section class="page-hero band band--blue">
+  <section class="page-hero band band--tint">
     <div class="wrap">
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité Google</span>
@@ -183,7 +183,7 @@ const jsonLd = [
   </section>
 
   <!-- RÉSULTATS CLIENTS -->
-  <section class="band band--night">
+  <section class="band band--tint">
     <div class="wrap">
       <SectionHead
         eyebrow="Résultats clients"
@@ -212,7 +212,7 @@ const jsonLd = [
   </section>
 
   <!-- FAQ -->
-  <FAQ items={faqItems} title="Vos questions sur la publicité Google" eyebrow="FAQ · Publicité Google" />
+  <FAQ items={faqItems} title="Vos questions sur la publicité Google" eyebrow="FAQ · Publicité Google" band="paper" />
 
   <CTA
     title="On regarde votre situation, gratuitement ?"
