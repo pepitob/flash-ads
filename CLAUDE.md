@@ -132,9 +132,11 @@ jamais un seuil élevé.
   Le bleu reste la couleur des liens, icônes, numéros d'étape et chiffres.
   **Texte sur fond rose** : blanc nu ne pèse que 3,5:1, et `--fa-navy`, bien qu'à 5:1, se noie
   dans la saturation du fond (illisible à l'usage, pas seulement à la mesure). Le bouton porte
-  donc du **blanc cerné d'un filet `--fa-navy`** (`-webkit-text-stroke: .6px` +
+  donc du **blanc cerné d'un filet `--fa-navy`** (`-webkit-text-stroke: .085em` +
   `paint-order: stroke fill`, qui pousse le filet hors du glyphe pour ne pas amaigrir la
-  lettre). Les **petits éléments roses** (badge « Le plus choisi », tag « Obligatoire », 10px)
+  lettre). L'épaisseur est en `em` parce que le bouton existe en 15px (hero, nav, CTA) et en
+  14px (packs) : un filet fixe y pèserait deux poids différents. 0,085em donne 1,3px à 15px,
+  la limite au-delà de laquelle les contrepoinçons du « a » et du « e » se ferment. Les **petits éléments roses** (badge « Le plus choisi », tag « Obligatoire », 10px)
   gardent un texte `--fa-navy` : un filet à cette taille ferait une bouillie. Ne jamais poser
   du blanc nu sur du rose. Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
   **pas de monospace**. **Aucun dégradé dans le système** : le gradient bleu→rose ne subsiste

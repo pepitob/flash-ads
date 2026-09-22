@@ -173,11 +173,14 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
    saturation du fond. Le filet tranche les deux, comme le trait des cartes.
    `paint-order` pousse le filet à l'extérieur du glyphe pour ne pas amaigrir
    la lettre ; là où il n'est pas supporté, le filet reste centré et le texte
-   demeure lisible. */
+   demeure lisible. L'épaisseur est en `em` et non en px : le bouton existe en
+   15px (hero, nav, CTA) et en 14px (packs), un filet fixe y pèserait deux
+   poids différents. 0,085em donne 1,3px à 15px, l'épaisseur au-delà de
+   laquelle les contrepoinçons du « a » et du « e » commencent à se fermer. */
 .btn-primary {
   background: var(--fa-pink);
   color: #fff;
-  -webkit-text-stroke: .6px var(--fa-navy);
+  -webkit-text-stroke: .085em var(--fa-navy);
   paint-order: stroke fill;
 }
 /* Le survol assombrit au lieu d'éclaircir : éclaircir aurait encore réduit le
