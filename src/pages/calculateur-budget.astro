@@ -1,0 +1,99 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AnswerBlock from "../components/AnswerBlock.astro";
+import BudgetCalculator from "../components/calculator/BudgetCalculator.astro";
+import FAQ from "../components/FAQ.astro";
+import CTA from "../components/CTA.astro";
+import { breadcrumbSchema, toolSchema, type FaqItem } from "../lib/schema";
+
+const title = "Calculateur de budget Google Ads (Suisse) | Flash Ads";
+const description =
+  "Calculez en direct le budget Google Ads dont vous avez besoin en Suisse romande : coûts par clic réels par secteur, coût par client projeté et pack adapté. Gratuit, sans inscription.";
+const path = "/calculateur-budget";
+
+const faqItems: FaqItem[] = [
+  {
+    question: "Comment est calculé le budget ?",
+    answer:
+      "Tout part du coût d'un nouveau client dans votre secteur. Pour signer un client, il faut plusieurs demandes entrantes, car tout le monde ne signe pas. Pour obtenir une demande, il faut plusieurs visites sur votre site, car tout le monde ne remplit pas le formulaire. Chaque visite est un clic payé à Google. En combinant le coût du clic observé en Suisse romande avec ces deux taux, on obtient un coût par client : de 15 CHF dans la beauté à plus de 500 CHF dans le conseil B2B. Le budget, c'est ce coût multiplié par le nombre de clients que vous visez, plus une marge de sécurité de 20 % parce que les premières semaines coûtent toujours plus cher. Pour une boutique en ligne, le raisonnement part de votre marge brute : c'est elle qui fixe le retour minimum que vos campagnes doivent atteindre.",
+  },
+  {
+    question: "Pourquoi un budget recommandé et une fourchette autour ?",
+    answer:
+      "Le chiffre recommandé est celui à inscrire dans votre budget : il est calculé sur le coût par client central de votre secteur. La fourchette de plus ou moins 25 % autour montre ce qui se passe si vos mots-clés sont plus disputés que la moyenne, ou au contraire mieux ciblés. À l'intérieur d'un même secteur, l'écart est large : un plombier qui vise « dépannage urgence Genève » ne paie pas le même prix qu'un plombier qui vise « installation sanitaire Valais ». Le détail du calcul, coût par client compris, est consultable sous le résultat.",
+  },
+  {
+    question: "Les résultats sont-ils garantis ?",
+    answer:
+      "Non, et personne ne peut les garantir. Ce calculateur donne un ordre de grandeur pour savoir si l'investissement a du sens avant de se lancer, pas une promesse de résultat. Les chiffres réels dépendent de votre site, de votre offre, de votre réactivité face aux demandes et de la concurrence. C'est pour ça que le budget recommandé est un point de départ : il s'affine après 6 à 8 semaines de données réelles sur votre compte.",
+  },
+  {
+    question: "Que se passe-t-il si le calcul donne moins de 500 CHF par mois ?",
+    answer:
+      "On vous le dit franchement et on ne vous propose aucun pack. En dessous de 500 CHF de budget publicitaire mensuel, les campagnes ne récoltent pas assez de clics pour être optimisées : les résultats deviennent aléatoires et vous paieriez des frais de gestion pour rien. Mieux vaut viser un peu plus haut, ou attendre d'avoir ce budget, que de tester trop petit. C'est aussi pour ça que le calculateur ne descend jamais sous ce seuil : nous ne recommandons pas un budget que nous refuserions de gérer.",
+  },
+];
+
+const jsonLd = [
+  toolSchema({
+    name: "Calculateur de budget Google Ads",
+    description:
+      "Outil gratuit qui estime le budget publicitaire mensuel nécessaire sur Google Ads en Suisse romande, à partir du secteur d'activité, de la valeur d'un client et du nombre de clients visés.",
+    url: path,
+  }),
+  breadcrumbSchema([
+    { name: "Accueil", url: "/" },
+    { name: "Calculateur de budget", url: path },
+  ]),
+];
+---
+
+<BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
+  <section class="page-hero">
+    <div class="wrap">
+      <nav class="crumbs mono" aria-label="Fil d'Ariane">
+        <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Calculateur de budget</span>
+      </nav>
+      <span class="eyebrow">Outil gratuit, sans inscription</span>
+      <h1 class="display">Calculateur de budget <span class="flash-word">Google Ads</span> (Suisse)</h1>
+
+      <AnswerBlock>
+        <p>
+          <b>Pour estimer un budget Google Ads, on part du nombre de clients visés, pas d'un montant
+          au hasard.</b> Il faut plusieurs demandes entrantes pour signer un client, et plusieurs
+          clics pour obtenir une demande : le budget mensuel est donc le nombre de clics nécessaires
+          multiplié par le coût du clic dans votre secteur. En Suisse romande, ce coût va d'environ
+          0.40 CHF (tourisme, commerce) à 9 CHF (plomberie, déménagement) selon la concurrence. Le
+          calculateur ci-dessous fait ce calcul en direct pour 18 secteurs : il affiche un budget
+          recommandé, la fourchette réaliste autour, et le coût par client que cela représente.
+        </p>
+      </AnswerBlock>
+    </div>
+  </section>
+
+  <section class="calc-section">
+    <div class="wrap">
+      <BudgetCalculator />
+    </div>
+  </section>
+
+  <FAQ
+    items={faqItems}
+    title="Vos questions sur le budget Google Ads"
+    eyebrow="FAQ · Budget Google Ads"
+  />
+
+  <CTA
+    title="On valide ces chiffres pour votre marché ?"
+    text="L'audit gratuit vérifie les coûts par clic réels sur vos mots-clés, dans votre canton. On vous dit franchement si le budget tient la route."
+  />
+</BaseLayout>
+
+<style>
+  .page-hero { padding: 72px 0 12px; }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted); }
+  .crumbs a:hover { color: var(--flash-deep); }
+  .page-hero h1 { font-size: clamp(34px, 4.6vw, 54px); font-weight: 600; margin: 18px 0 22px; max-width: 16em; }
+  .calc-section { padding: 40px 0 84px; }
+</style>

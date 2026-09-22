@@ -15,6 +15,9 @@ import {
   pricingNotes,
   specialCampaignsNote,
   budgetFloorNote,
+  chatgptAds,
+  chatgptBetaNote,
+  chatgptPromoNote,
 } from "../data/tarifs";
 
 export const GET: APIRoute = () => {
@@ -67,6 +70,23 @@ export const GET: APIRoute = () => {
     lines.push(`- ${pricingNotes.budgetSeparate}`);
     lines.push(`- Campagnes spéciales : ${specialCampaignsNote}`);
     lines.push(`- Budget minimum : ${budgetFloorNote}`);
+    lines.push("");
+
+    // ChatGPT Ads : service distinct, un seul pack, tarif de lancement daté.
+    lines.push("## ChatGPT Ads (publicité sur ChatGPT)");
+    lines.push("");
+    lines.push("- Canal ouvert en Suisse depuis le 24 août 2026.");
+    lines.push(
+      `- Pack ${chatgptAds.name} : ${chatgptAds.priceValue}.-${chatgptAds.unit} de frais de gestion, plus ${chatgptAds.setupValue}.- de setup (une fois). Gestion complète comprise.`,
+    );
+    lines.push(
+      `- Hors promotion : ${chatgptAds.regularPriceValue}.-${chatgptAds.unit} et ${chatgptAds.regularSetupValue}.- de setup.`,
+    );
+    lines.push(
+      `- Budget publicitaire minimum : ${chatgptAds.minBudgetDaily}.-/jour, soit environ ${chatgptAds.minBudgetMonthly}.-/mois, payé directement à OpenAI. Aucune commission dessus.`,
+    );
+    lines.push(`- ${chatgptBetaNote}`);
+    lines.push(`- ${chatgptPromoNote}`);
   }
   lines.push("");
 

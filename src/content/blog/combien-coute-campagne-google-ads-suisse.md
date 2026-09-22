@@ -2,7 +2,7 @@
 title: "Combien coûte une campagne Google Ads en Suisse ?"
 description: "Budget publicitaire, frais de gestion, coût par clic : on détaille ce que coûte réellement une campagne Google Ads pour une PME en Suisse romande, sans langue de bois."
 pubDate: 2026-06-10
-updatedDate: 2026-08-21
+updatedDate: 2026-08-28
 category: "Budget & coûts"
 answer: "Une campagne Google Ads en Suisse comporte <b>deux coûts distincts</b> : le <b>budget publicitaire</b>, payé directement à Google (500 CHF/mois au minimum pour des données exploitables), et les <b>frais de gestion</b> de l'agence. Chez Flash Ads, ces frais sont fixes, publics et mensuels (dès 390.-/mois), sans aucun pourcentage prélevé sur votre budget."
 relatedService: "/services/google-ads"
@@ -27,6 +27,8 @@ Entre 500 et 1 200 CHF/mois, une campagne Search bien ciblée sur une zone et un
 ## Combien coûte un clic (CPC) en Suisse ?
 
 Le coût par clic dépend entièrement de votre secteur et de la concurrence sur vos mots-clés. Un avocat ou une fiduciaire à Genève paie bien plus cher qu'un commerce de niche en Valais. Plutôt que de vous donner un chiffre inventé, nous le validons pour **votre** marché dans le Keyword Planner lors de l'audit.
+
+Pour un premier ordre de grandeur, notre [calculateur de budget Google Ads](/calculateur-budget) affiche les fourchettes de coût par clic observées en Suisse romande pour 18 secteurs, et en déduit le budget mensuel nécessaire pour atteindre votre objectif de clients.
 
 ## Les frais de gestion Flash Ads
 

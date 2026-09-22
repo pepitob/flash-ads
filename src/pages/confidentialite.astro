@@ -13,8 +13,6 @@ const description =
       <span class="eyebrow">Protection des données</span>
       <h1 class="display">Politique de confidentialité</h1>
 
-      <p class="note mono">⚠️ PLACEHOLDER : faire valider ce texte par un·e juriste avant publication. Adapter selon le prestataire de formulaire et l'éventuel outil analytics réellement utilisés.</p>
-
       <h2>Responsable du traitement</h2>
       <p>
         {site.name}, {site.city} ({site.region}), Suisse. Contact :
@@ -23,7 +21,7 @@ const description =
 
       <h2>Données collectées</h2>
       <p>
-        Via nos formulaires (demande d'audit gratuit et liste d'attente), nous collectons les données que
+        Via nos formulaires (demande d'audit gratuit et demande d'accès ChatGPT Ads), nous collectons les données que
         vous nous transmettez : nom, entreprise, e-mail, téléphone, site web, budget publicitaire
         envisagé et message. Ces données servent uniquement à traiter votre demande.
       </p>
@@ -32,22 +30,23 @@ const description =
       <p>
         Les données sont traitées pour répondre à votre demande, préparer notre recommandation et, le cas échéant,
         gérer la relation contractuelle. La base est votre consentement et l'exécution de mesures
-        précontractuelles. Pour la liste d'attente ChatGPT Ads, votre e-mail n'est utilisé que pour
-        vous prévenir de l'ouverture du service en Suisse.
+        précontractuelles. Pour une demande d'accès ChatGPT Ads, vos données servent uniquement à
+        évaluer si ce canal convient à votre activité et à vous répondre.
       </p>
 
       <h2>Transmission à des tiers</h2>
       <p>
-        Les soumissions de formulaire transitent par notre prestataire d'envoi (par ex. Formspree),
-        qui les achemine par e-mail. <em>Préciser le prestataire retenu et le pays d'hébergement.</em>
-        Aucune donnée n'est revendue.
+        Les soumissions de formulaire sont traitées par Netlify (Netlify, Inc.), l'hébergeur de ce
+        site, qui les enregistre et nous les transmet. <em>Préciser le pays d'hébergement retenu et,
+        le cas échéant, les garanties de transfert hors Suisse et UE.</em> Aucune donnée n'est revendue.
       </p>
 
       <h2>Cookies et mesure d'audience</h2>
       <p>
-        Au lancement, ce site ne dépose pas de cookies de suivi non essentiels. Si une mesure
-        d'audience est ajoutée ultérieurement, un bandeau de consentement permettra de la refuser par
-        défaut, conformément à la nLPD et au RGPD.
+        Ce site charge Google Tag Manager (Google Ireland Limited), qui sert à déclencher nos outils
+        de mesure d'audience. Les cookies effectivement déposés dépendent des balises configurées
+        dans ce conteneur. Un bandeau de consentement permettant de refuser la mesure d'audience
+        doit être mis en place avant la mise en ligne, conformément à la nLPD et au RGPD.
       </p>
 
       <h2>Durée de conservation</h2>
@@ -70,6 +69,5 @@ const description =
   .legal h2 { font-family: var(--font-display); font-size: 21px; font-weight: 600; margin: 34px 0 10px; }
   .legal p { color: var(--ink); font-size: 16px; max-width: 60ch; line-height: 1.7; }
   .legal a { color: var(--flash-deep); }
-  .note { background: #fff6d6; border: 1px solid #f0e0a0; border-radius: 10px; padding: 12px 16px; font-size: 12.5px; color: #6b5a1a; max-width: 60ch; }
   .back { margin-top: 40px; }
 </style>

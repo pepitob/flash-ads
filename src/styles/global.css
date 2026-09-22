@@ -224,9 +224,13 @@ section { padding: 84px 0; }
 .final .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, .2); }
 .final .btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .06); }
 
-/* ── Reveal animations ──────────────────────────────────────── */
-.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
-.reveal.in { opacity: 1; transform: none; }
+/* ── Reveal animations ──────────────────────────────────────────
+   Le contenu est visible PAR DÉFAUT : il n'est masqué que si le JavaScript est
+   là pour le révéler (classe `js` posée sur <html> par BaseLayout). Sans cette
+   garde, un script bloqué, en erreur ou simplement désactivé laissait toute la
+   page à `opacity: 0`, donc entièrement blanche. */
+.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
+.js .reveal.in { opacity: 1; transform: none; }
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1100px) {
@@ -244,6 +248,6 @@ section { padding: 84px 0; }
 /* ── Accessibility: respect reduced-motion ─────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .reveal { opacity: 1; transform: none; }
+  .js .reveal { opacity: 1; transform: none; }
   html { scroll-behavior: auto; }
 }

@@ -1,8 +1,26 @@
 ---
 /**
- * Formulaire de contact / demande d'audit gratuit.
- * Endpoint host-agnostic via env (PUBLIC_FORMSPREE_QUOTE_ID) - email + webhook-ready.
- * Anti-spam : honeypot. Validation côté client (required + types). Succès inline (JS).
+ * Formulaire de contact / demande d'audit gratuit - Netlify Forms.
+ *
+ * Détection par Netlify : `data-netlify="true"` + un `name` unique. Netlify
+ * analyse le HTML STATIQUE à la fin du build, or Astro rend bien ce formulaire
+ * au build : rien d'autre n'est requis côté configuration (il faut simplement
+ * que « Forms > Enable form detection » soit activé sur le site Netlify).
+ *
+ * L'envoi se fait en AJAX pour garder le message de succès en ligne, sans
+ * redirection. Netlify impose alors trois choses (doc « Forms setup ») :
+ *   1. poster sur un chemin du site (ici « / »),
+ *   2. un corps encodé en `application/x-www-form-urlencoded`,
+ *   3. le champ caché `form-name` reprenant le nom du formulaire. Netlify
+ *      l'injecte lui-même dans le HTML statique, mais on le déclare
+ *      explicitement : c'est lui qui route la soumission AJAX.
+ *
+ * Le message de succès vit HORS du <form> : en cas d'envoi réussi, le
+ * formulaire est masqué (`display: none`), ce qui masquerait aussi un message
+ * placé à l'intérieur. Le message d'erreur, lui, reste dans le formulaire
+ * puisque celui-ci demeure visible dans ce cas.
+ *
+ * Anti-spam : honeypot Netlify (`netlify-honeypot`), champ invisible côté humain.
  * Champ budget = pré-qualification du pack (tranches alignées sur la grille tarifaire).
  * « Moins de 500 » affiche un message expliquant qu'on ne prend pas ces budgets.
  * ?pack=<id> (CTA « Choisir X » de la grille) pré-sélectionne la tranche.
@@ -10,16 +28,22 @@
 import { ui } from "../i18n/fr";
 import { budgetFloorNote } from "../data/tarifs";
 
-const endpointId = import.meta.env.PUBLIC_FORMSPREE_QUOTE_ID ?? "";
-const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
+/** Nom du formulaire : c'est sous ce libellé que les soumissions arrivent dans Netlify. */
+const FORM_NAME = "devis";
 ---
 
-<form class="lead-form" id="quote-form" method="POST" action={action} novalidate>
-  {!endpointId && (
-    <p class="form-warn">
-      ⚠️ Endpoint non configuré : définissez <code>PUBLIC_FORMSPREE_QUOTE_ID</code> dans <code>.env</code>.
-    </p>
-  )}
+<div class="quote-wrap">
+  <form
+  class="lead-form"
+  id="quote-form"
+  name={FORM_NAME}
+  method="POST"
+  action="/"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  novalidate
+>
+  <input type="hidden" name="form-name" value={FORM_NAME} />
 
   <div class="grid2">
     <label>{ui.form.name}*<input type="text" name="nom" required autocomplete="name" /></label>
@@ -49,21 +73,27 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
 
   <label>{ui.form.message}<textarea name="message" rows="4"></textarea></label>
 
-  <!-- Honeypot anti-spam (caché aux humains, rempli par les bots) -->
-  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="gotcha" aria-hidden="true" />
+  <!-- Honeypot Netlify (caché aux humains, rempli par les bots) -->
+  <p class="gotcha" aria-hidden="true">
+    <label>Ne remplissez pas ce champ<input type="text" name="bot-field" tabindex="-1" autocomplete="off" /></label>
+  </p>
 
   <button type="submit" class="btn btn-primary">{ui.form.submit} <span class="arrow" aria-hidden="true">→</span></button>
 
-  <p class="form-success" id="quote-success" hidden role="status">
-    <strong>{ui.form.successTitle}</strong><br />{ui.form.successBody}
-  </p>
   <p class="form-error" id="quote-error" hidden role="alert">
     Une erreur est survenue. Réessayez ou écrivez-nous directement.
   </p>
-</form>
+  </form>
+
+  <!-- Hors du <form> : il est masqué au moment où ce message s'affiche. -->
+  <p class="form-success" id="quote-success" hidden role="status" tabindex="-1">
+    <strong>{ui.form.successTitle}</strong><br />{ui.form.successBody}
+  </p>
+</div>
 
 <style>
-  .lead-form { display: flex; flex-direction: column; gap: 16px; max-width: 620px; }
+  .quote-wrap { max-width: 620px; }
+  .lead-form { display: flex; flex-direction: column; gap: 16px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--ink); }
   input, select, textarea {
@@ -82,11 +112,12 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
     box-shadow: var(--ring-accent);
   }
   textarea { resize: vertical; }
-  .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; }
+  .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .lead-form .btn { align-self: flex-start; margin-top: 4px; }
   .form-success { background: rgba(37, 99, 255, .06); border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: 12px; padding: 16px 18px; font-size: 15px; }
+  .form-success:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
   .form-error { color: #b00020; font-size: 14px; }
-  .form-warn { background: #fff6d6; border: 1px solid #f0e0a0; border-radius: 10px; padding: 10px 14px; font-size: 13px; }
+  .btn:disabled { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
   .budget-min { font-size: 12px; font-weight: 400; color: var(--muted); }
   .budget-floor {
     background: rgba(255, 46, 139, .05);
@@ -105,6 +136,21 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
   const form = document.getElementById("quote-form") as HTMLFormElement | null;
   const ok = document.getElementById("quote-success");
   const err = document.getElementById("quote-error");
+
+  /**
+   * Un envoi à la fois. Sans ce verrou, un double clic part deux fois : deux
+   * soumissions Netlify (donc deux fois le même lead) et deux `form_submit`
+   * dans le dataLayer, donc une conversion comptée en double.
+   */
+  let pending = false;
+  const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null;
+  const btnLabel = submitBtn?.innerHTML ?? "";
+  const lock = (on: boolean) => {
+    pending = on;
+    if (!submitBtn) return;
+    submitBtn.disabled = on;
+    submitBtn.innerHTML = on ? "Envoi…" : btnLabel;
+  };
 
   // Budget : message « moins de 500 » + pré-sélection via ?pack=<id> (grille tarifaire).
   const budget = form?.querySelector<HTMLSelectElement>('select[name="budget"]');
@@ -126,21 +172,47 @@ const action = endpointId ? `https://formspree.io/f/${endpointId}` : "";
     toggleFloor();
   }
 
-  if (form && form.action) {
+  if (form) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (pending) return;
       if (!form.checkValidity()) { form.reportValidity(); return; }
       err?.setAttribute("hidden", "");
+      lock(true);
       try {
-        const res = await fetch(form.action, {
+        // Netlify Forms en AJAX : corps url-encodé, posté sur un chemin du site.
+        // Le champ caché `form-name` (présent dans le FormData) fait le routage.
+        const res = await fetch(form.getAttribute("action") || "/", {
           method: "POST",
-          body: new FormData(form),
-          headers: { Accept: "application/json" },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
         });
-        if (res.ok) { form.reset(); form.style.display = "none"; ok?.removeAttribute("hidden"); }
-        else throw new Error("bad response");
-      } catch {
+        if (res.ok) {
+          form.reset();
+          form.style.display = "none";
+          ok?.removeAttribute("hidden");
+          // Conversion : un seul événement pour tous les formulaires du site, le
+          // formulaire concerné étant porté par un paramètre. GTM peut ainsi
+          // déclencher une seule balise et distinguer les cas dans la condition.
+          // Le nom vient de l'attribut `name` du <form> : pas de second endroit à
+          // maintenir, et c'est déjà celui sous lequel Netlify range la soumission.
+          const w = window as unknown as { dataLayer?: unknown[] };
+          w.dataLayer = w.dataLayer || [];
+          w.dataLayer.push({ event: "form_submit", form_name: form.getAttribute("name") });
+          // Le focus était sur le bouton d'envoi, qui vient d'être masqué :
+          // sans cela il retombe sur <body> et la confirmation passe inaperçue
+          // au clavier comme au lecteur d'écran.
+          ok?.focus();
+        }
+        else throw new Error(String(res.status));
+      } catch (e) {
+        // Sur le site déployé, le statut dit tout : un 404 signifie que Netlify
+        // n'a pas détecté ce formulaire (détection désactivée, ou déploiement
+        // non refait depuis sa dernière modification). Le reste vient du réseau.
+        console.warn("[Flash Ads] Envoi du formulaire refusé :", String(e));
         err?.removeAttribute("hidden");
+        // Rendre la main : l'envoi a échoué, le visiteur doit pouvoir réessayer.
+        lock(false);
       }
     });
   }

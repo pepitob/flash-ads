@@ -4,6 +4,7 @@ import SEOHead from "../components/seo/SEOHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { organizationSchema } from "../lib/schema";
+import { site } from "../data/site";
 
 interface Props {
   title: string;
@@ -27,6 +28,24 @@ const allSchemas = [organizationSchema(), ...jsonLd];
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    {/* Marque la présence du JavaScript avant le premier rendu : les animations
+        d'apparition ne masquent le contenu que si quelque chose peut le
+        réafficher. Doit rester `is:inline` et en tête, sinon un flash de
+        contenu masqué apparaît. */}
+    <script is:inline>document.documentElement.classList.add("js");</script>
+
+    {/* Google Tag Manager. `is:inline` est indispensable : sans lui, Astro
+        transformerait ce snippet en module différé et il ne serait plus chargé
+        en tête, ce que GTM demande. `dataLayer` est aussi le canal des
+        événements du calculateur (calc_start, calc_result, calc_pack_click). */}
+    {site.gtmId && (
+      <script is:inline set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${site.gtmId}');`} />
+    )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <SEOHead
@@ -40,6 +59,14 @@ const allSchemas = [organizationSchema(), ...jsonLd];
     />
   </head>
   <body>
+    {/* Google Tag Manager (noscript), juste après l'ouverture du body. */}
+    {site.gtmId && (
+      <noscript
+        set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${site.gtmId}"
+height="0" width="0" style="display:none;visibility:hidden"></iframe>`}
+      />
+    )}
+
     <Header />
     <main id="main">
       <slot />
@@ -59,7 +86,9 @@ const allSchemas = [organizationSchema(), ...jsonLd];
               }
             });
           },
-          { threshold: 0.12 },
+          // Seuil bas : sur un téléphone, un bloc plus haut que l'écran ne
+          // dépasse jamais un seuil élevé, il resterait donc masqué.
+          { threshold: 0.05 },
         );
         els.forEach((el) => io.observe(el));
       }

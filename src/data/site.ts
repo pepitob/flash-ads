@@ -25,6 +25,8 @@ export const site = {
   foundingYear: 2024,
   // Baseline reprise du site actuel.
   baseline: "Simple. Transparent. Efficace.",
+  // Conteneur Google Tag Manager. Vide = aucun script de mesure chargé.
+  gtmId: "GTM-N7DZJWFZ",
   // Badge Google Partner officiel (ID agence fourni).
   googlePartner: {
     id: "9907170973",
@@ -40,9 +42,15 @@ const services = [
   { label: "Tracking & Analytics", href: "/services/tracking-analytics" },
 ] as const;
 
+/** Outils gratuits - liens footer et maillage interne (hors menu principal). */
+const tools = [
+  { label: "Calculateur de budget Google Ads", href: "/calculateur-budget" },
+] as const;
+
 /** Navigation principale - partagée header + footer, prête pour i18n. */
 export const nav = {
   services,
+  tools,
   main: [
     { label: "Services", href: "/services/google-ads", children: services },
     { label: "Tarifs", href: "/#tarifs" },

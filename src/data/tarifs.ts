@@ -34,6 +34,12 @@ export type Tier = {
   unit: "/mois";
   /** Tranche de budget publicitaire affichée sur la carte. */
   forBudget: string;
+  /**
+   * Même tranche, en valeurs numériques (CHF/mois) : source unique du mapping
+   * budget -> pack utilisé par le calculateur (`tierForBudget`). `max: null` =
+   * pas de plafond. Doit rester cohérent avec `forBudget`.
+   */
+  budgetRange: { min: number; max: number | null };
   featured: boolean;
   /** Badge affiché sur la carte (Croissance : « Le plus choisi »). */
   badge?: string;
@@ -66,6 +72,7 @@ export const tiers: Tier[] = [
     priceIsFrom: false,
     unit: "/mois",
     forBudget: "Budget pub de 500 à 1 200 CHF/mois",
+    budgetRange: { min: 500, max: 1200 },
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Search" },
@@ -88,6 +95,7 @@ export const tiers: Tier[] = [
     priceIsFrom: false,
     unit: "/mois",
     forBudget: "Budget pub de 1 200 à 5 000 CHF/mois",
+    budgetRange: { min: 1200, max: 5000 },
     featured: true,
     badge: "Le plus choisi",
     attributes: [
@@ -111,6 +119,7 @@ export const tiers: Tier[] = [
     priceIsFrom: false,
     unit: "/mois",
     forBudget: "Budget pub de 5 000 à 15 000 CHF/mois",
+    budgetRange: { min: 5000, max: 15000 },
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Search, Display, Shopping" },
@@ -133,6 +142,7 @@ export const tiers: Tier[] = [
     priceIsFrom: true,
     unit: "/mois",
     forBudget: "Budget pub de 15 000 CHF/mois et plus",
+    budgetRange: { min: 15000, max: null },
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Tous" },
@@ -216,3 +226,72 @@ export const specialCampaignsNote =
  */
 export const budgetFloorNote =
   "En dessous de 500 CHF par mois de budget publicitaire, les campagnes ne génèrent pas assez de données pour être optimisées : les résultats sont aléatoires et vous paieriez des frais de gestion pour rien. Nous préférons vous le dire d'entrée : mieux vaut attendre d'avoir ce budget que de tester trop petit.";
+
+/**
+ * Pack correspondant à un budget publicitaire mensuel (CHF).
+ * Renvoie `null` sous le plancher de 500.-/mois : aucun pack n'est proposé,
+ * c'est le message de refus pédagogique qui s'affiche (cf. budgetFloorNote).
+ * Utilisé par le calculateur de budget (/calculateur-budget).
+ */
+export function tierForBudget(budget: number): Tier | null {
+  if (!Number.isFinite(budget) || budget < 500) return null;
+  return (
+    tiers.find(
+      (t) => budget >= t.budgetRange.min && (t.budgetRange.max === null || budget < t.budgetRange.max),
+    ) ?? tiers[tiers.length - 1]
+  );
+}
+
+/* ──────────────────────────────────────────────────────────────
+   ChatGPT Ads : offre de lancement.
+
+   Service distinct de la gestion Google Ads : un seul pack, tout compris,
+   d'où un export séparé plutôt qu'une entrée de `tiers` (la grille Google Ads
+   se choisit sur le budget publicitaire, ce qui n'a pas de sens ici).
+
+   Remise de lancement à durée limitée : les tarifs remisés s'appliquent
+   jusqu'au 31.12.2026, puis le tarif plein prend le relais. Ce doublement doit
+   rester écrit noir sur blanc partout où l'offre est présentée.
+   ────────────────────────────────────────────────────────────── */
+
+export const chatgptAds = {
+  name: "Early Bird",
+  /** Frais de gestion mensuels pendant la période de lancement. */
+  price: "240.-",
+  priceValue: 240,
+  /** Tarif plein, appliqué dès la fin de la remise. */
+  regularPrice: "480.-",
+  regularPriceValue: 480,
+  unit: "/mois",
+  /** Dernier jour de la remise (inclus). */
+  promoEndsISO: "2026-12-31",
+  promoEndsLabel: "31 décembre 2026",
+  /** Frais de setup uniques, remisés eux aussi. */
+  setup: "150.-",
+  setupValue: 150,
+  regularSetup: "300.-",
+  regularSetupValue: 300,
+  /** Budget publicitaire minimum, payé directement à OpenAI. */
+  minBudgetDaily: 20,
+  minBudgetMonthly: 600,
+  attributes: [
+    { label: "Canal", value: "ChatGPT Ads (annonces sponsorisées)" },
+    { label: "Gestion", value: "Création, ciblage et optimisation en continu" },
+    { label: "Budget publicitaire", value: "20.-/jour minimum, soit environ 600.-/mois" },
+    { label: "Setup", value: "Compte, tracking et première campagne inclus" },
+    { label: "Reporting", value: "Dashboard + point mensuel" },
+    { label: "Support", value: "E-mail, réponse sous 48 h" },
+  ],
+  ctaLabel: "Demander l'accès Early Bird",
+} as const;
+
+/**
+ * Mention obligatoire : ChatGPT Ads est un canal jeune. Ne jamais présenter
+ * l'offre sans elle, et ne jamais promettre de résultat chiffré.
+ */
+export const chatgptBetaNote =
+  "ChatGPT Ads est un canal récent, encore en phase de test et d'apprentissage. Les volumes, les coûts et les performances ne sont pas stabilisés : aucun résultat n'est garanti. Nous nous engageons sur le travail et la transparence des chiffres, pas sur une promesse de retour.";
+
+/** Mention obligatoire sous le prix : la remise est limitée dans le temps. */
+export const chatgptPromoNote =
+  "Tarif de lancement valable jusqu'au 31 décembre 2026. À partir du 1er janvier 2027, les frais de gestion passent à 480.-/mois. Budget publicitaire payé directement à OpenAI, en plus des frais de gestion.";
