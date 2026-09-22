@@ -7,7 +7,7 @@
 import { addOns } from "../data/tarifs";
 ---
 
-<div class="addons">
+<div class="addons edge">
   <h3>Mise en place et options</h3>
   <ul class="addons-list">
     {
@@ -35,7 +35,13 @@ import { addOns } from "../data/tarifs";
 </div>
 
 <style>
-  .addons { max-width: 720px; margin: 44px auto 0; }
+  .addons {
+    max-width: 720px;
+    margin: 44px auto 0;
+    background: var(--surface-on, var(--paper));
+    border-radius: var(--r);
+    padding: 26px 28px;
+  }
   .addons h3 {
     font-family: var(--font-display);
     font-size: 15px;

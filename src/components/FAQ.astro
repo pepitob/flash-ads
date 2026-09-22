@@ -52,6 +52,18 @@ const schema = faqSchema(items);
   .faq-list { width: 100%; }
   .faq-item { border-bottom: 1px solid var(--rule, var(--hairline)); }
   .faq-item:first-child { border-top: 1px solid var(--rule, var(--hairline)); }
+  /* Seul l'item OUVERT prend le trait et l'ombre : fermée, une liste de dix
+     questions encadrées ferait dix boîtes empilées. */
+  .faq-item[open] {
+    background: var(--surface-on, var(--paper));
+    border: var(--edge-w) solid var(--edge);
+    border-radius: var(--r);
+    box-shadow: var(--shadow-edge);
+    padding: 0 18px;
+    margin: 10px 0;
+  }
+  .faq-item[open] + .faq-item { border-top: 1px solid var(--rule, var(--hairline)); }
+  .faq-item summary:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
   .faq-item summary {
     list-style: none;
     cursor: pointer;
@@ -66,7 +78,6 @@ const schema = faqSchema(items);
     letter-spacing: -.01em;
   }
   .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary:focus-visible { outline: 2px solid var(--accent-on, var(--accent)); outline-offset: 4px; border-radius: var(--r); }
   .chev {
     flex: 0 0 auto;
     font-family: var(--font-mono);

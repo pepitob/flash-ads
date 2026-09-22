@@ -8,7 +8,7 @@ interface Props {
 const { title, href, linkLabel = "En savoir plus" } = Astro.props;
 ---
 
-<div class="card">
+<div class="card edge">
   <div class="ico"><slot name="icon" /></div>
   <h3>{title}</h3>
   <p><slot /></p>

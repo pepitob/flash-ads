@@ -328,8 +328,22 @@ const jsonLd = [
   .trust-stats .n { font-weight: 700; font-size: 28px; letter-spacing: -.02em; }
   .trust-stats .l { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
 
-  .cards4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
-  .cards4 .card { padding: 26px; }
+  /* « Pourquoi nous choisir » : des lignes de grille, pas des boîtes. Quatre
+     cadres de plus ici saturaient la page alors que les colonnes se lisent
+     déjà seules. La séparation suit l'axe de la grille au fil des ruptures. */
+  .cards4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .cards4 .card {
+    background: none;
+    border: 0;
+    border-left: 1px solid var(--rule, var(--hairline));
+    border-radius: 0;
+    padding: 4px 24px;
+  }
+  .cards4 .card:hover { border-color: var(--rule, var(--hairline)); }
+  .cards4 .card:first-child { border-left: 0; padding-left: 0; }
+  /* Aucune boîte ici, pas même la pastille d'icône : l'icône vit à nu. */
+  .cards4 :global(.ico) { background: none; width: auto; height: auto; place-items: start; margin-bottom: 14px; }
+  .cards4 :global(.ico svg) { width: 26px; height: 26px; }
   .cards4 h3 { font-size: 18px; font-weight: 600; margin-top: 2px; }
   .cards4 p { color: var(--muted-on, var(--muted)); font-size: 14.5px; line-height: 1.6; margin-top: 8px; }
 
@@ -354,7 +368,9 @@ const jsonLd = [
     .hero { padding: 48px 0 40px; }
     .problem-grid { grid-template-columns: 1fr; }
     .trust-inner { gap: 22px; }
-    .cards4 { grid-template-columns: 1fr 1fr; }
+    .cards4 { grid-template-columns: 1fr 1fr; row-gap: 28px; }
+    .cards4 .card:nth-child(2n+1) { border-left: 0; padding-left: 0; }
+    .cards4 .card:nth-child(n+3) { border-top: 1px solid var(--rule, var(--hairline)); padding-top: 28px; }
     .tile { padding: 28px 24px; }
   }
 
@@ -372,6 +388,8 @@ const jsonLd = [
     .baseline { margin-top: 16px; }
   }
   @media (max-width: 560px) {
-    .cards4 { grid-template-columns: 1fr; }
+    .cards4 { grid-template-columns: 1fr; row-gap: 24px; }
+    .cards4 .card { border-left: 0; padding-left: 0; }
+    .cards4 .card:nth-child(n+2) { border-top: 1px solid var(--rule, var(--hairline)); padding-top: 24px; }
   }
 </style>

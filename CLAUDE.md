@@ -162,6 +162,33 @@ jamais un seuil élevé.
   (home, `/services/google-ads`, `/services/chatgpt-ads`, `/agence`) : même
   rôle, même traitement. Laisser au moins une section claire entre deux bandes
   sombres, sinon la page se referme trop tôt.
+- **Trait net et ombre portée plate** (« offset shadow »), seul effet de relief
+  du système : `border: var(--edge-w) solid var(--edge)` plus une ombre pleine
+  décalée en bas à droite, `--shadow-edge-sm` (3px, boutons et badge),
+  `--shadow-edge` (4px, cartes), `--shadow-edge-lg` (7px, objets héros).
+  **Aucun flou, aucune opacité, aucune autre couleur que `--edge`, jamais de
+  direction inversée.** `--edge` vaut `--fa-navy` (jamais `#000`) et passe à
+  `#ffffff` sur `.band--night` : un composant ne l'écrit jamais en dur, il lit
+  `var(--edge)`. En pratique, on pose `.edge-sm` / `.edge` / `.edge-lg`, qui
+  déclarent aussi `--edge-offset` : c'est ce nombre unique qui pilote l'ombre
+  au repos, le survol (translate 2px, ombre réduite de 2px) et le clic
+  (l'élément se pose dans son ombre, ombre supprimée). Les états ne s'appliquent
+  qu'à ce qui se clique (`a`, `button`, `summary`, `.card`). Focus clavier :
+  contour 3px `--fa-pink` avec `outline-offset: 3px`, **en plus** de la bordure,
+  jamais à sa place. `prefers-reduced-motion` retire le déplacement et garde le
+  changement d'ombre.
+  **Liste fermée de ce qui porte le traitement** : boutons primaires et
+  secondaires, les 4 cartes de tarifs (la vedette en `--shadow-edge-lg`), le
+  bloc « Mise en place et options », les 3 cartes de services, l'aperçu
+  d'annonce du hero, le badge Google Partner (sauf dans le pied de page) et
+  l'item de FAQ **ouvert** uniquement.
+  **Ce qui ne le porte pas, volontairement** : les témoignages (filet 1px
+  `--rule`, rien d'autre), la grille « Pourquoi nous choisir » (lignes de
+  grille seules, ni boîte ni pastille d'icône), les tuiles de chiffres et les
+  résultats (typographie seule, aucun contour), les logos clients, les items de
+  FAQ fermés, le pied de page, la navigation, les champs de formulaire et les
+  bandes elles-mêmes. **Jamais d'imbrication** : un élément traité n'en contient
+  pas un autre, à la seule exception du bouton dans une carte de tarifs.
 - **Pas d'animation d'apparition au scroll** : ce sont les bandes qui structurent la page.
   Seules subsistent les micro-transitions de survol (200 ms au plus).
 - **Contenu publié** : les prix (`pricingValidated`), les **avis Google** et les **logos clients**

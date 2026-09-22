@@ -23,7 +23,7 @@ const {
 } = Astro.props;
 ---
 
-<div class="ad surface-paper" role="img" aria-label={`Exemple d'annonce Google Search gérée par Flash Ads pour la recherche « ${query} »`}>
+<div class="ad surface-paper edge-lg" role="img" aria-label={`Exemple d'annonce Google Search gérée par Flash Ads pour la recherche « ${query} »`}>
   <!-- Barre de recherche, précédée du logo Google comme sur une vraie page de résultats -->
   <div class="ad-bar">
     <img class="ad-google" src="/google-wordmark.webp" alt="Google" width="122" height="40" decoding="async" />
@@ -62,8 +62,9 @@ const {
 </div>
 
 <style>
+  /* Le trait et l'ombre viennent de .edge-lg : c'est l'objet le plus avancé
+     de la page, il porte donc le décalage le plus fort. */
   .ad {
-    border: 1px solid var(--rule, var(--hairline));
     border-radius: var(--r);
     padding: 18px;
     position: relative;

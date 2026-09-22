@@ -77,6 +77,19 @@
   --shadow-header: 0 1px 3px rgba(20, 24, 40, .10), 0 10px 30px rgba(20, 24, 40, .05);
   --ring-accent: 0 0 0 3px rgba(37, 99, 255, .25);
 
+  /* ── Trait net et ombre portée plate ──
+     Un seul traitement visuel : bordure franche + ombre pleine décalée en bas à
+     droite. Aucun flou, aucune opacité, aucune autre couleur que --edge, et
+     jamais de direction inversée. --edge n'est pas #000 : le noir pur ne vit
+     dans aucune autre partie du système. Il est redéfini par bande, parce que
+     le navy disparaît sur midnight, et un composant ne le connaît jamais en
+     dur : il lit var(--edge). */
+  --edge: var(--fa-navy);
+  --edge-w: 2px;
+  --shadow-edge-sm: 3px 3px 0 var(--edge);   /* boutons, badge */
+  --shadow-edge:    4px 4px 0 var(--edge);   /* cartes */
+  --shadow-edge-lg: 7px 7px 0 var(--edge);   /* objets héros */
+
   /* ── Rayons : tous à 4px, seule la pilule fait exception ── */
   --radius-sm: 4px;
   --radius-md: 4px;
@@ -142,14 +155,21 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-family: var(--font-display); font-weight: 600; font-size: 15px; letter-spacing: -.01em;
   padding: 13px 24px; border-radius: var(--radius-md); text-decoration: none;
-  border: 1px solid transparent; cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-normal) var(--ease-out), background var(--dur-normal) var(--ease-out), color var(--dur-normal) var(--ease-out);
+  border: var(--edge-w) solid var(--edge); cursor: pointer;
+  --edge-offset: 3px;
+  box-shadow: var(--shadow-edge-sm);
+  transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out), background 120ms var(--ease-out), color 120ms var(--ease-out);
 }
+.btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: calc(var(--edge-offset) - 2px) calc(var(--edge-offset) - 2px) 0 var(--edge);
+}
+.btn:active { transform: translate(var(--edge-offset), var(--edge-offset)); box-shadow: none; }
+.btn:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-primary:hover { background: var(--accent-hover); }
-.btn-primary:active { opacity: .9; }
-.btn-ghost { background: transparent; color: var(--on-strong, var(--ink)); border-color: #d6dae3; }
-.btn-ghost:hover { border-color: var(--ink); background: var(--surface-subtle); }
+.btn-ghost { background: var(--surface-on, var(--paper)); color: var(--on-strong, var(--ink)); }
+.btn-ghost:hover { background: var(--surface-on, var(--paper)); }
 .btn .arrow { transition: transform .18s ease; }
 .btn:hover .arrow { transform: translateX(3px); }
 
@@ -191,6 +211,7 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
   --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
   --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
   --rule: var(--fa-smoke); --surface-on: var(--fa-white);
+  --edge: var(--fa-navy);
   color: var(--on);
 }
 .band--tint {
@@ -198,6 +219,7 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
   --on: var(--body); --on-strong: var(--ink); --on-faint: #7b8298;
   --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: #6f7793;
   --rule: #d8e2fb; --surface-on: var(--fa-white);
+  --edge: var(--fa-navy);
   color: var(--on);
 }
 /* Sur midnight : texte blanc ou --fa-slate-light, accent --fa-blue-light.
@@ -207,7 +229,38 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
   --on: var(--fa-slate-light); --on-strong: #fff; --on-faint: var(--fa-slate);
   --accent-on: var(--fa-blue-light); --eyebrow-on: var(--fa-pink); --muted-on: var(--fa-slate);
   --rule: var(--border-dark); --surface-on: var(--surface-dark-card);
+  --edge: #ffffff;
   color: var(--on);
+}
+
+/* ── Trait + ombre plate : le traitement, et sa liste fermée ────
+   `--edge-offset` pilote à la fois l'ombre au repos et les deux états : un
+   seul nombre à régler par taille, donc aucune chance que le survol et le
+   clic se désynchronisent de l'ombre de départ. */
+.edge, .edge-sm, .edge-lg {
+  border: var(--edge-w) solid var(--edge);
+  transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+}
+.edge    { --edge-offset: 4px; box-shadow: var(--shadow-edge); }
+.edge-sm { --edge-offset: 3px; box-shadow: var(--shadow-edge-sm); }
+.edge-lg { --edge-offset: 7px; box-shadow: var(--shadow-edge-lg); }
+
+/* Les états ne concernent que ce qui se clique ou s'ouvre : un bloc décoratif
+   qui s'enfonce sous le curseur promet une action qui n'existe pas. */
+:is(a, button, summary, .card):is(.edge, .edge-sm, .edge-lg):hover {
+  transform: translate(2px, 2px);
+  box-shadow: calc(var(--edge-offset) - 2px) calc(var(--edge-offset) - 2px) 0 var(--edge);
+}
+/* L'élément vient se poser exactement dans son ombre. */
+:is(a, button, summary, .card):is(.edge, .edge-sm, .edge-lg):active {
+  transform: translate(var(--edge-offset), var(--edge-offset));
+  box-shadow: none;
+}
+/* Le focus s'ajoute à la bordure, il ne la remplace pas : d'où le rose et le
+   décalage, pour qu'il reste distinguable du trait. */
+.edge:focus-visible, .edge-sm:focus-visible, .edge-lg:focus-visible {
+  outline: 3px solid var(--fa-pink);
+  outline-offset: 3px;
 }
 
 /* ── Sections ───────────────────────────────────────────────── */
@@ -219,10 +272,15 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
 /* ── Cards (3-up grids: services, cases) ────────────────────── */
 .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .card {
-  background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--radius-xl); padding: 32px;
-  transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out), border-color .2s var(--ease-out); position: relative;
+  background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline));
+  border-radius: var(--radius-xl); padding: 32px; position: relative;
+  transition: border-color .2s var(--ease-out);
 }
-.card:hover { border-color: var(--ink); }
+.card:hover { border-color: var(--on-strong, var(--ink)); }
+/* Une carte qui porte le trait ne garde pas en plus le survol de bordure :
+   c'est l'ombre qui dit l'état, deux effets superposés en diraient deux. */
+.card:is(.edge, .edge-sm, .edge-lg),
+.card:is(.edge, .edge-sm, .edge-lg):hover { border-color: var(--edge); }
 .card .ico { width: 44px; height: 44px; border-radius: var(--radius-md); display: grid; place-items: center; background: rgba(37, 99, 255, .10); margin-bottom: 16px; }
 .card .ico svg { width: 20px; height: 20px; stroke: var(--accent-on, var(--accent)); }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 19px; letter-spacing: -.01em; }
@@ -232,9 +290,17 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
 .card:hover .lnk .arrow { transform: translateX(3px); }
 
 /* ── Pricing ────────────────────────────────────────────────── */
-.price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
-.price { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--radius-xl); padding: 26px 24px; display: flex; flex-direction: column; position: relative; }
-.price.feat { border: 1.5px solid var(--accent); }
+.price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; align-items: stretch; }
+/* Les quatre packs portent le trait ; la vedette se distingue par la
+   profondeur de l'ombre, pas par une couleur de bordure différente. */
+.price {
+  background: var(--surface-on, var(--paper)); border-radius: var(--radius-xl);
+  padding: 26px 24px; display: flex; flex-direction: column; position: relative;
+  --edge-offset: 4px;
+  border: var(--edge-w) solid var(--edge);
+  box-shadow: var(--shadow-edge);
+}
+.price.feat { --edge-offset: 7px; box-shadow: var(--shadow-edge-lg); }
 .price .badge { position: absolute; top: 18px; right: 18px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fa-navy); background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
 .price .tier { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--on-faint, var(--faint)); }
 .price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--on-strong, var(--ink)); }
@@ -260,7 +326,9 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
 
 /* ── Case studies ───────────────────────────────────────────── */
 .cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.case { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--radius-xl); padding: 32px; }
+/* Pas de boîte : un chiffre de cette taille se tient seul, et trois cadres de
+   plus entreraient en concurrence avec les cartes de tarifs. */
+.case { padding: 0 24px 0 0; }
 .case .metric { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -.03em; line-height: 1; color: var(--accent-on, var(--accent)); }
 .case .who { font-family: var(--font-display); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--on-faint, var(--faint)); margin-top: 10px; }
 .case p { font-size: 14px; color: var(--muted-on, var(--muted)); margin-top: 12px; }
@@ -283,17 +351,18 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
    et consorts). Ne restent ici que les cas où une bande change la NATURE d'un
    élément, pas seulement sa teinte. */
 .band--tint, .band--night {
-  .card, .case, .price, .answer { background: var(--surface-on); }
+  .card, .price, .answer { background: var(--surface-on); }
 }
 .band--night {
   .card .ico { background: rgba(255, 255, 255, .10); }
-  .card:hover { border-color: var(--on-strong); }
   .price .row .k { opacity: .75; }
   .answer-body :global(p), .answer-body :global(b) { color: var(--on-strong); }
+  /* Sur midnight le trait est blanc : le bouton bleu garde donc son fond, et
+     le bouton fantôme redevient transparent pour ne pas doubler la surface. */
   .btn-primary { background: var(--fa-blue); color: #fff; }
   .btn-primary:hover { background: var(--fa-blue-light); color: var(--fa-navy); }
-  .btn-ghost { color: #fff; border-color: var(--rule); }
-  .btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .10); }
+  .btn-ghost { background: transparent; color: #fff; }
+  .btn-ghost:hover { background: rgba(255, 255, 255, .10); }
 }
 
 /* Îlot clair posé sur une bande sombre : il redéclare les variables pour
@@ -303,6 +372,7 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
   --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
   --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
   --rule: var(--fa-smoke); --surface-on: var(--fa-white);
+  --edge: var(--fa-navy);
   color: var(--on);
 }
 .surface-paper .btn-primary { background: var(--fa-blue); color: #fff; }
@@ -327,5 +397,10 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
 /* ── Accessibility: respect reduced-motion ─────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  /* Le déplacement disparaît, le changement d'ombre reste : l'état est toujours
+     lisible, sans mouvement. */
+  .btn:hover, .btn:active,
+  :is(.edge, .edge-sm, .edge-lg):hover,
+  :is(.edge, .edge-sm, .edge-lg):active { transform: none; }
   html { scroll-behavior: auto; }
 }
