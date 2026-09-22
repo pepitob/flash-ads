@@ -348,6 +348,20 @@ const jsonLd = [
     .trust-inner { gap: 22px; }
     .cards4 { grid-template-columns: 1fr 1fr; }
   }
+
+  /* Sur téléphone, la colonne de texte passe AU-DESSUS de l'aperçu d'annonce.
+     Sans resserrement, l'aperçu tombait intégralement sous la ligne de
+     flottaison (833 px de haut pour un écran de 844) : le visuel signature du
+     hero était invisible à l'arrivée. On récupère la centaine de pixels qui
+     permet d'en montrer le haut, donc d'inviter au défilement. */
+  @media (max-width: 640px) {
+    .hero { padding: 40px 0 32px; }
+    .hero-grid { gap: 28px; }
+    .hero h1 { margin: 14px 0 0; }
+    .hero .lead { font-size: 17px; margin-top: 18px; }
+    .hero-cta { margin-top: 24px; gap: 10px; }
+    .baseline { margin-top: 16px; }
+  }
   @media (max-width: 560px) {
     .cards4 { grid-template-columns: 1fr; }
   }

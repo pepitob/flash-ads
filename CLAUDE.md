@@ -112,6 +112,16 @@ Comprendre ces flux transversaux avant d'éditer :
   page existante. Mode expert : `?pro=1` ou le bouton en bas (outil de vente, non indexé via le
   canonique sans paramètre).
 
+## Animations d'apparition
+
+`.reveal` + IntersectionObserver (`BaseLayout.astro`) fait apparaître les blocs au défilement.
+**Le contenu est visible par défaut** : la règle qui le masque est portée par `.js .reveal`, et la
+classe `js` est posée sur `<html>` par un script `is:inline` en tête de `<head>`. Ne jamais
+remettre `opacity: 0` directement sur `.reveal` : sans cette garde, un script bloqué, en erreur ou
+désactivé laissait les 38 blocs de la home invisibles, donc une page blanche. Le seuil de
+l'observateur est bas (`0.05`) parce qu'un bloc plus haut que l'écran d'un téléphone n'atteint
+jamais un seuil élevé.
+
 ## Conventions non négociables
 
 - **Design system verrouillé** (Flash Ads Design System, fondations dans
