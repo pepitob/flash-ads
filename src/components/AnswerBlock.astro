@@ -9,12 +9,18 @@ interface Props {
   question?: string;
   /** Niveau de titre (default h2). */
   as?: "h2" | "h3";
+  /**
+   * `card` (défaut) : encadré, pour une réponse posée au fil d'un article.
+   * `lead` : sans cadre, titre à gauche et réponse à droite, quand le bloc
+   * ouvre une section et n'a donc rien à se détacher de.
+   */
+  variant?: "card" | "lead";
 }
-const { question, as = "h2" } = Astro.props;
+const { question, as = "h2", variant = "card" } = Astro.props;
 const Heading = as;
 ---
 
-<div class="answer">
+<div class:list={["answer", variant]}>
   {question && <Heading class="answer-q display">{question}</Heading>}
   <div class="answer-body"><slot /></div>
 </div>
@@ -32,4 +38,28 @@ const Heading = as;
   .answer-body :global(p) { font-size: 17px; color: var(--on-strong, var(--ink)); }
   .answer-body :global(p + p) { margin-top: 10px; }
   .answer-body :global(b) { color: var(--on-strong, var(--ink)); }
+
+  /* Variante d'ouverture de section : pas de cadre, la question tient lieu de
+     titre et la réponse se lit comme un chapô, sur deux colonnes. */
+  .answer.lead {
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr);
+    gap: 56px;
+    align-items: start;
+  }
+  .answer.lead .answer-q {
+    font-size: clamp(28px, 3.4vw, 40px);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    margin-bottom: 0;
+  }
+  .answer.lead .answer-body :global(p) { font-size: 18px; line-height: 1.75; }
+
+  @media (max-width: 900px) {
+    .answer.lead { grid-template-columns: 1fr; gap: 18px; }
+  }
 </style>

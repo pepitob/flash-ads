@@ -166,8 +166,12 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 }
 .btn:active { transform: translate(var(--edge-offset), var(--edge-offset)); box-shadow: none; }
 .btn:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); }
+/* L'action est rose : c'est le seul endroit du site où la couleur d'alerte de
+   la marque sert à autre chose qu'un eyebrow, et c'est précisément ce qui la
+   rend percutante. Le texte est --fa-navy, jamais blanc : le rose ne monte
+   qu'à 3,5:1 avec du blanc, contre 5:1 avec le navy. */
+.btn-primary { background: var(--fa-pink); color: var(--fa-navy); }
+.btn-primary:hover { background: #ff4d9c; }
 .btn-ghost { background: var(--surface-on, var(--paper)); color: var(--on-strong, var(--ink)); }
 .btn-ghost:hover { background: var(--surface-on, var(--paper)); }
 .btn .arrow { transition: transform .18s ease; }
@@ -303,15 +307,22 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
 .price.feat { --edge-offset: 7px; box-shadow: var(--shadow-edge-lg); }
 .price .badge { position: absolute; top: 18px; right: 18px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fa-navy); background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
 .price .tier { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--on-faint, var(--faint)); }
-.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--on-strong, var(--ink)); }
-.price .amt small { font-size: 14px; font-weight: 500; color: var(--muted-on, var(--muted)); }
+.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--on-strong, var(--ink)); white-space: nowrap; }
+/* L'unité passe à la ligne pour les quatre packs : « dès 1490.- /mois » ne
+   tient pas dans la colonne, et un seul pack décalé ferait une grille bancale. */
+.price .amt small { display: block; font-size: 13px; font-weight: 500; color: var(--muted-on, var(--muted)); margin-top: 2px; }
 .price .for { font-size: 13px; color: var(--muted-on, var(--muted)); min-height: 40px; }
 .price .rows { margin-top: 16px; display: flex; flex-direction: column; }
 .price .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rule, var(--hairline-subtle)); }
 .price .row .k { font-size: 12px; color: var(--muted-on, var(--muted)); flex-shrink: 0; }
 .price .row .k sup { color: var(--eyebrow-on, var(--fa-pink)); cursor: help; }
 .price .row .v { font-size: 13px; color: var(--on, var(--body)); text-align: right; }
-.price .btn { justify-content: center; margin-top: auto; }
+/* « Choisir Performance » est le libellé le plus long : il doit tenir sur une
+   ligne comme les trois autres, la colonne ne fait que 198px utiles. */
+.price .btn {
+  justify-content: center; margin-top: auto;
+  padding-inline: 12px; font-size: 14px; white-space: nowrap;
+}
 .price-note { font-size: 13px; color: var(--muted-on, var(--muted)); text-align: center; margin-top: 24px; }
 .price-note b { color: var(--on-strong, var(--ink)); }
 
@@ -357,10 +368,8 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
   .card .ico { background: rgba(255, 255, 255, .10); }
   .price .row .k { opacity: .75; }
   .answer-body :global(p), .answer-body :global(b) { color: var(--on-strong); }
-  /* Sur midnight le trait est blanc : le bouton bleu garde donc son fond, et
-     le bouton fantôme redevient transparent pour ne pas doubler la surface. */
-  .btn-primary { background: var(--fa-blue); color: #fff; }
-  .btn-primary:hover { background: var(--fa-blue-light); color: var(--fa-navy); }
+  /* Sur midnight le trait est blanc : le bouton fantôme redevient transparent
+     pour ne pas doubler la surface. Le bouton rose, lui, ne change pas. */
   .btn-ghost { background: transparent; color: #fff; }
   .btn-ghost:hover { background: rgba(255, 255, 255, .10); }
 }
@@ -375,8 +384,6 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
   --edge: var(--fa-navy);
   color: var(--on);
 }
-.surface-paper .btn-primary { background: var(--fa-blue); color: #fff; }
-.surface-paper .btn-primary:hover { background: var(--accent-hover); }
 
 /* Deux bandes de même famille qui se suivent : un filet évite la soudure. */
 .band--paper + .band--paper, .band--tint + .band--tint { border-top: 1px solid var(--rule); }

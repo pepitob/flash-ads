@@ -127,8 +127,11 @@ jamais un seuil élevé.
 - **Design system verrouillé** (Flash Ads Design System, fondations dans
   `src/styles/global.css` ; re-synchronisation via le skill `/design-sync`) : accent uni
   **Flash Blue `#2563FF`** ; **rose `#FF2E8B`** réservé aux eyebrows, coches, badge « Le plus
-  choisi » et point « en direct », et **ne porte jamais de texte blanc** (ratio 3,5:1 : son
-  texte est `--fa-navy`). Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
+  choisi », point « en direct » et **bouton d'action** (`.btn-primary`), et **ne porte jamais
+  de texte blanc** (ratio 3,5:1 : son texte est `--fa-navy`, qui monte à 5:1). Le bouton
+  primaire est donc rose à texte navy sur les trois bandes : c'est le seul endroit où le rose
+  sert à autre chose qu'un accent typographique, et c'est ce qui le rend percutant. Le bleu
+  reste la couleur des liens, icônes, numéros d'étape et chiffres. Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
   **pas de monospace**. **Aucun dégradé dans le système** : le gradient bleu→rose ne subsiste
   que dans le `<linearGradient>` interne au SVG du logo (`Brand.astro`). Ne jamais réintroduire
   un `linear-gradient` sur un texte, un fond, un filet ou une bordure. **Aucune ombre** non
@@ -158,6 +161,11 @@ jamais un seuil élevé.
   **Une ou deux bandes `night` viennent casser l'alternance au milieu de la
   page**, jamais collées à la clôture sombre : sur la home, « Pourquoi nous
   choisir » (vers le tiers) et « Comment on travaille » (vers les deux tiers).
+  Cartographie de la home : header paper, hero tint, bandeau de confiance paper,
+  « Qu'est-ce que Flash Ads ? » + diptyque problème / réponse tint (une seule
+  bande : les trois blocs racontent la même chose, et le chapô seul dans son
+  encadré blanc flottait), pourquoi night, services paper, tarifs tint, méthode
+  night, témoignages tint, résultats paper, FAQ tint, CTA + pied de page night.
   Le bloc méthode et le bloc « pourquoi » sont sombres partout où ils existent
   (home, `/services/google-ads`, `/services/chatgpt-ads`, `/agence`) : même
   rôle, même traitement. Laisser au moins une section claire entre deux bandes
@@ -178,16 +186,16 @@ jamais un seuil élevé.
   jamais à sa place. `prefers-reduced-motion` retire le déplacement et garde le
   changement d'ombre.
   **Liste fermée de ce qui porte le traitement** : boutons primaires et
-  secondaires, les 4 cartes de tarifs (la vedette en `--shadow-edge-lg`), le
-  bloc « Mise en place et options », les 3 cartes de services, l'aperçu
-  d'annonce du hero, le badge Google Partner (sauf dans le pied de page) et
-  l'item de FAQ **ouvert** uniquement.
+  secondaires, les 4 cartes de tarifs (la vedette en `--shadow-edge-lg`), les 3
+  cartes de services, l'aperçu d'annonce du hero, le badge Google Partner (sauf
+  dans le pied de page) et l'item de FAQ **ouvert** uniquement.
   **Ce qui ne le porte pas, volontairement** : les témoignages (filet 1px
   `--rule`, rien d'autre), la grille « Pourquoi nous choisir » (lignes de
   grille seules, ni boîte ni pastille d'icône), les tuiles de chiffres et les
-  résultats (typographie seule, aucun contour), les logos clients, les items de
-  FAQ fermés, le pied de page, la navigation, les champs de formulaire et les
-  bandes elles-mêmes. **Jamais d'imbrication** : un élément traité n'en contient
+  résultats (typographie seule, aucun contour), le bloc « Mise en place et
+  options » (une liste de compléments, pas un quatrième objet en concurrence
+  avec les cartes de packs), les logos clients, les items de FAQ fermés, le pied
+  de page, la navigation, les champs de formulaire et les bandes elles-mêmes. **Jamais d'imbrication** : un élément traité n'en contient
   pas un autre, à la seule exception du bouton dans une carte de tarifs.
 - **Pas d'animation d'apparition au scroll** : ce sont les bandes qui structurent la page.
   Seules subsistent les micro-transitions de survol (200 ms au plus).
