@@ -129,7 +129,7 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
-  <section class="page-hero">
+  <section class="page-hero band band--tint">
     <div class="wrap">
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité ChatGPT</span>
@@ -157,7 +157,7 @@ const jsonLd = [
   </section>
 
   <!-- OFFRE (CTA principal de la page) -->
-  <section id="offre">
+  <section id="offre" class="band band--paper">
     <div class="wrap">
       <SectionHead
         eyebrow="Offre de lancement"
@@ -166,7 +166,7 @@ const jsonLd = [
       />
 
       <div class="offer-grid">
-        <div class="price feat reveal">
+        <div class="price feat">
           <span class="badge">Jusqu'au 31.12</span>
           <span class="tier">{chatgptAds.name}</span>
           <div class="amt">
@@ -189,7 +189,7 @@ const jsonLd = [
           </a>
         </div>
 
-        <div class="offer-notes reveal">
+        <div class="offer-notes">
           <div class="note-card">
             <h3>Ce que vous payez, en clair</h3>
             <ul>
@@ -220,7 +220,7 @@ const jsonLd = [
   </section>
 
   <!-- FORMAT -->
-  <section class="section-alt">
+  <section class="section-alt band band--tint">
     <div class="wrap">
       <SectionHead
         eyebrow="Le format"
@@ -228,17 +228,17 @@ const jsonLd = [
         text="La publicité n'altère pas les réponses de l'IA : elle s'affiche à côté, identifiée comme telle."
       />
       <div class="cards3">
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg></div>
           <h3>Sous la réponse</h3>
           <p>L'annonce apparaît après la réponse de ChatGPT, dans une zone identifiée. Elle comprend votre nom, votre favicon, un titre, un texte, une image et le lien vers votre site.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg></div>
           <h3>Clairement labellisée</h3>
           <p>Chaque annonce est marquée comme publicité. L'utilisateur sait ce qui est sponsorisé et ce qui ne l'est pas.</p>
         </div>
-        <div class="card reveal">
+        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 20V10M18 20V4M6 20v-4" /></svg></div>
           <h3>On paie au clic</h3>
           <p>Vous payez quand quelqu'un clique. OpenAI recommande de démarrer autour de 3 à 5 dollars d'enchère maximale : c'est un plafond, l'enchère au second prix fait souvent payer moins.</p>
@@ -252,9 +252,9 @@ const jsonLd = [
   </section>
 
   <!-- POURQUOI MAINTENANT -->
-  <section class="why">
+  <section class="why band band--night">
     <div class="wrap why-grid">
-      <div class="reveal">
+      <div>
         <span class="eyebrow">Pourquoi maintenant</span>
         <h2 class="display">Le premier entrant apprend plus vite et paie moins cher.</h2>
         <p class="muted">
@@ -265,7 +265,7 @@ const jsonLd = [
         </p>
         <a href="#demande" class="btn btn-ghost why-link">Nous contacter <span class="arrow" aria-hidden="true">→</span></a>
       </div>
-      <div class="why-panel reveal">
+      <div class="why-panel">
         <span class="eyebrow">État du déploiement</span>
         <ul class="timeline mono">
           <li><b>9 fév. 2026</b> : test aux États-Unis (Free + Go)</li>
@@ -282,9 +282,9 @@ const jsonLd = [
   </section>
 
   <!-- DEMANDE D'ACCÈS -->
-  <section id="demande" class="ask">
+  <section id="demande" class="ask band band--tint">
     <div class="wrap">
-      <div class="ask-box reveal">
+      <div class="ask-box">
         <span class="eyebrow">Demande d'accès</span>
         <h2 class="display">Parlons-en avant que le tarif remonte.</h2>
         <p class="muted">
@@ -302,70 +302,69 @@ const jsonLd = [
     </div>
   </section>
 
-  <FAQ items={faqItems} title="Questions fréquentes sur la publicité ChatGPT" eyebrow="FAQ · ChatGPT Ads" />
+  <FAQ items={faqItems} title="Questions fréquentes sur la publicité ChatGPT" eyebrow="FAQ · ChatGPT Ads" band="paper" />
 </BaseLayout>
 
 <style>
   .page-hero { padding: 72px 0 20px; }
-  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 22px; }
-  .crumbs a { text-decoration: none; color: var(--muted); }
-  .crumbs a:hover { color: var(--flash-deep); }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
+  .crumbs a:hover { color: var(--accent-on, var(--accent)); }
   .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 10px; max-width: 15em; }
-  .updated { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+  .updated { font-size: 12px; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
   .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
 
   /* ── Offre ── */
   .offer-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 28px; align-items: start; }
   .offer-grid .price { max-width: none; }
-  .was { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
-  .was s { color: var(--faint); }
+  .was { font-size: 13px; color: var(--muted-on, var(--muted)); margin-bottom: 4px; }
+  .was s { color: var(--on-faint, var(--faint)); }
   .offer-cta { justify-content: center; width: 100%; margin-top: auto; }
   .offer-notes { display: flex; flex-direction: column; gap: 16px; }
   .note-card {
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--surface-on, var(--paper));
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: var(--r);
     padding: 26px 28px;
   }
   .note-card h3 { font-family: var(--font-display); font-weight: 600; font-size: 18px; }
   .note-card ul { list-style: none; margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .note-card li { font-size: 14.5px; color: var(--muted); line-height: 1.6; padding-left: 18px; position: relative; }
+  .note-card li { font-size: 14.5px; color: var(--muted-on, var(--muted)); line-height: 1.6; padding-left: 18px; position: relative; }
   .note-card li::before { content: ""; position: absolute; left: 0; top: 9px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
-  .note-card b { color: var(--ink); font-weight: 600; }
-  .promo-note { font-size: 12.5px; color: var(--muted); line-height: 1.6; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+  .note-card b { color: var(--on-strong, var(--ink)); font-weight: 600; }
+  .promo-note { font-size: 12.5px; color: var(--muted-on, var(--muted)); line-height: 1.6; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule, var(--hairline)); }
   /* Le canal est jeune : cette carte doit se remarquer, pas se fondre. */
   .note-card.beta { border-left: 3px solid var(--fa-pink); }
-  .note-card.beta p { font-size: 14.5px; color: var(--muted); line-height: 1.6; margin-top: 12px; }
+  .note-card.beta p { font-size: 14.5px; color: var(--muted-on, var(--muted)); line-height: 1.6; margin-top: 12px; }
 
-  .fmt-source { font-size: 12px; color: var(--faint); margin-top: 26px; text-align: center; }
-  .fmt-source a { color: var(--muted); }
+  .fmt-source { font-size: 12px; color: var(--on-faint, var(--faint)); margin-top: 26px; text-align: center; }
+  .fmt-source a { color: var(--muted-on, var(--muted)); }
 
-  .muted { color: var(--muted); font-size: 16px; margin-top: 14px; max-width: 36em; }
+  .muted { color: var(--muted-on, var(--muted)); font-size: 16px; margin-top: 14px; max-width: 36em; }
   .why { padding-top: 64px; }
   .why-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
   .why h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; margin-top: 16px; }
   .why-link { margin-top: 26px; }
-  .why-panel { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--r); padding: 28px; }
+  .why-panel { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 28px; }
   .timeline { list-style: none; margin-top: 18px; display: flex; flex-direction: column; gap: 14px; }
-  .timeline li { font-size: 13px; color: var(--muted); padding-left: 18px; position: relative; }
+  .timeline li { font-size: 13px; color: var(--muted-on, var(--muted)); padding-left: 18px; position: relative; }
   .timeline li::before { content: ""; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: var(--flash-deep); }
-  .timeline li.live { color: var(--ink); font-weight: 600; }
+  .timeline li.live { color: var(--on-strong, var(--ink)); font-weight: 600; }
   .timeline li.live::before { background: var(--fa-pink); box-shadow: 0 0 0 4px rgba(255, 46, 139, .16); }
-  .tl-source { font-size: 11.5px; color: var(--faint); margin-top: 18px; }
-  .tl-source a { color: var(--muted); }
+  .tl-source { font-size: 11.5px; color: var(--on-faint, var(--faint)); margin-top: 18px; }
+  .tl-source a { color: var(--muted-on, var(--muted)); }
 
   /* ── Demande d'accès ── */
   .ask-box {
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--surface-on, var(--paper));
+    border: 1px solid var(--rule, var(--hairline));
     border-radius: var(--radius-2xl);
     padding: 48px;
-    box-shadow: var(--shadow);
   }
   .ask-box h2 { font-size: clamp(26px, 3vw, 36px); font-weight: 600; margin-top: 16px; }
   .ask-box .muted { margin-bottom: 28px; }
-  .ask-direct { font-size: 13.5px; color: var(--muted); margin-top: 22px; }
-  .ask-direct a { color: var(--accent); text-decoration: none; }
+  .ask-direct { font-size: 13.5px; color: var(--muted-on, var(--muted)); margin-top: 22px; }
+  .ask-direct a { color: var(--accent-on, var(--accent)); text-decoration: none; }
 
   @media (max-width: 900px) {
     .offer-grid, .why-grid { grid-template-columns: 1fr; gap: 28px; }

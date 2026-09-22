@@ -127,11 +127,85 @@ jamais un seuil élevé.
 - **Design system verrouillé** (Flash Ads Design System, fondations dans
   `src/styles/global.css` ; re-synchronisation via le skill `/design-sync`) : accent uni
   **Flash Blue `#2563FF`** ; **rose `#FF2E8B`** réservé aux eyebrows, coches, badge « Le plus
-  choisi » et point « en direct » ; gradient signature bleu→rose (vertical sur l'éclair,
-  horizontal sur mots et chiffres) **sans jamais s'attarder dans le violet** (look
-  « IA/crypto » à éviter). Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
-  **pas de monospace**. Sections sombres : midnight `#0d1020` avec lueur rose. Cartes 16px,
-  boutons 8px.
+  choisi », point « en direct » et chiffres d'accent. **Il n'est jamais un fond de bouton** :
+  il ne porte le blanc qu'à 3,5:1. Le fond des boutons d'action est **`--fa-pink-cta`
+  `#E0006E`**, avec **texte blanc** (4,78:1, AA), et `--fa-pink-cta-hover` `#c60061` au survol
+  (5,88:1, le survol assombrit pour ne pas perdre de contraste). **Aucun contour sur les
+  labels** : ni `-webkit-text-stroke`, ni `paint-order`, ni `text-shadow`. Un contour
+  n'améliore pas le contraste mesuré, il ne fait qu'épaissir les glyphes. **Exception** : sur
+  un aplat `--fa-blue`, le rose tombe à 1,37:1 et disparaît, le bouton primaire s'inverse donc
+  en blanc à texte `--fa-blue` (`.band--blue`/`.on-blue`). Le bleu reste par ailleurs la
+  couleur des liens, icônes, numéros d'étape et chiffres.
+  Tout bouton doit rester **au-dessus de 4,5:1**, y compris les commandes secondaires du
+  calculateur : mesurer avant de changer une couleur de bouton ou de fond de bande.
+  Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
+  **pas de monospace**. **Aucun dégradé dans le système** : le gradient bleu→rose ne subsiste
+  que dans le `<linearGradient>` interne au SVG du logo (`Brand.astro`). Ne jamais réintroduire
+  un `linear-gradient` sur un texte, un fond, un filet ou une bordure. **Aucune ombre** floutée
+  non plus, sauf sous le header collant (`--shadow-header`). **Tous les rayons à 4px**, seule
+  la pilule (`--radius-pill`) fait exception.
+- **Rythme par bandes de section** : la page alterne des fonds (`.band` +
+  `.band--paper` / `--tint` / `--night`) au lieu d'être une nappe blanche.
+  **Trois surfaces, pas une de plus** : `paper` (blanc, surface par défaut),
+  `tint` (`#eef3ff`, une section sur deux) et `night` (midnight, réservé à la
+  clôture de page : CTA final + pied de page, qui forment un seul bloc sombre).
+  **Le bleu plein reste une couleur d'accent** (boutons, liens, chiffres) et
+  n'est jamais un fond de section : une page qui alterne blanc, bleu clair, bleu
+  vif et noir ressemble à quatre sites collés bout à bout. `.band` porte le
+  rythme vertical, le modificateur porte la couleur : un bloc interne peut donc
+  prendre un modificateur seul. Chaque bande expose ses couleurs en variables
+  (`--on`, `--on-strong`, `--on-faint`, `--muted-on`, `--accent-on`,
+  `--eyebrow-on`, `--rule`, `--surface-on`) et **les composants lisent ces
+  variables**, jamais un littéral ni un token brut :
+  `color: var(--muted-on, var(--muted))`. Le repli garde le rendu identique hors
+  bande (header). Un îlot clair posé sur une bande sombre prend `.surface-paper`,
+  qui redéclare ces variables pour lui-même. Sur midnight : texte blanc ou
+  `--fa-slate-light`, accent `--fa-blue-light`, jamais `--fa-blue`.
+  Règle d'assemblage d'une page : hero en `tint`, puis alternance
+  `paper` / `tint`, FAQ (`<FAQ band="paper|tint">`, `tint` par défaut) réglée
+  pour que l'alternance reste juste, puis CTA et pied de page en `night`. Jamais
+  deux bandes identiques qui se suivent, sauf le CTA et le pied de page.
+  **Une ou deux bandes `night` viennent casser l'alternance au milieu de la
+  page**, jamais collées à la clôture sombre : sur la home, « Pourquoi nous
+  choisir » (vers le tiers) et « Comment on travaille » (vers les deux tiers).
+  Cartographie de la home : header paper, hero tint, bandeau de confiance paper,
+  « Qu'est-ce que Flash Ads ? » + diptyque problème / réponse tint (une seule
+  bande : les trois blocs racontent la même chose, et le chapô seul dans son
+  encadré blanc flottait), pourquoi night, services paper, tarifs tint, méthode
+  night, témoignages tint, résultats paper, FAQ tint, CTA + pied de page night.
+  Le bloc méthode et le bloc « pourquoi » sont sombres partout où ils existent
+  (home, `/services/google-ads`, `/services/chatgpt-ads`, `/agence`) : même
+  rôle, même traitement. Laisser au moins une section claire entre deux bandes
+  sombres, sinon la page se referme trop tôt.
+- **Trait net et ombre portée plate** (« offset shadow »), seul effet de relief
+  du système : `border: var(--edge-w) solid var(--edge)` plus une ombre pleine
+  décalée en bas à droite, `--shadow-edge-sm` (3px, boutons et badge),
+  `--shadow-edge` (4px, cartes), `--shadow-edge-lg` (7px, objets héros).
+  **Aucun flou, aucune opacité, aucune autre couleur que `--edge`, jamais de
+  direction inversée.** `--edge` vaut `--fa-navy` (jamais `#000`) et passe à
+  `#ffffff` sur `.band--night` : un composant ne l'écrit jamais en dur, il lit
+  `var(--edge)`. En pratique, on pose `.edge-sm` / `.edge` / `.edge-lg`, qui
+  déclarent aussi `--edge-offset` : c'est ce nombre unique qui pilote l'ombre
+  au repos, le survol (translate 2px, ombre réduite de 2px) et le clic
+  (l'élément se pose dans son ombre, ombre supprimée). Les états ne s'appliquent
+  qu'à ce qui se clique (`a`, `button`, `summary`, `.card`). Focus clavier :
+  contour 3px `--fa-pink` avec `outline-offset: 3px`, **en plus** de la bordure,
+  jamais à sa place. `prefers-reduced-motion` retire le déplacement et garde le
+  changement d'ombre.
+  **Liste fermée de ce qui porte le traitement** : boutons primaires et
+  secondaires, les 4 cartes de tarifs (la vedette en `--shadow-edge-lg`), les 3
+  cartes de services, l'aperçu d'annonce du hero, le badge Google Partner (sauf
+  dans le pied de page) et l'item de FAQ **ouvert** uniquement.
+  **Ce qui ne le porte pas, volontairement** : les témoignages (filet 1px
+  `--rule`, rien d'autre), la grille « Pourquoi nous choisir » (lignes de
+  grille seules, ni boîte ni pastille d'icône), les tuiles de chiffres et les
+  résultats (typographie seule, aucun contour), le bloc « Mise en place et
+  options » (une liste de compléments, pas un quatrième objet en concurrence
+  avec les cartes de packs), les logos clients, les items de FAQ fermés, le pied
+  de page, la navigation, les champs de formulaire et les bandes elles-mêmes. **Jamais d'imbrication** : un élément traité n'en contient
+  pas un autre, à la seule exception du bouton dans une carte de tarifs.
+- **Pas d'animation d'apparition au scroll** : ce sont les bandes qui structurent la page.
+  Seules subsistent les micro-transitions de survol (200 ms au plus).
 - **Contenu publié** : les prix (`pricingValidated`), les **avis Google** et les **logos clients**
   (`src/data/temoignages.ts` + `public/logos/`) sont réels. Les **chiffres de la section
   Résultats** (home + page Publicité Google) sont en revanche des ordres de grandeur

@@ -26,22 +26,20 @@
   --font-display: "Space Grotesk Variable", system-ui, sans-serif;
   --font-body: "Inter Variable", system-ui, sans-serif;
 
-  --radius-card: 16px;
+  --radius-card: 4px;
 }
 
 :root {
   /* ── Brand primaries ── */
   --fa-blue: #2563ff;
-  --fa-blue-bright: #2e6bff;
-  --fa-blue-light: #5b9cff;
-  --fa-pink: #ff2e8b;
-  --fa-pink-deep: #ff1e84;
-  --fa-pink-light: #ff6bb0;
+  --fa-blue-light: #5b9cff;   /* accent sur fond sombre, jamais --fa-blue */
+  --fa-pink: #ff2e8b;         /* eyebrows, accents, chiffres : jamais un fond de bouton */
+  --fa-pink-cta: #E0006E;     /* fond des boutons d'action : blanc dessus = 4,78:1 (AA) */
+  --fa-pink-cta-hover: #c60061;
+  --fa-tint: #eef3ff;         /* bleu de marque dilué : fond clair coloré */
 
-  /* ── Signature gradient (blue → pink, no purple) ── */
-  --grad: linear-gradient(180deg, #2563ff 0%, #2e6bff 40%, #ff2e8b 60%, #ff1e84 100%);
-  --grad-h: linear-gradient(90deg, #2563ff 0%, #2e6bff 40%, #ff2e8b 60%, #ff1e84 100%);
-  --grad-bright: linear-gradient(180deg, #5b9cff 0%, #6aa0ff 40%, #ff6bb0 60%, #ff5aa6 100%);
+  /* Aucun dégradé dans le système : le seul qui subsiste est le <linearGradient>
+     interne au SVG du logo (Brand.astro). Ne pas réintroduire de token ici. */
 
   /* ── Neutrals ── */
   --fa-navy: #161a28;
@@ -49,7 +47,7 @@
   --fa-slate: #8a90a0;
   --fa-slate-light: #9aa0b4;
   --fa-smoke: #eceef2;
-  --fa-mist: #f0f1f4;
+  --fa-white: #ffffff;
   --fa-offwhite: #f6f7fa;
 
   /* ── Semantic (+ back-compat aliases used across components/pages) ── */
@@ -74,21 +72,34 @@
   --blue: #2563ff;
   --pink: #ff2e8b;
 
-  /* ── Shadows (cool navy-tinted) ── */
-  --shadow: 0 1px 3px rgba(20, 24, 40, .10), 0 10px 30px rgba(20, 24, 40, .05);
-  --shadow-lg: 0 4px 12px rgba(20, 24, 40, .08), 0 24px 48px rgba(20, 24, 40, .08);
-  --shadow-accent: 0 8px 24px rgba(37, 99, 255, .22);
-  --shadow-flash: 0 8px 24px rgba(37, 99, 255, .22); /* back-compat */
+  /* ── Ombres ──
+     Une seule subsiste, et uniquement sous le header collant : ailleurs, la
+     séparation se fait par une bordure 1px --fa-smoke. --ring-accent reste
+     pour le focus clavier, c'est un indicateur d'accessibilité, pas un effet. */
+  --shadow-header: 0 1px 3px rgba(20, 24, 40, .10), 0 10px 30px rgba(20, 24, 40, .05);
   --ring-accent: 0 0 0 3px rgba(37, 99, 255, .25);
 
-  /* ── Radii ── */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 24px;
+  /* ── Trait net et ombre portée plate ──
+     Un seul traitement visuel : bordure franche + ombre pleine décalée en bas à
+     droite. Aucun flou, aucune opacité, aucune autre couleur que --edge, et
+     jamais de direction inversée. --edge n'est pas #000 : le noir pur ne vit
+     dans aucune autre partie du système. Il est redéfini par bande, parce que
+     le navy disparaît sur midnight, et un composant ne le connaît jamais en
+     dur : il lit var(--edge). */
+  --edge: var(--fa-navy);
+  --edge-w: 2px;
+  --shadow-edge-sm: 3px 3px 0 var(--edge);   /* boutons, badge */
+  --shadow-edge:    4px 4px 0 var(--edge);   /* cartes */
+  --shadow-edge-lg: 7px 7px 0 var(--edge);   /* objets héros */
+
+  /* ── Rayons : tous à 4px, seule la pilule fait exception ── */
+  --radius-sm: 4px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+  --radius-xl: 4px;
+  --radius-2xl: 4px;
   --radius-pill: 999px;
-  --r: 16px;                  /* back-compat: card radius */
+  --r: 4px;                   /* back-compat: card radius */
 
   /* ── Motion ── */
   --ease-out: cubic-bezier(.16, 1, .3, 1);
@@ -110,14 +121,14 @@ html { scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
   background: var(--canvas);
-  color: var(--body);
+  color: var(--on, var(--body));
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 a { color: inherit; }
 img { display: block; max-width: 100%; }
-h1, h2, h3, h4, .display { color: var(--ink); }
+h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 
 /* ── Layout helpers ─────────────────────────────────────────── */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 32px; }
@@ -132,105 +143,263 @@ h1, h2, h3, h4, .display { color: var(--ink); }
   font-weight: 600;
   letter-spacing: var(--ls-wide);
   text-transform: uppercase;
-  color: var(--fa-pink);
+  color: var(--eyebrow-on, var(--fa-pink));
   display: inline-block;
 }
 
-/* Signature gradient - ONLY via these classes (blue → pink) */
+/* Mot mis en avant : aplat, jamais un dégradé. La couleur vient de la bande
+   (--accent-on), pour rester lisible aussi bien sur fond clair que sombre. */
 .flash-word,
-.text-gradient {
-  background: var(--grad-h);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.bg-gradient-signature { background: var(--grad); }
+.text-gradient { color: var(--accent-on, var(--accent)); }
 
 /* ── Buttons - rounded rectangles (radius-md), not pills ─────── */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   font-family: var(--font-display); font-weight: 600; font-size: 15px; letter-spacing: -.01em;
   padding: 13px 24px; border-radius: var(--radius-md); text-decoration: none;
-  border: 1px solid transparent; cursor: pointer;
-  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-normal) var(--ease-out), background var(--dur-normal) var(--ease-out), color var(--dur-normal) var(--ease-out);
+  border: var(--edge-w) solid var(--edge); cursor: pointer;
+  --edge-offset: 3px;
+  box-shadow: var(--shadow-edge-sm);
+  transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out), background 120ms var(--ease-out), color 120ms var(--ease-out);
 }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-hover); box-shadow: var(--shadow-accent); transform: translateY(-1px); }
-.btn-primary:active { transform: scale(.98); }
-.btn-ghost { background: transparent; color: var(--ink); border-color: #d6dae3; }
-.btn-ghost:hover { border-color: var(--ink); background: var(--surface-subtle); }
+.btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: calc(var(--edge-offset) - 2px) calc(var(--edge-offset) - 2px) 0 var(--edge);
+}
+.btn:active { transform: translate(var(--edge-offset), var(--edge-offset)); box-shadow: none; }
+.btn:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
+/* L'action est rose : c'est le seul endroit du site où la couleur d'alerte de
+   la marque sert à autre chose qu'un accent, et c'est ce qui la rend
+   percutante. Mais c'est --fa-pink-cta (#E0006E), pas --fa-pink : le rose de
+   marque ne porte du blanc qu'à 3,5:1, celui-ci monte à 4,78:1, donc AA.
+   Aucun filet sur le label : un contour n'améliore pas le contraste mesuré,
+   il ne fait qu'épaissir les glyphes. */
+.btn-primary { background: var(--fa-pink-cta); color: #fff; }
+/* Le survol assombrit au lieu d'éclaircir : éclaircir réduirait le contraste
+   du texte blanc (5,88:1 au survol). */
+.btn-primary:hover { background: var(--fa-pink-cta-hover); }
+
+/* Exception : sur un aplat --fa-blue, le rose tombe à 1,37:1 et disparaît. Le
+   bouton s'inverse alors, blanc à texte bleu. Aucune section n'a ce fond
+   aujourd'hui (le système n'a que paper, tint et night), la règle est là pour
+   le jour où un bloc bleu apparaît. */
+.band--blue .btn-primary, .on-blue .btn-primary { background: #fff; color: var(--fa-blue); }
+.band--blue .btn-primary:hover, .on-blue .btn-primary:hover { background: #e6edff; }
+.btn-ghost { background: var(--surface-on, var(--paper)); color: var(--on-strong, var(--ink)); }
+.btn-ghost:hover { background: var(--surface-on, var(--paper)); }
 .btn .arrow { transition: transform .18s ease; }
 .btn:hover .arrow { transform: translateX(3px); }
 
+
+/* ── Bandes de section ─────────────────────────────────────────
+   Le rythme de la page vient du fond, plus de l'espace blanc. Trois surfaces
+   seulement, et pas une de plus : c'est ce qui fait tenir l'ensemble.
+
+     paper  blanc, la surface par défaut
+     tint   le bleu de marque dilué, une section sur deux
+     night  midnight, réservé à la clôture de page (CTA + pied de page)
+
+   Le bleu plein reste une couleur d'ACCENT (boutons, liens, chiffres). Il n'est
+   jamais un fond de section : une page qui alterne blanc, bleu clair, bleu vif
+   et noir ressemble à quatre sites collés bout à bout.
+
+   Chaque bande expose ses couleurs en variables ; les composants s'y branchent
+   et restent donc lisibles dans les trois bandes sans classe supplémentaire :
+
+     --on          texte courant (paragraphes)
+     --on-strong   titres
+     --on-faint    labels, méta
+     --muted-on    gris secondaire
+     --accent-on   accent lisible SUR cette bande
+     --eyebrow-on  eyebrow (rose du design system)
+     --rule        bordures et filets
+     --surface-on  fond d'une carte posée sur la bande
+
+   `.band` ne porte QUE le rythme vertical, les modificateurs ne portent que la
+   couleur : un bloc interne peut ainsi prendre un modificateur seul.
+
+   Densité : environ 30 % de moins que les 84px d'avant. Le clamp plafonne à
+   64px, volontairement sous le 7vw du brief qui aurait AUGMENTÉ le padding
+   desktop (89px à 1280px) au lieu de le réduire. */
+.band { padding-block: clamp(40px, 4.6vw, 64px); }
+
+.band--paper {
+  background: var(--fa-white);
+  --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
+  --rule: var(--fa-smoke); --surface-on: var(--fa-white);
+  --edge: var(--fa-navy);
+  color: var(--on);
+}
+.band--tint {
+  background: var(--fa-tint);
+  --on: var(--body); --on-strong: var(--ink); --on-faint: #7b8298;
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: #6f7793;
+  --rule: #d8e2fb; --surface-on: var(--fa-white);
+  --edge: var(--fa-navy);
+  color: var(--on);
+}
+/* Sur midnight : texte blanc ou --fa-slate-light, accent --fa-blue-light.
+   Jamais --fa-blue, illisible sur ce fond. */
+.band--night {
+  background: var(--fa-midnight);
+  --on: var(--fa-slate-light); --on-strong: #fff; --on-faint: var(--fa-slate);
+  --accent-on: var(--fa-blue-light); --eyebrow-on: var(--fa-pink); --muted-on: var(--fa-slate);
+  --rule: var(--border-dark); --surface-on: var(--surface-dark-card);
+  --edge: #ffffff;
+  color: var(--on);
+}
+
+/* ── Trait + ombre plate : le traitement, et sa liste fermée ────
+   `--edge-offset` pilote à la fois l'ombre au repos et les deux états : un
+   seul nombre à régler par taille, donc aucune chance que le survol et le
+   clic se désynchronisent de l'ombre de départ. */
+.edge, .edge-sm, .edge-lg {
+  border: var(--edge-w) solid var(--edge);
+  transition: transform 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+}
+.edge    { --edge-offset: 4px; box-shadow: var(--shadow-edge); }
+.edge-sm { --edge-offset: 3px; box-shadow: var(--shadow-edge-sm); }
+.edge-lg { --edge-offset: 7px; box-shadow: var(--shadow-edge-lg); }
+
+/* Les états ne concernent que ce qui se clique ou s'ouvre : un bloc décoratif
+   qui s'enfonce sous le curseur promet une action qui n'existe pas. */
+:is(a, button, summary, .card):is(.edge, .edge-sm, .edge-lg):hover {
+  transform: translate(2px, 2px);
+  box-shadow: calc(var(--edge-offset) - 2px) calc(var(--edge-offset) - 2px) 0 var(--edge);
+}
+/* L'élément vient se poser exactement dans son ombre. */
+:is(a, button, summary, .card):is(.edge, .edge-sm, .edge-lg):active {
+  transform: translate(var(--edge-offset), var(--edge-offset));
+  box-shadow: none;
+}
+/* Le focus s'ajoute à la bordure, il ne la remplace pas : d'où le rose et le
+   décalage, pour qu'il reste distinguable du trait. */
+.edge:focus-visible, .edge-sm:focus-visible, .edge-lg:focus-visible {
+  outline: 3px solid var(--fa-pink);
+  outline-offset: 3px;
+}
+
 /* ── Sections ───────────────────────────────────────────────── */
-section { padding: 84px 0; }
-.sec-head { max-width: 34em; margin-bottom: 44px; }
+section { padding-block: clamp(40px, 4.6vw, 64px); }
+.sec-head { max-width: 34em; margin-bottom: 32px; }
 .sec-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 14px; }
-.sec-head p { color: var(--muted); font-size: 17px; margin-top: 14px; }
+.sec-head p { color: var(--muted-on, var(--muted)); font-size: 17px; margin-top: 14px; }
 
 /* ── Cards (3-up grids: services, cases) ────────────────────── */
 .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .card {
-  background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 32px;
-  transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out), border-color .2s var(--ease-out); position: relative;
+  background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline));
+  border-radius: var(--radius-xl); padding: 32px; position: relative;
+  transition: border-color .2s var(--ease-out);
 }
-.card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: transparent; }
+.card:hover { border-color: var(--on-strong, var(--ink)); }
+/* Une carte qui porte le trait ne garde pas en plus le survol de bordure :
+   c'est l'ombre qui dit l'état, deux effets superposés en diraient deux. */
+.card:is(.edge, .edge-sm, .edge-lg),
+.card:is(.edge, .edge-sm, .edge-lg):hover { border-color: var(--edge); }
 .card .ico { width: 44px; height: 44px; border-radius: var(--radius-md); display: grid; place-items: center; background: rgba(37, 99, 255, .10); margin-bottom: 16px; }
-.card .ico svg { width: 20px; height: 20px; stroke: var(--accent); }
+.card .ico svg { width: 20px; height: 20px; stroke: var(--accent-on, var(--accent)); }
 .card h3 { font-family: var(--font-display); font-weight: 600; font-size: 19px; letter-spacing: -.01em; }
-.card p { color: var(--muted); font-size: 14.5px; margin-top: 9px; }
-.card .lnk { display: inline-flex; gap: 7px; align-items: center; margin-top: 16px; font-family: var(--font-display); font-weight: 600; font-size: 13.5px; color: var(--accent); text-decoration: none; }
+.card p { color: var(--muted-on, var(--muted)); font-size: 14.5px; margin-top: 9px; }
+.card .lnk { display: inline-flex; gap: 7px; align-items: center; margin-top: 16px; font-family: var(--font-display); font-weight: 600; font-size: 13.5px; color: var(--accent-on, var(--accent)); text-decoration: none; }
 .card .lnk .arrow { transition: transform .18s; }
 .card:hover .lnk .arrow { transform: translateX(3px); }
 
 /* ── Pricing ────────────────────────────────────────────────── */
-.price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
-.price { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 26px 24px; display: flex; flex-direction: column; position: relative; }
-.price.feat { border: 1.5px solid var(--accent); box-shadow: var(--shadow-lg); }
-.price .badge { position: absolute; top: 18px; right: 18px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
-.price .tier { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
-.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--ink); }
-.price .amt small { font-size: 14px; font-weight: 500; color: var(--muted); }
-.price .for { font-size: 13px; color: var(--muted); min-height: 40px; }
+.price-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; align-items: stretch; }
+/* Les quatre packs portent le trait ; la vedette se distingue par la
+   profondeur de l'ombre, pas par une couleur de bordure différente. */
+.price {
+  background: var(--surface-on, var(--paper)); border-radius: var(--radius-xl);
+  padding: 26px 24px; display: flex; flex-direction: column; position: relative;
+  --edge-offset: 4px;
+  border: var(--edge-w) solid var(--edge);
+  box-shadow: var(--shadow-edge);
+}
+.price.feat { --edge-offset: 7px; box-shadow: var(--shadow-edge-lg); }
+.price .badge { position: absolute; top: 18px; right: 18px; font-family: var(--font-display); font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fa-navy); background: var(--fa-pink); padding: 4px 9px; border-radius: var(--radius-xs, 3px); }
+.price .tier { font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--on-faint, var(--faint)); }
+.price .amt { font-family: var(--font-display); font-weight: 700; font-size: 34px; letter-spacing: -.03em; margin: 14px 0 2px; color: var(--on-strong, var(--ink)); white-space: nowrap; }
+/* L'unité passe à la ligne pour les quatre packs : « dès 1490.- /mois » ne
+   tient pas dans la colonne, et un seul pack décalé ferait une grille bancale. */
+.price .amt small { display: block; font-size: 13px; font-weight: 500; color: var(--muted-on, var(--muted)); margin-top: 2px; }
+.price .for { font-size: 13px; color: var(--muted-on, var(--muted)); min-height: 40px; }
 .price .rows { margin-top: 16px; display: flex; flex-direction: column; }
-.price .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--hairline-subtle); }
-.price .row .k { font-size: 12px; color: var(--muted); flex-shrink: 0; }
-.price .row .k sup { color: var(--fa-pink); cursor: help; }
-.price .row .v { font-size: 13px; color: var(--body); text-align: right; }
-.price .btn { justify-content: center; margin-top: auto; }
-.price-note { font-size: 13px; color: var(--muted); text-align: center; margin-top: 24px; }
-.price-note b { color: var(--ink); }
+.price .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rule, var(--hairline-subtle)); }
+.price .row .k { font-size: 12px; color: var(--muted-on, var(--muted)); flex-shrink: 0; }
+.price .row .k sup { color: var(--eyebrow-on, var(--fa-pink)); cursor: help; }
+.price .row .v { font-size: 13px; color: var(--on, var(--body)); text-align: right; }
+/* « Choisir Performance » est le libellé le plus long : il doit tenir sur une
+   ligne comme les trois autres, la colonne ne fait que 198px utiles. */
+.price .btn {
+  justify-content: center; margin-top: auto;
+  padding-inline: 12px; font-size: 14px; white-space: nowrap;
+}
+.price-note { font-size: 13px; color: var(--muted-on, var(--muted)); text-align: center; margin-top: 24px; }
+.price-note b { color: var(--on-strong, var(--ink)); }
 
 /* ── Method (numbered 01→04) ────────────────────────────────── */
 .method { display: grid; grid-template-columns: .9fr 1.1fr; gap: 48px; align-items: start; }
 .steps { display: flex; flex-direction: column; }
-.step { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid var(--hairline); }
+.step { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 20px 0; border-top: 1px solid var(--rule, var(--hairline)); }
 .step:first-child { border-top: none; }
-.step .no { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--accent); padding-top: 2px; min-width: 24px; }
+.step .no { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--accent-on, var(--accent)); padding-top: 2px; min-width: 24px; }
 .step h4 { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
-.step p { color: var(--muted); font-size: 14px; margin-top: 5px; }
+.step p { color: var(--muted-on, var(--muted)); font-size: 14px; margin-top: 5px; }
 
 /* ── Case studies ───────────────────────────────────────────── */
 .cases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.case { background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-xl); padding: 32px; box-shadow: var(--shadow); }
-.case .metric { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -.03em; line-height: 1; background: var(--grad-h); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.case .who { font-family: var(--font-display); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); margin-top: 10px; }
-.case p { font-size: 14px; color: var(--muted); margin-top: 12px; }
+/* Pas de boîte : un chiffre de cette taille se tient seul, et trois cadres de
+   plus entreraient en concurrence avec les cartes de tarifs. */
+.case { padding: 0 24px 0 0; }
+.case .metric { font-family: var(--font-display); font-weight: 700; font-size: 44px; letter-spacing: -.03em; line-height: 1; color: var(--accent-on, var(--accent)); }
+.case .who { font-family: var(--font-display); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--on-faint, var(--faint)); margin-top: 10px; }
+.case p { font-size: 14px; color: var(--muted-on, var(--muted)); margin-top: 12px; }
 
-/* ── Final CTA - midnight + pink glow (the one bold moment) ──── */
-.final { background: var(--surface-dark); border-radius: var(--radius-2xl); padding: 72px 48px; text-align: center; position: relative; overflow: hidden; }
-.final::before { content: ""; position: absolute; width: 480px; height: 480px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 46, 139, .18), transparent 65%); bottom: -260px; left: 50%; transform: translateX(-50%); }
-.final h2 { color: #fff; font-size: clamp(30px, 4vw, 42px); font-weight: 700; letter-spacing: -.025em; position: relative; max-width: 18em; margin: 0 auto; }
-.final p { color: var(--fa-slate-light); margin: 16px auto 0; max-width: 34em; position: relative; }
-.final .cta-row { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; justify-content: center; position: relative; }
-.final .btn-ghost { color: #fff; border-color: rgba(255, 255, 255, .2); }
-.final .btn-ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .06); }
+/* ── CTA final ──────────────────────────────────────────────────
+   Ce n'est plus une carte sombre posée sur du blanc : la bande qui l'englobe
+   porte la couleur, le bloc ne fait plus que centrer son contenu. */
+.final { text-align: center; }
+.final h2 { font-size: clamp(30px, 4vw, 42px); font-weight: 700; letter-spacing: -.025em; max-width: 18em; margin: 0 auto; }
+.final p { margin: 16px auto 0; max-width: 34em; }
+.final .cta-row { display: flex; gap: 14px; margin-top: 32px; flex-wrap: wrap; justify-content: center; }
 
-/* ── Reveal animations ──────────────────────────────────────────
-   Le contenu est visible PAR DÉFAUT : il n'est masqué que si le JavaScript est
-   là pour le révéler (classe `js` posée sur <html> par BaseLayout). Sans cette
-   garde, un script bloqué, en erreur ou simplement désactivé laissait toute la
-   page à `opacity: 0`, donc entièrement blanche. */
-.js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s var(--ease-out), transform .6s var(--ease-out); }
-.js .reveal.in { opacity: 1; transform: none; }
+/* Les animations d'apparition au scroll ont été retirées : ce sont les bandes
+   de couleur qui structurent désormais la page, et masquer le contenu en
+   attendant un observateur ne faisait que retarder sa lecture. La classe
+   `.reveal` reste posée sur le balisage mais n'a plus aucun effet. */
+
+/* ── Ce que l'indirection par variable ne sait pas dire ─────────
+   Presque tout se règle dans les composants (`var(--muted-on, var(--muted))`
+   et consorts). Ne restent ici que les cas où une bande change la NATURE d'un
+   élément, pas seulement sa teinte. */
+.band--tint, .band--night {
+  .card, .price, .answer { background: var(--surface-on); }
+}
+.band--night {
+  .card .ico { background: rgba(255, 255, 255, .10); }
+  .price .row .k { opacity: .75; }
+  .answer-body :global(p), .answer-body :global(b) { color: var(--on-strong); }
+  /* Sur midnight le trait est blanc : le bouton fantôme redevient transparent
+     pour ne pas doubler la surface. Le bouton rose, lui, ne change pas. */
+  .btn-ghost { background: transparent; color: #fff; }
+  .btn-ghost:hover { background: rgba(255, 255, 255, .10); }
+}
+
+/* Îlot clair posé sur une bande sombre : il redéclare les variables pour
+   lui-même, tout ce qu'il contient redevient donc lisible sur blanc. */
+.surface-paper {
+  background: var(--fa-white);
+  --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
+  --rule: var(--fa-smoke); --surface-on: var(--fa-white);
+  --edge: var(--fa-navy);
+  color: var(--on);
+}
+
+/* Deux bandes de même famille qui se suivent : un filet évite la soudure. */
+.band--paper + .band--paper, .band--tint + .band--tint { border-top: 1px solid var(--rule); }
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 1100px) {
@@ -239,7 +408,7 @@ section { padding: 84px 0; }
 @media (max-width: 900px) {
   .cards3, .cases { grid-template-columns: 1fr; }
   .method { grid-template-columns: 1fr; gap: 36px; }
-  section { padding: 60px 0; }
+  section, .band { padding-block: 40px; }
 }
 @media (max-width: 640px) {
   .price-grid { grid-template-columns: 1fr; }
@@ -248,6 +417,10 @@ section { padding: 84px 0; }
 /* ── Accessibility: respect reduced-motion ─────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .js .reveal { opacity: 1; transform: none; }
+  /* Le déplacement disparaît, le changement d'ombre reste : l'état est toujours
+     lisible, sans mouvement. */
+  .btn:hover, .btn:active,
+  :is(.edge, .edge-sm, .edge-lg):hover,
+  :is(.edge, .edge-sm, .edge-lg):active { transform: none; }
   html { scroll-behavior: auto; }
 }
