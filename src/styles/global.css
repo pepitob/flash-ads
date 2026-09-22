@@ -167,11 +167,22 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 .btn:active { transform: translate(var(--edge-offset), var(--edge-offset)); box-shadow: none; }
 .btn:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
 /* L'action est rose : c'est le seul endroit du site où la couleur d'alerte de
-   la marque sert à autre chose qu'un eyebrow, et c'est précisément ce qui la
-   rend percutante. Le texte est --fa-navy, jamais blanc : le rose ne monte
-   qu'à 3,5:1 avec du blanc, contre 5:1 avec le navy. */
-.btn-primary { background: var(--fa-pink); color: var(--fa-navy); }
-.btn-primary:hover { background: #ff4d9c; }
+   la marque sert à autre chose qu'un eyebrow, et c'est ce qui la rend
+   percutante. Le texte est blanc, cerné d'un filet --fa-navy : blanc sur rose
+   ne pèse que 3,5:1, et le navy seul, bien qu'à 5:1, se noie dans la
+   saturation du fond. Le filet tranche les deux, comme le trait des cartes.
+   `paint-order` pousse le filet à l'extérieur du glyphe pour ne pas amaigrir
+   la lettre ; là où il n'est pas supporté, le filet reste centré et le texte
+   demeure lisible. */
+.btn-primary {
+  background: var(--fa-pink);
+  color: #fff;
+  -webkit-text-stroke: .6px var(--fa-navy);
+  paint-order: stroke fill;
+}
+/* Le survol assombrit au lieu d'éclaircir : éclaircir aurait encore réduit le
+   contraste du texte blanc. */
+.btn-primary:hover { background: #ec2179; }
 .btn-ghost { background: var(--surface-on, var(--paper)); color: var(--on-strong, var(--ink)); }
 .btn-ghost:hover { background: var(--surface-on, var(--paper)); }
 .btn .arrow { transition: transform .18s ease; }

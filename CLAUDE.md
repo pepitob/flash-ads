@@ -127,11 +127,16 @@ jamais un seuil élevé.
 - **Design system verrouillé** (Flash Ads Design System, fondations dans
   `src/styles/global.css` ; re-synchronisation via le skill `/design-sync`) : accent uni
   **Flash Blue `#2563FF`** ; **rose `#FF2E8B`** réservé aux eyebrows, coches, badge « Le plus
-  choisi », point « en direct » et **bouton d'action** (`.btn-primary`), et **ne porte jamais
-  de texte blanc** (ratio 3,5:1 : son texte est `--fa-navy`, qui monte à 5:1). Le bouton
-  primaire est donc rose à texte navy sur les trois bandes : c'est le seul endroit où le rose
-  sert à autre chose qu'un accent typographique, et c'est ce qui le rend percutant. Le bleu
-  reste la couleur des liens, icônes, numéros d'étape et chiffres. Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
+  choisi », point « en direct » et **bouton d'action** (`.btn-primary`). C'est le seul endroit
+  où le rose sert à autre chose qu'un accent typographique, et c'est ce qui le rend percutant.
+  Le bleu reste la couleur des liens, icônes, numéros d'étape et chiffres.
+  **Texte sur fond rose** : blanc nu ne pèse que 3,5:1, et `--fa-navy`, bien qu'à 5:1, se noie
+  dans la saturation du fond (illisible à l'usage, pas seulement à la mesure). Le bouton porte
+  donc du **blanc cerné d'un filet `--fa-navy`** (`-webkit-text-stroke: .6px` +
+  `paint-order: stroke fill`, qui pousse le filet hors du glyphe pour ne pas amaigrir la
+  lettre). Les **petits éléments roses** (badge « Le plus choisi », tag « Obligatoire », 10px)
+  gardent un texte `--fa-navy` : un filet à cette taille ferait une bouillie. Ne jamais poser
+  du blanc nu sur du rose. Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
   **pas de monospace**. **Aucun dégradé dans le système** : le gradient bleu→rose ne subsiste
   que dans le `<linearGradient>` interne au SVG du logo (`Brand.astro`). Ne jamais réintroduire
   un `linear-gradient` sur un texte, un fond, un filet ou une bordure. **Aucune ombre** non
