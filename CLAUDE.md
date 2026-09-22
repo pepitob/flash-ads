@@ -151,10 +151,17 @@ jamais un seuil élevé.
   bande (header). Un îlot clair posé sur une bande sombre prend `.surface-paper`,
   qui redéclare ces variables pour lui-même. Sur midnight : texte blanc ou
   `--fa-slate-light`, accent `--fa-blue-light`, jamais `--fa-blue`.
-  Règle d'assemblage d'une page : hero en `tint`, puis alternance stricte
+  Règle d'assemblage d'une page : hero en `tint`, puis alternance
   `paper` / `tint`, FAQ (`<FAQ band="paper|tint">`, `tint` par défaut) réglée
   pour que l'alternance reste juste, puis CTA et pied de page en `night`. Jamais
   deux bandes identiques qui se suivent, sauf le CTA et le pied de page.
+  **Une ou deux bandes `night` viennent casser l'alternance au milieu de la
+  page**, jamais collées à la clôture sombre : sur la home, « Pourquoi nous
+  choisir » (vers le tiers) et « Comment on travaille » (vers les deux tiers).
+  Le bloc méthode et le bloc « pourquoi » sont sombres partout où ils existent
+  (home, `/services/google-ads`, `/services/chatgpt-ads`, `/agence`) : même
+  rôle, même traitement. Laisser au moins une section claire entre deux bandes
+  sombres, sinon la page se referme trop tôt.
 - **Pas d'animation d'apparition au scroll** : ce sont les bandes qui structurent la page.
   Seules subsistent les micro-transitions de survol (200 ms au plus).
 - **Contenu publié** : les prix (`pricingValidated`), les **avis Google** et les **logos clients**
