@@ -33,7 +33,9 @@
   /* ── Brand primaries ── */
   --fa-blue: #2563ff;
   --fa-blue-light: #5b9cff;   /* accent sur fond sombre, jamais --fa-blue */
-  --fa-pink: #ff2e8b;
+  --fa-pink: #ff2e8b;         /* eyebrows, accents, chiffres : jamais un fond de bouton */
+  --fa-pink-cta: #E0006E;     /* fond des boutons d'action : blanc dessus = 4,78:1 (AA) */
+  --fa-pink-cta-hover: #c60061;
   --fa-tint: #eef3ff;         /* bleu de marque dilué : fond clair coloré */
 
   /* Aucun dégradé dans le système : le seul qui subsiste est le <linearGradient>
@@ -167,25 +169,22 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 .btn:active { transform: translate(var(--edge-offset), var(--edge-offset)); box-shadow: none; }
 .btn:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
 /* L'action est rose : c'est le seul endroit du site où la couleur d'alerte de
-   la marque sert à autre chose qu'un eyebrow, et c'est ce qui la rend
-   percutante. Le texte est blanc, cerné d'un filet --fa-navy : blanc sur rose
-   ne pèse que 3,5:1, et le navy seul, bien qu'à 5:1, se noie dans la
-   saturation du fond. Le filet tranche les deux, comme le trait des cartes.
-   `paint-order` pousse le filet à l'extérieur du glyphe pour ne pas amaigrir
-   la lettre ; là où il n'est pas supporté, le filet reste centré et le texte
-   demeure lisible. L'épaisseur est en `em` et non en px : le bouton existe en
-   15px (hero, nav, CTA) et en 14px (packs), un filet fixe y pèserait deux
-   poids différents. 0,085em donne 1,3px à 15px, l'épaisseur au-delà de
-   laquelle les contrepoinçons du « a » et du « e » commencent à se fermer. */
-.btn-primary {
-  background: var(--fa-pink);
-  color: #fff;
-  -webkit-text-stroke: .085em var(--fa-navy);
-  paint-order: stroke fill;
-}
-/* Le survol assombrit au lieu d'éclaircir : éclaircir aurait encore réduit le
-   contraste du texte blanc. */
-.btn-primary:hover { background: #ec2179; }
+   la marque sert à autre chose qu'un accent, et c'est ce qui la rend
+   percutante. Mais c'est --fa-pink-cta (#E0006E), pas --fa-pink : le rose de
+   marque ne porte du blanc qu'à 3,5:1, celui-ci monte à 4,78:1, donc AA.
+   Aucun filet sur le label : un contour n'améliore pas le contraste mesuré,
+   il ne fait qu'épaissir les glyphes. */
+.btn-primary { background: var(--fa-pink-cta); color: #fff; }
+/* Le survol assombrit au lieu d'éclaircir : éclaircir réduirait le contraste
+   du texte blanc (5,88:1 au survol). */
+.btn-primary:hover { background: var(--fa-pink-cta-hover); }
+
+/* Exception : sur un aplat --fa-blue, le rose tombe à 1,37:1 et disparaît. Le
+   bouton s'inverse alors, blanc à texte bleu. Aucune section n'a ce fond
+   aujourd'hui (le système n'a que paper, tint et night), la règle est là pour
+   le jour où un bloc bleu apparaît. */
+.band--blue .btn-primary, .on-blue .btn-primary { background: #fff; color: var(--fa-blue); }
+.band--blue .btn-primary:hover, .on-blue .btn-primary:hover { background: #e6edff; }
 .btn-ghost { background: var(--surface-on, var(--paper)); color: var(--on-strong, var(--ink)); }
 .btn-ghost:hover { background: var(--surface-on, var(--paper)); }
 .btn .arrow { transition: transform .18s ease; }

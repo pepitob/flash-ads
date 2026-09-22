@@ -127,23 +127,23 @@ jamais un seuil élevé.
 - **Design system verrouillé** (Flash Ads Design System, fondations dans
   `src/styles/global.css` ; re-synchronisation via le skill `/design-sync`) : accent uni
   **Flash Blue `#2563FF`** ; **rose `#FF2E8B`** réservé aux eyebrows, coches, badge « Le plus
-  choisi », point « en direct » et **bouton d'action** (`.btn-primary`). C'est le seul endroit
-  où le rose sert à autre chose qu'un accent typographique, et c'est ce qui le rend percutant.
-  Le bleu reste la couleur des liens, icônes, numéros d'étape et chiffres.
-  **Texte sur fond rose** : blanc nu ne pèse que 3,5:1, et `--fa-navy`, bien qu'à 5:1, se noie
-  dans la saturation du fond (illisible à l'usage, pas seulement à la mesure). Le bouton porte
-  donc du **blanc cerné d'un filet `--fa-navy`** (`-webkit-text-stroke: .085em` +
-  `paint-order: stroke fill`, qui pousse le filet hors du glyphe pour ne pas amaigrir la
-  lettre). L'épaisseur est en `em` parce que le bouton existe en 15px (hero, nav, CTA) et en
-  14px (packs) : un filet fixe y pèserait deux poids différents. 0,085em donne 1,3px à 15px,
-  la limite au-delà de laquelle les contrepoinçons du « a » et du « e » se ferment. Les **petits éléments roses** (badge « Le plus choisi », tag « Obligatoire », 10px)
-  gardent un texte `--fa-navy` : un filet à cette taille ferait une bouillie. Ne jamais poser
-  du blanc nu sur du rose. Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
+  choisi », point « en direct » et chiffres d'accent. **Il n'est jamais un fond de bouton** :
+  il ne porte le blanc qu'à 3,5:1. Le fond des boutons d'action est **`--fa-pink-cta`
+  `#E0006E`**, avec **texte blanc** (4,78:1, AA), et `--fa-pink-cta-hover` `#c60061` au survol
+  (5,88:1, le survol assombrit pour ne pas perdre de contraste). **Aucun contour sur les
+  labels** : ni `-webkit-text-stroke`, ni `paint-order`, ni `text-shadow`. Un contour
+  n'améliore pas le contraste mesuré, il ne fait qu'épaissir les glyphes. **Exception** : sur
+  un aplat `--fa-blue`, le rose tombe à 1,37:1 et disparaît, le bouton primaire s'inverse donc
+  en blanc à texte `--fa-blue` (`.band--blue`/`.on-blue`). Le bleu reste par ailleurs la
+  couleur des liens, icônes, numéros d'étape et chiffres.
+  Tout bouton doit rester **au-dessus de 4,5:1**, y compris les commandes secondaires du
+  calculateur : mesurer avant de changer une couleur de bouton ou de fond de bande.
+  Typo Space Grotesk (titres, labels, boutons) + Inter (corps),
   **pas de monospace**. **Aucun dégradé dans le système** : le gradient bleu→rose ne subsiste
   que dans le `<linearGradient>` interne au SVG du logo (`Brand.astro`). Ne jamais réintroduire
-  un `linear-gradient` sur un texte, un fond, un filet ou une bordure. **Aucune ombre** non
-  plus, sauf sous le header collant (`--shadow-header`) : la séparation se fait par une bordure
-  1px `--rule`. **Tous les rayons à 4px**, seule la pilule (`--radius-pill`) fait exception.
+  un `linear-gradient` sur un texte, un fond, un filet ou une bordure. **Aucune ombre** floutée
+  non plus, sauf sous le header collant (`--shadow-header`). **Tous les rayons à 4px**, seule
+  la pilule (`--radius-pill`) fait exception.
 - **Rythme par bandes de section** : la page alterne des fonds (`.band` +
   `.band--paper` / `--tint` / `--night`) au lieu d'être une nappe blanche.
   **Trois surfaces, pas une de plus** : `paper` (blanc, surface par défaut),
