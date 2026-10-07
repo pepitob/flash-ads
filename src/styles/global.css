@@ -36,6 +36,14 @@
   --fa-pink: #ff2e8b;         /* eyebrows, accents, chiffres : jamais un fond de bouton */
   --fa-pink-cta: #E0006E;     /* fond des boutons d'action : blanc dessus = 4,78:1 (AA) */
   --fa-pink-cta-hover: #c60061;
+  /* Variantes de TEXTE des couleurs de marque. Le rose #ff2e8b ne tient que
+     3,49:1 sur blanc (3,14:1 sur tint) : tout texte rose (eyebrows, chiffres
+     d'accent) lit --fa-pink-text, 5,88:1 sur blanc et 5,29:1 sur tint. Le
+     bleu tient sur blanc (4,88:1) mais pas sur tint (4,39:1), d'où
+     --fa-blue-on-tint (5,03:1). Le rose vif reste celui des formes : coches,
+     points « en direct », badges, filets. */
+  --fa-blue-on-tint: #2259f0;
+  --fa-pink-text: #c60061;
   --fa-tint: #eef3ff;         /* bleu de marque dilué : fond clair coloré */
 
   /* Aucun dégradé dans le système : le seul qui subsiste est le <linearGradient>
@@ -53,8 +61,12 @@
   /* ── Semantic (+ back-compat aliases used across components/pages) ── */
   --ink: #161a28;             /* text-strong / headings */
   --body: #3a4052;            /* long-form body */
-  --muted: #8a90a0;           /* secondary text */
-  --faint: #aeb4c2;           /* labels, meta */
+  /* Gris de texte : ≥ 4,5:1 sur blanc, offwhite, smoke et tint (mesurés :
+     muted 5,94 / 5,54 / 5,11 / 5,35 ; faint 5,12 / 4,78 / 4,41* / 4,61).
+     *faint n'est jamais posé sur smoke, qui ne sert qu'aux filets. Les
+     anciens #8a90a0 et #aeb4c2 (3,19:1 et 2,07:1) échouaient partout. */
+  --muted: #5c637d;           /* secondary text */
+  --faint: #666d87;           /* labels, meta */
   --canvas: #ffffff;          /* page background */
   --paper: #ffffff;           /* card surface */
   --surface-subtle: #f6f7fa;  /* alternating sections */
@@ -143,7 +155,7 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
   font-weight: 600;
   letter-spacing: var(--ls-wide);
   text-transform: uppercase;
-  color: var(--eyebrow-on, var(--fa-pink));
+  color: var(--eyebrow-on, var(--fa-pink-text));
   display: inline-block;
 }
 
@@ -226,15 +238,18 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
 .band--paper {
   background: var(--fa-white);
   --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
-  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink-text); --muted-on: var(--muted);
   --rule: var(--fa-smoke); --surface-on: var(--fa-white);
   --edge: var(--fa-navy);
   color: var(--on);
 }
 .band--tint {
   background: var(--fa-tint);
-  --on: var(--body); --on-strong: var(--ink); --on-faint: #7b8298;
-  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: #6f7793;
+  /* Contrastes sur tint (sur une carte blanche posée dessus entre
+     parenthèses) : muted 5,35:1 (5,94), faint 4,61:1 (5,12), accent 5,03:1
+     (5,59), eyebrow 5,29:1 (5,88). Tous au-dessus de 4,5:1. */
+  --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
+  --accent-on: var(--fa-blue-on-tint); --eyebrow-on: var(--fa-pink-text); --muted-on: var(--muted);
   --rule: #d8e2fb; --surface-on: var(--fa-white);
   --edge: var(--fa-navy);
   color: var(--on);
@@ -328,7 +343,7 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
 .price .rows { margin-top: 16px; display: flex; flex-direction: column; }
 .price .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-top: 1px solid var(--rule, var(--hairline-subtle)); }
 .price .row .k { font-size: 12px; color: var(--muted-on, var(--muted)); flex-shrink: 0; }
-.price .row .k sup { color: var(--eyebrow-on, var(--fa-pink)); cursor: help; }
+.price .row .k sup { color: var(--eyebrow-on, var(--fa-pink-text)); cursor: help; }
 .price .row .v { font-size: 13px; color: var(--on, var(--body)); text-align: right; }
 /* « Choisir Performance » est le libellé le plus long : il doit tenir sur une
    ligne comme les trois autres, la colonne ne fait que 198px utiles. */
@@ -392,7 +407,7 @@ section { padding-block: clamp(40px, 4.6vw, 64px); }
 .surface-paper {
   background: var(--fa-white);
   --on: var(--body); --on-strong: var(--ink); --on-faint: var(--faint);
-  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink); --muted-on: var(--muted);
+  --accent-on: var(--fa-blue); --eyebrow-on: var(--fa-pink-text); --muted-on: var(--muted);
   --rule: var(--fa-smoke); --surface-on: var(--fa-white);
   --edge: var(--fa-navy);
   color: var(--on);

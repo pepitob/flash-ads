@@ -21,6 +21,7 @@ const schema = faqSchema(items);
     <div class="faq-intro">
       <span class="eyebrow">{eyebrow}</span>
       <h2 class="display">{title}</h2>
+      {Astro.slots.has("default") && <div class="faq-aside"><slot /></div>}
     </div>
     <div class="faq-list">
       {
@@ -49,6 +50,10 @@ const schema = faqSchema(items);
     align-items: start;
   }
   .faq-intro h2 { font-size: clamp(28px, 3.4vw, 42px); font-weight: 600; margin-top: 16px; }
+  /* Une longue FAQ laisserait sa colonne de gauche vide : l'intro accompagne
+     la lecture. Inoffensif pour une FAQ courte, qui ne défile pas. */
+  .faq-intro { position: sticky; top: 110px; }
+  .faq-aside { margin-top: 20px; }
   .faq-list { width: 100%; }
   .faq-item { border-bottom: 1px solid var(--rule, var(--hairline)); }
   .faq-item:first-child { border-top: 1px solid var(--rule, var(--hairline)); }
@@ -92,5 +97,6 @@ const schema = faqSchema(items);
 
   @media (max-width: 900px) {
     .faq-layout { grid-template-columns: 1fr; gap: 32px; }
+    .faq-intro { position: static; }
   }
 </style>

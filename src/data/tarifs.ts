@@ -277,12 +277,12 @@ export const chatgptAds = {
   attributes: [
     { label: "Canal", value: "ChatGPT Ads (annonces sponsorisées)" },
     { label: "Gestion", value: "Création, ciblage et optimisation en continu" },
-    { label: "Budget publicitaire", value: "20.-/jour minimum, soit environ 600.-/mois" },
+    { label: "Budget publicitaire", value: "20 CHF/jour minimum, soit environ 600 CHF/mois" },
     { label: "Setup", value: "Compte, tracking et première campagne inclus" },
     { label: "Reporting", value: "Dashboard + point mensuel" },
     { label: "Support", value: "E-mail, réponse sous 48 h" },
   ],
-  ctaLabel: "Demander l'accès Early Bird",
+  ctaLabel: "Vérifier mon éligibilité",
 } as const;
 
 /**

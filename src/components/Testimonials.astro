@@ -6,24 +6,13 @@
  * Affichage : rail à défilement horizontal (scroll-snap), 2-3 cartes visibles
  * à la fois + amorce de la suivante pour signaler qu'on peut faire défiler.
  */
-import { testimonials, googleReviews } from "../data/temoignages";
-
-const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
+import { testimonials } from "../data/temoignages";
+import GoogleRating from "./GoogleRating.astro";
 ---
 
 <div class="tm-carousel">
   <div class="tm-bar">
-    <a
-      class="tm-rating"
-      href={googleReviews.profileUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <span class="tm-stars" aria-hidden="true">★★★★★</span>
-      <span>
-        <strong>{ratingFr}</strong> sur {googleReviews.count} avis Google
-      </span>
-    </a>
+    <GoogleRating />
     <div class="tm-nav">
       <button type="button" class="tm-btn" data-tm-prev aria-label="Témoignages précédents">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
@@ -69,17 +58,6 @@ const ratingFr = googleReviews.rating.toFixed(1).replace(".", ",");
     gap: 16px;
     margin-bottom: 20px;
   }
-  .tm-rating {
-    display: inline-flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 14px;
-    color: var(--muted-on, var(--muted));
-    text-decoration: none;
-  }
-  .tm-rating strong { color: var(--on-strong, var(--ink)); font-family: var(--font-display); }
-  .tm-rating:hover { color: var(--on-strong, var(--ink)); }
-
   .tm-nav { display: flex; gap: 8px; flex-shrink: 0; }
   .tm-btn {
     width: 38px;

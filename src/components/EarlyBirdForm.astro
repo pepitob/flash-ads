@@ -1,18 +1,34 @@
 ---
 /**
- * Demande d'accès ChatGPT Ads - Netlify Forms.
+ * Vérification d'éligibilité ChatGPT Ads - Netlify Forms.
  *
  * Même mécanique que `QuoteForm.astro` : détection par Netlify sur le HTML
  * statique (`data-netlify` + `name` unique), envoi en AJAX pour garder la
  * confirmation en ligne, corps url-encodé et champ caché `form-name` qui route
  * la soumission. Voir CLAUDE.md §Formulaires pour les points à ne pas casser.
+ * Tout champ ajouté ou renommé ici exige un redéploiement (détection au build).
  *
  * Le message de succès vit HORS du <form> : celui-ci est masqué à l'envoi, un
  * message placé à l'intérieur disparaîtrait avec lui.
+ *
+ * Les secteurs et leur éligibilité viennent de `src/data/chatgpt-secteurs.ts`,
+ * la même source que les cartes de la page : le message affiché sous le champ
+ * ne peut donc pas contredire ce que la section annonce.
  */
 import { ui } from "../i18n/fr";
+import { secteurGroupes, secteurAutre, eligibiliteParSecteur } from "../data/chatgpt-secteurs";
 
 const FORM_NAME = "chatgpt-ads";
+
+const budgets = [
+  { value: "aucun", label: "Aucun" },
+  { value: "moins-500", label: "Moins de 500 CHF" },
+  { value: "500-1500", label: "500 à 1 500 CHF" },
+  { value: "1500-5000", label: "1 500 à 5 000 CHF" },
+  { value: "plus-5000", label: "Plus de 5 000 CHF" },
+];
+
+const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
 ---
 
 <div class="eb-wrap">
@@ -25,19 +41,46 @@ const FORM_NAME = "chatgpt-ads";
     data-netlify="true"
     netlify-honeypot="bot-field"
     novalidate
+    data-eligibility={JSON.stringify(eligibiliteParSecteur)}
   >
     <input type="hidden" name="form-name" value={FORM_NAME} />
     <input type="hidden" name="offre" value="chatgpt-ads-early-bird" />
+    <input type="hidden" name="page" value="services-chatgpt-ads" />
+    {/* Remplis depuis l'URL au chargement s'ils y figurent, rien n'est stocké. */}
+    <input type="hidden" name="utm_source" value="" />
+    <input type="hidden" name="utm_medium" value="" />
+    <input type="hidden" name="utm_campaign" value="" />
+    <input type="hidden" name="gclid" value="" />
 
     <div class="grid2">
-      <label>{ui.form.name}*<input type="text" name="nom" required autocomplete="name" /></label>
-      <label>{ui.form.company}<input type="text" name="entreprise" autocomplete="organization" /></label>
+      <label>Nom et prénom*<input type="text" name="nom" required autocomplete="name" /></label>
+      <label>{ui.form.email}*<input type="email" name="email" required autocomplete="email" /></label>
     </div>
     <div class="grid2">
-      <label>{ui.form.email}*<input type="email" name="email" required autocomplete="email" /></label>
-      <label>{ui.form.phone}<input type="tel" name="telephone" autocomplete="tel" /></label>
+      <label>{ui.form.phone} (facultatif)<input type="tel" name="telephone" autocomplete="tel" /></label>
+      <label>{ui.form.company}<input type="text" name="entreprise" autocomplete="organization" /></label>
     </div>
-    <label>{ui.form.website}<input type="url" name="site_web" placeholder="https://" /></label>
+    <label>Site web<input type="url" name="site_web" placeholder="https://" /></label>
+
+    <div class="field">
+      <label>
+        Secteur*
+        <select name="secteur" id="chatgpt-secteur" required aria-describedby="chatgpt-eligibility">
+          <option value="">Choisir votre secteur</option>
+          {sectors.map((s) => <option value={s.id}>{s.label}</option>)}
+        </select>
+      </label>
+      <p class="eligibility" id="chatgpt-eligibility" aria-live="polite"></p>
+    </div>
+
+    <label>
+      Budget Google Ads actuel par mois
+      <select name="budget_google">
+        <option value="">Choisir</option>
+        {budgets.map((b) => <option value={b.value}>{b.label}</option>)}
+      </select>
+    </label>
+
     <label>
       Ce que vous vendez, en une phrase
       <textarea name="message" rows="3" placeholder="Pour préparer le premier échange."></textarea>
@@ -47,7 +90,7 @@ const FORM_NAME = "chatgpt-ads";
       <label>Ne remplissez pas ce champ<input type="text" name="bot-field" tabindex="-1" autocomplete="off" /></label>
     </p>
 
-    <button type="submit" class="btn btn-primary">Demander l'accès Early Bird <span class="arrow" aria-hidden="true">→</span></button>
+    <button type="submit" class="btn btn-primary">Vérifier mon éligibilité <span class="arrow" aria-hidden="true">→</span></button>
 
     <p class="form-error" id="chatgpt-error" hidden role="alert">
       Une erreur est survenue. Réessayez ou écrivez-nous directement.
@@ -65,25 +108,28 @@ const FORM_NAME = "chatgpt-ads";
   .eb-form { display: flex; flex-direction: column; gap: 16px; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--on-strong, var(--ink)); }
-  input, textarea {
+  input, textarea, select {
     font-family: var(--font-body);
     font-size: 15px;
     padding: 12px 14px;
     border: 1px solid var(--rule, var(--hairline));
-    border-radius: 11px;
+    border-radius: var(--r);
     background: var(--surface-on, var(--paper));
     color: var(--on-strong, var(--ink));
     width: 100%;
   }
-  input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring-accent); }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring-accent); }
   textarea { resize: vertical; }
+  .eligibility { font-size: 13.5px; line-height: 1.55; color: var(--muted-on, var(--muted)); margin-top: 8px; }
+  .eligibility:empty { display: none; }
+  .eligibility :global(a) { color: var(--accent-on, var(--accent)); }
   .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .eb-form .btn { align-self: flex-start; margin-top: 4px; }
   .form-success {
     background: rgba(37, 99, 255, .06);
     border: 1px solid var(--rule, var(--hairline));
     border-left: 3px solid var(--accent);
-    border-radius: 12px;
+    border-radius: var(--r);
     padding: 16px 18px;
     font-size: 15px;
   }
@@ -97,11 +143,57 @@ const FORM_NAME = "chatgpt-ads";
   const form = document.getElementById("chatgpt-form") as HTMLFormElement | null;
   const ok = document.getElementById("chatgpt-success");
   const err = document.getElementById("chatgpt-error");
+  const sector = document.getElementById("chatgpt-secteur") as HTMLSelectElement | null;
+  const eligibilityMsg = document.getElementById("chatgpt-eligibility");
+
+  type Eligibilite = "ouvert" | "validation" | "impossible" | "autre";
+  const eligibility: Record<string, Eligibilite> = JSON.parse(form?.dataset.eligibility || "{}");
+
+  const w = window as unknown as { dataLayer?: unknown[] };
+  const push = (data: Record<string, unknown>) => {
+    w.dataLayer = w.dataLayer || [];
+    w.dataLayer.push(data);
+  };
+
+  // Attribution : reprise des paramètres de l'URL d'arrivée, sans stockage.
+  // Une visite qui a quitté la page d'arrivée ne les porte plus, c'est voulu.
+  const params = new URLSearchParams(location.search);
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "gclid"]) {
+    const value = params.get(key);
+    const input = form?.elements.namedItem(key) as HTMLInputElement | null;
+    if (value && input) input.value = value.slice(0, 200);
+  }
+
+  /**
+   * Message sous le champ secteur. Il informe sans jamais bloquer l'envoi : un
+   * secteur fermé sur ChatGPT reste un prospect Google Ads. Aucune donnée
+   * personnelle dans le dataLayer, seulement le secteur et son statut.
+   */
+  const showEligibility = () => {
+    if (!sector || !eligibilityMsg) return;
+    const status = eligibility[sector.value];
+    eligibilityMsg.textContent = "";
+    if (status === "impossible") {
+      eligibilityMsg.append(
+        "Les règles d'OpenAI ne permettent pas encore la publicité pour ce secteur en Suisse. Google Ads reste possible : ",
+      );
+      const link = document.createElement("a");
+      link.href = "/services/google-ads";
+      link.textContent = "gestion Google Ads";
+      eligibilityMsg.append(link, ".");
+    } else if (status === "validation") {
+      eligibilityMsg.textContent = "Possible après validation par OpenAI. On prépare le dossier avec vous.";
+    }
+    if (status) {
+      push({ event: "eligibility_check", form: "service_chatgpt", secteur: sector.value, eligibilite: status });
+    }
+  };
+  sector?.addEventListener("change", showEligibility);
 
   /**
    * Un envoi à la fois. Sans ce verrou, un double clic part deux fois : deux
-   * soumissions Netlify (donc deux fois le même lead) et deux `form_submit`
-   * dans le dataLayer, donc une conversion comptée en double.
+   * soumissions Netlify (donc deux fois le même lead) et deux conversions
+   * dans le dataLayer.
    */
   let pending = false;
   const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null;
@@ -119,26 +211,33 @@ const FORM_NAME = "chatgpt-ads";
     if (!form.checkValidity()) { form.reportValidity(); return; }
     err?.setAttribute("hidden", "");
     lock(true);
+    // Lu avant le reset, qui vide les champs.
+    const data = new FormData(form);
+    const secteur = String(data.get("secteur") || "");
+    const lead = {
+      form: "service_chatgpt",
+      secteur,
+      eligibilite: eligibility[secteur] ?? "autre",
+      budget_google: String(data.get("budget_google") || ""),
+    };
     try {
       // Netlify Forms en AJAX : corps url-encodé, posté sur un chemin du site.
       // Le champ caché `form-name` (présent dans le FormData) fait le routage.
       const res = await fetch(form.getAttribute("action") || "/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
+        body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
       });
       if (!res.ok) throw new Error(String(res.status));
       form.reset();
       form.style.display = "none";
       ok?.removeAttribute("hidden");
-      // Conversion : un seul événement pour tous les formulaires du site, le
-      // formulaire concerné étant porté par un paramètre. GTM peut ainsi
-      // déclencher une seule balise et distinguer les cas dans la condition.
-      // Le nom vient de l'attribut `name` du <form> : pas de second endroit à
-      // maintenir, et c'est déjà celui sous lequel Netlify range la soumission.
-      const w = window as unknown as { dataLayer?: unknown[] };
-      w.dataLayer = w.dataLayer || [];
-      w.dataLayer.push({ event: "form_submit", form_name: form.getAttribute("name") });
+      // Deux événements, un seul à compter comme conversion dans GTM :
+      // `form_submit` est l'événement commun à tous les formulaires du site (la
+      // balise de conversion existante y est branchée) ; `generate_lead` porte
+      // en plus le secteur, l'éligibilité et le budget Google Ads déclaré.
+      push({ event: "form_submit", form_name: form.getAttribute("name") });
+      push({ event: "generate_lead", ...lead });
 
       // Le focus était sur le bouton, qui vient d'être masqué : sans cela il
       // retombe sur <body> et la confirmation passe inaperçue au clavier.
