@@ -51,6 +51,13 @@ Comprendre ces flux transversaux avant d'éditer :
   fichiers est neutralisé à l'affichage par `mix-blend-mode: multiply` : ne pas détourer les
   blancs, cela percerait les blancs intérieurs des logos. Ajouter un logo = déposer le WebP
   traité et compléter `clientLogos` dans `src/data/temoignages.ts`.
+- **Visuels de `/services/chatgpt-ads`** (`public/images/chatgpt-ads/`) : `phone.webp` (conversation +
+  annonce, hero) et `admanager.webp` (carte d'annonce de l'Ads Manager) sont des **visuels OpenAI**
+  (ads.openai.com), détourés de leur fond vert d'eau et recadrés dans un cadre navy ; la légende
+  « Visuel : OpenAI » doit rester sous chacun. `compare.webp` et `eligibility.webp` sont des
+  illustrations générées (Codex) au style du système (aplats, trait navy, ombre décalée nette),
+  décoratives (`alt` vide). L'ombre décalée des images détourées passe par
+  `filter: drop-shadow(Npx Npx 0 var(--edge))`, sans flou, pour suivre leur silhouette.
 - **Formulaires** : devis (`/contact`) et demande d'accès ChatGPT Ads
   (`/services/chatgpt-ads`), tous deux via **Netlify Forms**. Plus aucune dépendance Formspree.
 - **Mesure d'audience** : Google Tag Manager, injecté par `BaseLayout.astro` depuis `site.gtmId`
@@ -58,7 +65,7 @@ Comprendre ces flux transversaux avant d'éditer :
   sans lui Astro en ferait un module différé, ce que GTM ne supporte pas. Le `dataLayer` qu'il crée
   est le même que celui où le site pousse ses événements, exploitables comme déclencheurs dans le
   conteneur sans code supplémentaire : le calculateur émet `calc_start`, `calc_result`,
-  `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent un **unique**
+  `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent tous un
   `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis` ou
   `chatgpt-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
   événement par formulaire : une seule balise de conversion suffit, la condition se met sur le
@@ -67,7 +74,12 @@ Comprendre ces flux transversaux avant d'éditer :
   se déclenche donc à CHAQUE tentative, y compris celles refusées par la validation et celles dont
   la requête échoue. Notre `form_submit`, lui, n'est poussé qu'après acceptation par Netlify. Les
   deux formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
-  donc ni deux leads ni deux conversions.
+  donc ni deux leads ni deux conversions. **Exception enrichie, formulaire ChatGPT Ads** : en plus de
+  `form_submit`, il pousse `eligibility_check` au changement de secteur (`form: 'service_chatgpt'`,
+  `secteur`, `eligibilite` = `ouvert` | `validation` | `impossible` | `autre`) et `generate_lead` à
+  l'envoi accepté (mêmes paramètres + `budget_google`). Une seule des deux, `form_submit` ou
+  `generate_lead`, doit compter comme conversion dans GTM, sinon le lead est compté deux fois.
+  Aucune donnée personnelle (nom, e-mail, téléphone) dans le `dataLayer`.
 - **Calculateur de budget** (`/calculateur-budget`) : un seul moteur pur, `src/lib/calculator.ts`,
   appelé au build (rendu statique de l'état par défaut : SEO, pas de layout shift, résultat lisible
   sans JS) puis repris par l'îlot client de `src/components/calculator/BudgetCalculator.astro`.
@@ -111,6 +123,50 @@ Comprendre ces flux transversaux avant d'éditer :
   valeur déduite dès qu'on touche à la marge ou au réachat. Les 18 marges de `defaults.json` sont des estimations à valider. Le composant accepte `variant="compact"` pour être posé dans une section d'une
   page existante. Mode expert : `?pro=1` ou le bouton en bas (outil de vente, non indexé via le
   canonique sans paramètre).
+
+## Visuels générés (Codex)
+
+Les illustrations du site (ex. `public/images/chatgpt-ads/compare.webp` et `eligibility.webp`)
+sont générées par l'outil de génération d'images de **Codex CLI** (fonctionnalité
+`image_generation`, active par défaut), puis retouchées avec ImageMagick. Méthode validée :
+
+1. Écrire le prompt dans un fichier, dans un dossier de travail **hors du dépôt** (scratchpad),
+   puis lancer Codex en non interactif :
+   `codex exec --skip-git-repo-check --sandbox workspace-write -C <dossier> - < prompt.txt`.
+   Lui demander d'enregistrer les PNG **sous des noms précis dans le dossier courant** et de ne
+   rien faire d'autre. Compter quelques minutes pour deux images.
+2. Le prompt reprend toujours ce bloc de direction artistique, sans le modifier, suivi d'une
+   description par image (composition, objets, accents) :
+
+   ```text
+   - Flat vector illustration, editorial and minimal, lots of breathing room.
+   - TRANSPARENT background (no backdrop, no floor, no scene).
+   - Every object: solid white (#FFFFFF) fill, crisp 3px dark navy outline (#161A28).
+   - Relief ONLY via a hard flat offset shadow: a solid navy (#161A28) copy of the shape shifted
+     down-right by a few pixels. Absolutely no blur, no soft shadow, no gradient, no glow, no 3D,
+     no texture, no glassmorphism.
+   - Accent colors used sparingly as flat fills: electric blue #2563FF and pink #FF2E8B.
+     Light tint #EEF3FF allowed for secondary surfaces.
+   - Corners nearly square (small 4px radius), except pill-shaped buttons/badges.
+   - NO readable text, no letters, no numbers, no logos, no brand marks. Represent text with
+     simple grey/navy horizontal lines.
+   - Landscape 3:2, 1536x1024.
+   ```
+
+   « Aucun texte » est indispensable : le texte généré sort avec des fautes, et un logo ou une
+   marque inventée n'a rien à faire sur le site.
+3. Vérifier la transparence (`magick f.png -format "%[pixel:p{3,3}]" info:` doit donner
+   `srgba(0,0,0,0)`), puis rogner, aérer et convertir :
+   `magick f.png -trim +repage -bordercolor none -border 8 -resize '1200x1200>' -quality 88 f.webp`.
+4. Les déposer dans `public/images/<page>/` et les poser en `<img>` avec `width`/`height` réels
+   (pas de décalage de mise en page), `loading="lazy"` hors du hero, et `alt=""` : elles sont
+   décoratives, le texte voisin porte le sens. Une illustration se place **dans le flux d'une
+   colonne de texte** (sous un chapô, à côté d'une liste), jamais seule à hauteur d'un titre.
+
+Images tierces détourées (ex. visuels OpenAI) : on recadre sur la surface utile, on masque la
+silhouette (`roundrectangle` + `CopyOpacity`), on remplace leur fond ou leur cadre par un trait
+`#161a28` intégré à l'image, et l'ombre décalée vient du CSS
+(`filter: drop-shadow(Npx Npx 0 var(--edge))`). Source toujours légendée.
 
 ## Animations d'apparition
 
@@ -161,6 +217,17 @@ jamais un seuil élevé.
   bande (header). Un îlot clair posé sur une bande sombre prend `.surface-paper`,
   qui redéclare ces variables pour lui-même. Sur midnight : texte blanc ou
   `--fa-slate-light`, accent `--fa-blue-light`, jamais `--fa-blue`.
+  **Contraste du texte, partout ≥ 4,5:1** : les gris de texte sont `--muted`
+  `#5c637d` et `--faint` `#666d87`, valables sur blanc, offwhite et tint. Tout
+  texte rose (eyebrows, chiffres d'accent) lit `--fa-pink-text` `#c60061`
+  (5,88:1 sur blanc) : le rose vif `#ff2e8b` ne tient que 3,49:1 et reste
+  réservé aux formes (coches, points « en direct », badges à texte navy,
+  filets). Le bleu `#2563ff` tient sur blanc (4,88:1) mais pas sur tint
+  (4,39:1), où la bande lit `--fa-blue-on-tint` `#2259f0`. La bande night garde
+  le rose vif et `--fa-blue-light`, lisibles sur midnight. Ne jamais écrire
+  `var(--fa-blue)` ou `var(--fa-pink)` pour du texte dans un composant : lire
+  `--accent-on` / `--eyebrow-on`. Seule exception : le mot « Ads » du logo
+  (`Brand.astro`, `--fa-slate`), logotype exempté par le WCAG.
   Règle d'assemblage d'une page : hero en `tint`, puis alternance
   `paper` / `tint`, FAQ (`<FAQ band="paper|tint">`, `tint` par défaut) réglée
   pour que l'alternance reste juste, puis CTA et pied de page en `night`. Jamais
@@ -276,9 +343,14 @@ sans redirection), ce qui impose trois choses à ne pas casser : poster sur un c
 le champ caché `form-name` qui route la soumission. Anti-spam : honeypot Netlify
 (`netlify-honeypot="bot-field"`).
 
-**Demande d'accès ChatGPT Ads (`/services/chatgpt-ads`) : Netlify Forms** également,
-`name="chatgpt-ads"` (`EarlyBirdForm.astro`). Mêmes contraintes que ci-dessus. Les deux formulaires
-doivent apparaître dans « Forms » côté Netlify après le déploiement.
+**Vérification d'éligibilité ChatGPT Ads (`/services/chatgpt-ads#contact`) : Netlify Forms**
+également, `name="chatgpt-ads"` (`EarlyBirdForm.astro`). Mêmes contraintes que ci-dessus. Champs
+secteur (obligatoire) et budget Google Ads actuel ; champs cachés `page`, `utm_source`,
+`utm_medium`, `utm_campaign` et `gclid` remplis depuis l'URL, sans aucun stockage navigateur. Les
+secteurs et leur statut viennent de `src/data/chatgpt-secteurs.ts`, **seule source** partagée avec
+les cartes « Votre secteur peut-il diffuser ? » de la page : une règle d'OpenAI qui change se
+corrige là. Un secteur fermé affiche un message (et un lien Google Ads) mais **ne bloque jamais
+l'envoi**. Les deux formulaires doivent apparaître dans « Forms » côté Netlify après le déploiement.
 
 **Si des soumissions n'arrivent plus.** La détection ne tourne qu'au moment du build : toute
 modification d'un formulaire (champ renommé, nouveau formulaire, balise changée) exige un

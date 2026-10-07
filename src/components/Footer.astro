@@ -17,7 +17,7 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="foot-col">
-        <h5>{ui.footer.agency}</h5>
+        <h2 class="foot-h">{ui.footer.agency}</h2>
         <a href="/agence">Agence</a>
         <a href="/agence#methode">Méthode</a>
         <a href="/blog">Blog</a>
@@ -25,13 +25,13 @@ const year = new Date().getFullYear();
       </div>
 
       <div class="foot-col">
-        <h5>{ui.footer.services}</h5>
+        <h2 class="foot-h">{ui.footer.services}</h2>
         {nav.services.map((s) => <a href={s.href}>{s.label}</a>)}
         {nav.tools.map((t) => <a href={t.href}>{t.label}</a>)}
       </div>
 
       <div class="foot-col">
-        <h5>{ui.footer.contact}</h5>
+        <h2 class="foot-h">{ui.footer.contact}</h2>
         <a href={`mailto:${site.email}`}>{site.email}</a>
         <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
       </div>
@@ -61,12 +61,14 @@ const year = new Date().getFullYear();
   /* Le pied de page ne porte pas le traitement de trait : sur midnight le
      cadre blanc du badge se doublerait d'une ombre blanche, illisible. */
   .foot-badge :global(.gp-badge) { border: 0; box-shadow: none; background: none; padding: 0; }
-  .foot-col h5 {
+  /* h2 et non h5 : sous les h2 des sections, un h5 saute des niveaux. */
+  .foot-col .foot-h {
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: .12em;
     text-transform: uppercase;
     margin-bottom: 14px;
+    color: inherit; /* rendu identique à l'ancien h5, hors de la couleur forte des titres */
   }
   .foot-col a,
   .foot-col .loc {
