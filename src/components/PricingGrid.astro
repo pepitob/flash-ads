@@ -7,8 +7,7 @@
  * à l'échange. Un lien Stripe configuré remplace le lien contact.
  *
  * `inPage` : la page porte son propre formulaire `#contact` (Gestion Google
- * Ads). Les CTA y pointent (`?pack=<id>#contact`) et portent `data-cta`
- * (`tarifs_<pack>`) pour l'événement `cta_click`.
+ * Ads). Les CTA y pointent (`?pack=<id>#contact`), qui pré-remplit le pack.
  */
 import AddOnsTable from "./AddOnsTable.astro";
 import { tiers, pricingNotes, specialCampaignsNote } from "../data/tarifs";
@@ -42,7 +41,6 @@ const packHref = (id: string) => (inPage ? `?pack=${id}#contact` : `/contact?pac
         <div class="price-cta">
           <a
             href={tier.stripeLink || packHref(tier.id)}
-            data-cta={inPage ? `tarifs_${tier.id.replace(/-/g, "_")}` : undefined}
             class:list={["btn", tier.featured ? "btn-primary" : "btn-ghost"]}
             rel={tier.stripeLink ? "nofollow" : undefined}
           >

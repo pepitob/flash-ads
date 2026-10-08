@@ -110,7 +110,7 @@ const comptes = [
     {trackingFields.map((f) => <input type="hidden" name={f} value="" />)}
 
     <div class="grid2">
-      <label>Nom et prénom*<input type="text" name="nom" required autocomplete="name" /></label>
+      <label>Prénom et nom*<input type="text" name="nom" required autocomplete="name" /></label>
       <label>{ui.form.email}*<input type="email" name="email" required autocomplete="email" /></label>
     </div>
     <div class="grid2">
@@ -266,7 +266,7 @@ const comptes = [
 </style>
 
 <script>
-  import { push, trackCtaClicks, type Eligibilite } from "../lib/lead-track";
+  import { push, userData, type Eligibilite } from "../lib/lead-track";
 
   const form = document.querySelector<HTMLFormElement>("form[data-lead-form]");
   const wrap = form?.parentElement;
@@ -277,7 +277,6 @@ const comptes = [
   const eligibility: Record<string, Eligibilite> = JSON.parse(form?.dataset.eligibility || "{}");
   const budgetToPack: Record<string, string> = JSON.parse(form?.dataset.budgetPack || "{}");
 
-  trackCtaClicks();
 
   const field = <T extends Element>(name: string) => form?.elements.namedItem(name) as T | null;
 
@@ -406,7 +405,7 @@ const comptes = [
       // `form_submit` est l'événement commun à tous les formulaires du site ;
       // `generate_lead` porte en plus les paramètres de qualification.
       push({ event: "form_submit", form_name: form.getAttribute("name") });
-      push({ event: "generate_lead", ...lead });
+      push({ event: "generate_lead", ...lead, user_data: userData(data) });
 
       // Le focus était sur le bouton, qui vient d'être masqué : sans cela il
       // retombe sur <body> et la confirmation passe inaperçue au clavier.

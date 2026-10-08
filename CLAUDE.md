@@ -89,26 +89,34 @@ Comprendre ces flux transversaux avant d'éditer :
   `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis`,
   `chatgpt-ads` ou `audit-google-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
   événement par formulaire : une seule balise de conversion suffit, la condition se met sur le
-  paramètre. **Côté GTM, brancher la conversion sur l'événement personnalisé `form_submit`, jamais
+  paramètre. **La conversion est `generate_lead`, émis par les trois formulaires** juste après
+  `form_submit` (qui reste un simple événement de suivi : ne jamais compter les deux, sinon le
+  lead est compté deux fois). **Côté GTM, la brancher sur l'événement personnalisé, jamais
   sur le déclencheur « Form Submission » intégré** : celui-ci écoute l'événement natif `submit` et
   se déclenche donc à CHAQUE tentative, y compris celles refusées par la validation et celles dont
-  la requête échoue. Notre `form_submit`, lui, n'est poussé qu'après acceptation par Netlify. Les
-  deux formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
-  donc ni deux leads ni deux conversions. **Exception enrichie, pages à formulaire de lead** (`src/lib/lead-track.ts`, pages ChatGPT Ads et
-  Gestion Google Ads) : chaque événement porte `page` (`services-chatgpt-ads`, `lp_chatgpt` ou
-  `service_google_ads`, lu sur `data-track-page`
-  du formulaire) et `source_trafic` (`google` si `gclid` ou `utm_source=google`, `linkedin` si
-  `li_fat_id` ou `utm_source=linkedin`, sinon `autre` : les campagnes LinkedIn doivent donc toujours
-  porter `utm_source=linkedin`). En plus de `form_submit` : `eligibility_check` au choix d'un
-  secteur (`source` = `selecteur` | `formulaire`, `secteur`, `eligibilite` = `ouvert` |
-  `validation` | `impossible` | `autre`, et `form` = `service_chatgpt` sur la page service, valeur
-  historique déjà branchée), `cta_click` sur tout élément `data-cta` (`position` = `header` |
-  `hero` | `secteurs` | `offre` | `mobile_bar`) et `generate_lead` à l'envoi accepté (`secteur`,
-  `eligibilite`, `budget_google`). `generate_lead` est la conversion principale (Google Ads et
-  LinkedIn Ads) : une seule des deux, `form_submit` ou `generate_lead`, doit compter comme
-  conversion dans GTM, sinon le lead est compté deux fois. Le tag LinkedIn Insight se pose dans
-  GTM, pas dans le code.
-  Aucune donnée personnelle (nom, e-mail, téléphone) dans le `dataLayer`.
+  la requête échoue. Nos événements, eux, ne sont poussés qu'après acceptation par Netlify. Les
+  formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
+  donc ni deux leads ni deux conversions. Tous passent par `push()` de `src/lib/lead-track.ts`,
+  qui ajoute à chaque événement `page` (`contact`, `services-chatgpt-ads`, `lp_chatgpt` ou
+  `service_google_ads`, lu sur `data-track-page` du formulaire) et `source_trafic` (`google` si
+  `gclid` ou `utm_source=google`, `linkedin` si `li_fat_id` ou `utm_source=linkedin`, sinon
+  `autre` : les campagnes LinkedIn doivent donc toujours porter `utm_source=linkedin`).
+  `generate_lead` porte `form` (`devis`, `service_chatgpt` sur la page service ChatGPT, valeur
+  historique déjà branchée, `lp_chatgpt` ou `google_ads`) puis, selon le formulaire : `budget`
+  et `pack` (devis et audit Google Ads, mêmes tranches `moins-500` … `plus-15000`),
+  `compte_existant` (audit Google Ads), `secteur`, `eligibilite` et `budget_google` (ChatGPT).
+  Pages ChatGPT : `eligibility_check` au choix d'un secteur (`source` = `selecteur` |
+  `formulaire`, `secteur`, `eligibilite` = `ouvert` | `validation` | `impossible` | `autre`).
+  **Aucun suivi des clics de boutons** (`cta_click` retiré à la demande de l'agence : ne pas le
+  réintroduire). Le tag LinkedIn Insight se pose dans GTM, pas dans le code.
+  **Données personnelles : uniquement dans `user_data` de `generate_lead`** (`userData()` de
+  `lead-track.ts` : `email` en minuscules, `phone_number` en E.164 `+41…`, `address.first_name`,
+  `address.last_name` et `address.country = CH` tirés du champ unique « Prénom et nom »), pour
+  les **conversions améliorées** Google Ads. Jamais dans un autre événement ni en paramètre à plat.
+  Dans GTM : variable « Données fournies par l'utilisateur » liée à la balise de conversion,
+  **jamais mappées en paramètre GA4** (les données personnelles y sont interdites), et soumises
+  au consentement `ad_user_data` (Consent Mode v2, bandeau à poser). La politique de
+  confidentialité mentionne cette transmission hachée.
 - **Calculateur de budget** (`/calculateur-budget`) : un seul moteur pur, `src/lib/calculator.ts`,
   appelé au build (rendu statique de l'état par défaut : SEO, pas de layout shift, résultat lisible
   sans JS) puis repris par l'îlot client de `src/components/calculator/BudgetCalculator.astro`.
@@ -423,7 +431,7 @@ e-mail*, téléphone, entreprise, site web*, `budget`* (tranches alignées sur `
 `compte_google`, message, plus les champs cachés `pack` (depuis `?pack=`), `page=service_google_ads`,
 UTM, `gclid`, `li_fat_id`. Le message sous le budget (pack conseillé, plancher de 500.-, lien vers
 le calculateur) vient de `tarifs.ts` et ne bloque jamais l'envoi. `generate_lead` y porte `form:
-'google_ads'`, `budget`, `pack` (cliqué, sinon conseillé) et `compte_existant`.
+'google_ads'`, `budget`, `pack` (cliqué, sinon conseillé), `compte_existant` et `user_data`.
 
 **Si des soumissions n'arrivent plus.** La détection ne tourne qu'au moment du build : toute
 modification d'un formulaire (champ renommé, nouveau formulaire, balise changée) exige un
