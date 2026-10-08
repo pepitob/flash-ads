@@ -41,6 +41,7 @@ const FORM_NAME = "devis";
   action="/"
   data-netlify="true"
   netlify-honeypot="bot-field"
+  data-track-page="contact"
   novalidate
 >
   <input type="hidden" name="form-name" value={FORM_NAME} />
@@ -133,6 +134,8 @@ const FORM_NAME = "devis";
 </style>
 
 <script>
+  import { push, userData } from "../lib/lead-track";
+
   const form = document.getElementById("quote-form") as HTMLFormElement | null;
   const ok = document.getElementById("quote-success");
   const err = document.getElementById("quote-error");
@@ -152,6 +155,26 @@ const FORM_NAME = "devis";
     submitBtn.innerHTML = on ? "Envoi…" : btnLabel;
   };
 
+  // Pack cliqué dans la grille (`?pack=<id>`) : pré-sélection du budget et paramètre `pack`.
+  const pack = new URLSearchParams(location.search).get("pack");
+
+  /**
+   * Paramètres de `generate_lead`, lus avant le reset. Tranches alignées sur celles
+   * du formulaire Google Ads (`moins-500`, `plus-15000`) pour une seule nomenclature
+   * dans GTM. `pack` : celui cliqué dans la grille, sinon celui de la tranche.
+   */
+  const budgetKey: Record<string, string> = { "<500": "moins-500", ">15000": "plus-15000" };
+  const budgetPack: Record<string, string> = {
+    "500-1200": "starter",
+    "1200-5000": "croissance",
+    "5000-15000": "performance",
+    ">15000": "sur-mesure",
+  };
+  const leadOf = (data: FormData) => {
+    const b = String(data.get("budget") || "");
+    return { form: "devis", budget: budgetKey[b] ?? b, pack: pack || budgetPack[b] || "" };
+  };
+
   // Budget : message « moins de 500 » + pré-sélection via ?pack=<id> (grille tarifaire).
   const budget = form?.querySelector<HTMLSelectElement>('select[name="budget"]');
   const floorMsg = document.getElementById("budget-floor-msg");
@@ -162,7 +185,6 @@ const FORM_NAME = "devis";
       performance: "5000-15000",
       "sur-mesure": ">15000",
     };
-    const pack = new URLSearchParams(location.search).get("pack");
     if (pack && packToBudget[pack]) budget.value = packToBudget[pack];
     const toggleFloor = () => {
       if (budget.value === "<500") floorMsg?.removeAttribute("hidden");
@@ -179,13 +201,15 @@ const FORM_NAME = "devis";
       if (!form.checkValidity()) { form.reportValidity(); return; }
       err?.setAttribute("hidden", "");
       lock(true);
+      const data = new FormData(form);
+      const lead = leadOf(data);
       try {
         // Netlify Forms en AJAX : corps url-encodé, posté sur un chemin du site.
         // Le champ caché `form-name` (présent dans le FormData) fait le routage.
         const res = await fetch(form.getAttribute("action") || "/", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString(),
+          body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
         });
         if (res.ok) {
           form.reset();
@@ -196,9 +220,10 @@ const FORM_NAME = "devis";
           // déclencher une seule balise et distinguer les cas dans la condition.
           // Le nom vient de l'attribut `name` du <form> : pas de second endroit à
           // maintenir, et c'est déjà celui sous lequel Netlify range la soumission.
-          const w = window as unknown as { dataLayer?: unknown[] };
-          w.dataLayer = w.dataLayer || [];
-          w.dataLayer.push({ event: "form_submit", form_name: form.getAttribute("name") });
+          // `generate_lead` est LA conversion (avec `user_data` pour les conversions
+          // améliorées) : `form_submit` ne doit pas être compté en plus dans GTM.
+          push({ event: "form_submit", form_name: form.getAttribute("name") });
+          push({ event: "generate_lead", ...lead, user_data: userData(data) });
           // Le focus était sur le bouton d'envoi, qui vient d'être masqué :
           // sans cela il retombe sur <body> et la confirmation passe inaperçue
           // au clavier comme au lecteur d'écran.

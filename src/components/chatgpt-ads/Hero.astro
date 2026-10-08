@@ -35,7 +35,7 @@ const { eyebrow, link, crumbs = false, updated, points = [] } = Astro.props;
       <p class="hero-lead"><slot /></p>
 
       <div class="hero-cta">
-        <a href="#contact" class="btn btn-primary" data-cta="hero">{cta.label} <span class="arrow" aria-hidden="true">→</span></a>
+        <a href="#contact" class="btn btn-primary">{cta.label} <span class="arrow" aria-hidden="true">→</span></a>
         <a href={link.href} class="hero-link">{link.label}</a>
       </div>
       <p class="hero-note">{cta.note}</p>

@@ -31,7 +31,7 @@ export const ui = {
     rights: "Tous droits réservés.",
   },
   form: {
-    name: "Nom",
+    name: "Prénom et nom",
     company: "Entreprise",
     email: "E-mail",
     phone: "Téléphone",
