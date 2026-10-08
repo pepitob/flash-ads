@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import GoogleRating from "../components/GoogleRating.astro";
 import AnswerBlock from "../components/AnswerBlock.astro";
 import BudgetCalculator from "../components/calculator/BudgetCalculator.astro";
 import FAQ from "../components/FAQ.astro";
@@ -70,6 +71,7 @@ const jsonLd = [
               recommandé, la fourchette réaliste autour, et le coût par client que cela représente.
             </p>
           </AnswerBlock>
+          <GoogleRating spaced />
         </div>
         <!-- Illustration générée (Codex), décorative. -->
         <img class="hero-visual" src="/images/calculateur/hero.webp" width="1200" height="785" alt="" decoding="async" />

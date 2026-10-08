@@ -21,6 +21,11 @@ export const site = {
   social: {
     linkedin: "",
   },
+  // Associés : profils LinkedIn affichés sur /agence et repris en `founder` du schema Organization.
+  founders: [
+    { id: "hippolyte", name: "Hippolyte Bourban", firstName: "Hippolyte", linkedin: "https://www.linkedin.com/in/hippolytebourban/" },
+    { id: "karim", name: "Karim Bellazrak", firstName: "Karim", linkedin: "https://www.linkedin.com/in/karimbellazrak-seo/" },
+  ],
   // Année de fondation (E-E-A-T / schema).
   foundingYear: 2024,
   // Baseline reprise du site actuel.

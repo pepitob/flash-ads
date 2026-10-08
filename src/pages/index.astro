@@ -9,6 +9,7 @@ import Testimonials from "../components/Testimonials.astro";
 import ResultCases from "../components/ResultCases.astro";
 import LogoMarquee from "../components/LogoMarquee.astro";
 import GooglePartnerBadge from "../components/GooglePartnerBadge.astro";
+import GoogleRating from "../components/GoogleRating.astro";
 import FAQ from "../components/FAQ.astro";
 import CTA from "../components/CTA.astro";
 import { ui } from "../i18n/fr";
@@ -102,6 +103,7 @@ const jsonLd = [
           <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
           <a href="/#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
         </div>
+          <GoogleRating spaced />
         <p class="baseline mono">{site.baseline}</p>
       </div>
       <AdPreview />

@@ -2,8 +2,11 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SectionHead from "../components/SectionHead.astro";
 import GooglePartnerBadge from "../components/GooglePartnerBadge.astro";
+import GoogleRating from "../components/GoogleRating.astro";
 import CTA from "../components/CTA.astro";
 import { site } from "../data/site";
+
+const linkedin = Object.fromEntries(site.founders.map((f) => [f.id, f]));
 import { breadcrumbSchema } from "../lib/schema";
 
 const title = "L'agence Flash Ads : notre façon de faire | Flash Ads";
@@ -31,6 +34,7 @@ const jsonLd = [
             boîte noire. On ne fait que ça (pas de site web, pas de logo, pas de réseaux sociaux) pour
             le faire vraiment bien. Prix affichés, budget qui reste chez vous, rapports clairs. C'est tout.
           </p>
+          <GoogleRating spaced />
           <p class="baseline mono">{site.baseline}</p>
           <div class="hero-badge"><GooglePartnerBadge height={60} /><span class="mono">Agence certifiée Google Partner</span></div>
         </div>
@@ -50,22 +54,32 @@ const jsonLd = [
       />
       <div class="cards2">
         <div class="founder">
-          <div class="avatar" aria-hidden="true">⚡</div>
+          <img class="portrait" src="/images/equipe/hippo.webp" width="560" height="700" alt="Portrait de Hippolyte, associé de Flash Ads" loading="lazy" decoding="async" />
+          <p class="name">Hippolyte</p>
           <h3 class="display">Le profil technique & opérationnel</h3>
           <p class="role mono">Campagnes · Automatisation · Mesure</p>
           <p>
             Crée et améliore les campagnes, met en place la mesure et automatise les rapports.
             L'obsession : que chaque franc dépensé serve à amener des clients.
           </p>
+          <a class="li-badge" href={linkedin.hippolyte.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`Profil LinkedIn de ${linkedin.hippolyte.name} (nouvel onglet)`}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9.75h4V21H3V9.75zm6.5 0h3.8v1.55h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.98c0-1.19-.02-2.72-1.66-2.72-1.66 0-1.91 1.3-1.91 2.63V21h-4V9.75z" /></svg>
+            LinkedIn <span aria-hidden="true">↗</span>
+          </a>
         </div>
         <div class="founder">
-          <div class="avatar" aria-hidden="true">◆</div>
+          <img class="portrait" src="/images/equipe/karim.webp" width="560" height="700" alt="Portrait de Karim, associé de Flash Ads" loading="lazy" decoding="async" />
+          <p class="name">Karim</p>
           <h3 class="display">Le profil commercial & relation client</h3>
           <p class="role mono">Vente · Visibilité · Relation client</p>
           <p>
             Comprend votre marché, traduit vos objectifs en stratégie et reste votre interlocuteur clair.
             L'obsession : que vous sachiez toujours où vous en êtes.
           </p>
+          <a class="li-badge" href={linkedin.karim.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`Profil LinkedIn de ${linkedin.karim.name} (nouvel onglet)`}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9.75h4V21H3V9.75zm6.5 0h3.8v1.55h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.65 4.77 6.1V21h-4v-4.98c0-1.19-.02-2.72-1.66-2.72-1.66 0-1.91 1.3-1.91 2.63V21h-4V9.75z" /></svg>
+            LinkedIn <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </div>
     </div>
@@ -103,8 +117,18 @@ const jsonLd = [
   <!-- VALEURS -->
   <section class="values band band--paper">
     <div class="wrap">
-      <SectionHead eyebrow="Nos valeurs" title="Trois principes non négociables." />
-      <div class="cards3">
+      <div class="values-grid">
+        <div>
+          <span class="eyebrow">Nos valeurs</span>
+          <h2 class="display">Trois principes non négociables.</h2>
+          <p class="values-lead">
+            Vous parlez directement aux deux personnes qui gèrent vos campagnes, pas à un intermédiaire.
+            Et on travaille selon trois règles simples.
+          </p>
+          <!-- Photo générée à partir de portraits réels des deux associés, noir et blanc comme les portraits. -->
+          <img class="duo" src="/images/equipe/duo.webp" width="1000" height="667" alt="Hippolyte et Karim, les deux associés de Flash Ads, en discussion autour d'un ordinateur portable" loading="lazy" decoding="async" />
+        </div>
+        <div class="values-list">
         <div class="card">
           <h3>Tout est clair</h3>
           <p>Accès à votre compte, rapports simples, aucune zone d'ombre. Vous voyez exactement ce qu'on fait et ce que ça donne.</p>
@@ -116,6 +140,7 @@ const jsonLd = [
         <div class="card">
           <h3>Engagement court</h3>
           <p>3 mois au départ, le temps que Google Ads produise des données fiables. Ensuite, résiliable chaque mois : vous restez pour les résultats, pas par obligation.</p>
+        </div>
         </div>
       </div>
     </div>
@@ -136,10 +161,29 @@ const jsonLd = [
 
   .cards2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   .founder { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 30px; }
-  .avatar { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; color: #fff; background: var(--fa-blue); margin-bottom: 18px; }
+  /* Portraits noir et blanc : simple filet, aucune ombre (hors de la liste fermée). */
+  .portrait { display: block; width: 100%; max-width: 220px; height: auto; border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); margin-bottom: 20px; }
+  .founder .name { font-family: var(--font-display); font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--on-strong, var(--ink)); margin-bottom: 6px; }
+
+  .values-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  .values-grid h2 { font-size: clamp(26px, 3vw, 38px); font-weight: 600; margin-top: 16px; }
+  .values-lead { color: var(--muted-on, var(--muted)); font-size: 16px; margin-top: 14px; max-width: 34em; }
+  .duo { display: block; width: 100%; height: auto; border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); margin-top: 28px; }
+  .values-list { display: flex; flex-direction: column; gap: 20px; }
   .founder h3 { font-size: 21px; font-weight: 600; }
   .founder .role { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-on, var(--accent)); margin: 6px 0 14px; }
   .founder p { color: var(--muted-on, var(--muted)); font-size: 15px; }
+  /* Badge LinkedIn : pilule à filet, sans ombre (hors de la liste fermée). */
+  .li-badge {
+    display: inline-flex; align-items: center; gap: 7px; margin-top: 18px;
+    padding: 6px 12px; border: 1px solid var(--rule, var(--hairline)); border-radius: var(--radius-pill);
+    font-family: var(--font-display); font-size: 13px; font-weight: 600;
+    color: var(--accent-on, var(--accent)); text-decoration: none;
+    transition: border-color .15s;
+  }
+  .li-badge svg { width: 14px; height: 14px; fill: currentColor; }
+  .li-badge:hover { border-color: var(--accent-on, var(--accent)); }
+  .li-badge:focus-visible { outline: 3px solid var(--fa-pink); outline-offset: 3px; }
 
   .method-detail .steps-full {
     display: grid;
@@ -153,7 +197,7 @@ const jsonLd = [
   .step-full p { color: var(--muted-on, var(--muted)); font-size: 15px; margin-top: 6px; max-width: 48em; }
 
   @media (max-width: 900px) {
-    .cards2 { grid-template-columns: 1fr; }
+    .cards2, .values-grid { grid-template-columns: 1fr; }
     .method-detail .steps-full { grid-template-columns: 1fr; column-gap: 0; }
     .step-full { gap: 18px; }
   }

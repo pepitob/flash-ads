@@ -35,8 +35,8 @@ Comprendre ces flux transversaux avant d'éditer :
   Breadcrumb). `BaseLayout` injecte `organizationSchema()` **globalement** ; les pages ajoutent
   leurs schémas via la prop `jsonLd`. Le composant `FAQ.astro` émet **lui-même** son `FAQPage`
   (ne pas le dupliquer dans `jsonLd`).
-- **Sources de données uniques** (`src/data/`) : `site.ts` (identité, coordonnées, nav →
-  alimente footer + meta + Organization schema), `tarifs.ts` (**seul** endroit pour les prix,
+- **Sources de données uniques** (`src/data/`) : `site.ts` (identité, coordonnées, nav, associés
+  et leurs LinkedIn → alimente footer + meta + Organization schema, dont `founder`, et les badges de `/agence`), `tarifs.ts` (**seul** endroit pour les prix,
   répercuté home + page Google Ads), `temoignages.ts` (preuves/logos). Éditer la donnée, pas les pages.
 - **Content Collections** (`src/content.config.ts`, schémas Zod) : `blog/` (articles MD/MDX,
   schema Article + dates auto) et `cas-clients/` (réservée ; les cas sont actuellement inline
@@ -199,6 +199,15 @@ sont générées par l'outil de génération d'images de **Codex CLI** (fonction
    décoratives, le texte voisin porte le sens. Une illustration se place **dans le flux d'une
    colonne de texte** (sous un chapô, à côté d'une liste), jamais seule à hauteur d'un titre.
 
+Photos de l'équipe (`public/images/equipe/`) : `hippo.webp` et `karim.webp` (portraits 560x700,
+cadrés à mi-poitrine, affichés à 220px de large dans les cartes associés de `/agence`) et `duo.webp`
+(1000x667, section valeurs) sont générées par Codex à partir de photos réelles des deux associés,
+toutes en noir et blanc, même fond gris studio, même pull sombre. Elles sont volontairement
+adoucies pour ne pas faire « IA » : `-gaussian-blur 0x0.7 -level 4%,98% -attenuate 0.35 +noise
+Gaussian`, qualité 78. Une nouvelle photo doit reprendre ce traitement et ces proportions (tête
+d'environ 28 % de la hauteur, épaules entières).
+Simple filet `--rule`, jamais d'ombre décalée (hors liste fermée).
+
 Images tierces détourées (ex. visuels OpenAI) : on recadre sur la surface utile, on masque la
 silhouette (`roundrectangle` + `CopyOpacity`), on remplace leur fond ou leur cadre par un trait
 `#161a28` intégré à l'image, et l'ombre décalée vient du CSS
@@ -322,7 +331,9 @@ jamais un seuil élevé.
   Résultats** (home + page Publicité Google) sont en revanche des ordres de grandeur
   d'illustration décidés par l'agence, à remplacer par des mesures réelles dès qu'elles sont
   disponibles : ce sont des allégations publicitaires (LCD art. 3). Ne jamais inventer d'avis
-  client ni de prix. Plus aucun marqueur `⚠️ PLACEHOLDER` ne doit apparaître sur le site.
+  client ni de prix. La note Google (`GoogleRating.astro` : logo G, 5 étoiles, note, « Avis vérifiés »)
+  figure dans le hero de chaque page principale ; le **nombre d'avis n'est pas affiché** tant
+  qu'il reste faible (choix de l'agence, `googleReviews.count` conservé dans les données). Plus aucun marqueur `⚠️ PLACEHOLDER` ne doit apparaître sur le site.
 - **Cohérence des prix** : `src/data/tarifs.ts` est la seule source (répercutée home, page
   Google Ads, `/pricing.txt`, JSON-LD), mais si un montant change il change **partout** :
   grille, FAQ home + Google Ads, formulaire de contact, CGV, `llms.txt`, article de blog
@@ -439,7 +450,7 @@ resterait possible, mais il faudrait rebrancher ce formulaire. Définir l'URL de
 - [ ] Coller les **liens de paiement Stripe** par pack (`stripeLink` dans `src/data/tarifs.ts`).
 - [ ] Remplacer les **chiffres de la section Résultats** (home + page Publicité Google) par des
       mesures réelles : ce sont aujourd'hui des ordres de grandeur d'illustration.
-- [ ] Compléter les **bios des associés** (`src/pages/agence.astro`).
+- [ ] Compléter les **bios des associés** (`src/pages/agence.astro`) : photos et prénoms en place, bios encore génériques.
 - [ ] Compléter **mentions légales** et **politique de confidentialité** (IDE, hébergeur, juriste).
 - [ ] Mettre en place le **bandeau de consentement** avant la mise en ligne : Google Tag Manager
       (`site.gtmId`) est chargé sur toutes les pages, la politique de confidentialité l'annonce et

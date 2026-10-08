@@ -37,6 +37,7 @@ export function organizationSchema() {
       addressRegion: site.region,
       addressCountry: site.country,
     },
+    founder: site.founders.map((f) => ({ "@type": "Person", name: f.name, sameAs: [f.linkedin] })),
     ...(sameAs.length ? { sameAs } : {}),
   };
 }

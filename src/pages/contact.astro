@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import GoogleRating from "../components/GoogleRating.astro";
 import QuoteForm from "../components/QuoteForm.astro";
 import { site } from "../data/site";
 import { breadcrumbSchema } from "../lib/schema";
@@ -27,6 +28,7 @@ const jsonLd = [
           Décrivez votre situation en deux lignes. On vous répond sous un jour ouvré avec une première
           lecture honnête, et le pack adapté à votre budget publicitaire, à prix fixe et public.
         </p>
+        <GoogleRating spaced />
 
         <ul class="reassure">
           <li><span class="chk" aria-hidden="true">✓</span> Audit gratuit de votre compte ou de votre marché</li>

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import GoogleRating from "../../components/GoogleRating.astro";
 import BlogCard from "../../components/BlogCard.astro";
 import CTA from "../../components/CTA.astro";
 import { breadcrumbSchema, blogListSchema } from "../../lib/schema";
@@ -38,6 +39,7 @@ const jsonLd = [
         Des réponses concrètes aux questions que se posent les dirigeants de PME : combien ça coûte,
         comment ça marche, où va le budget. Sans jargon.
       </p>
+      <GoogleRating spaced />
     </div>
   </section>
 

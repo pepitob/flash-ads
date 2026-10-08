@@ -19,6 +19,7 @@ export const proofPlaceholder = false;
 /** Note agrégée de la fiche Google. Réel - mettre à jour si de nouveaux avis arrivent. */
 export const googleReviews = {
   rating: 5.0,
+  // Non affiché sur le site (trop faible pour l'instant) : la note seule, avec « Avis vérifiés ».
   count: 6,
   profileUrl:
     "https://www.google.com/maps/place/?q=place_id:ChIJf_0JGAUxjEcRdBaOc1yOMBk",

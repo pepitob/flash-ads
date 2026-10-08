@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import GoogleRating from "../../components/GoogleRating.astro";
 import AnswerBlock from "../../components/AnswerBlock.astro";
 import SectionHead from "../../components/SectionHead.astro";
 import FAQ from "../../components/FAQ.astro";
@@ -123,6 +124,7 @@ const jsonLd = [
             <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
             <a href="#crm" class="btn btn-ghost">La connexion CRM</a>
           </div>
+            <GoogleRating spaced />
         </div>
         <!-- Illustration générée (Codex), décorative : appels, formulaires et achats convergent vers un seul tableau vérifié. -->
         <img class="hero-visual" src="/images/tracking/hero.webp" width="1200" height="731" alt="" decoding="async" />
