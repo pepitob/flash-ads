@@ -54,15 +54,34 @@ Comprendre ces flux transversaux avant d'éditer :
 - **Visuels de `/services/chatgpt-ads`** (`public/images/chatgpt-ads/`) : `phone.webp` (conversation +
   annonce, hero) et `admanager.webp` (carte d'annonce de l'Ads Manager) sont des **visuels OpenAI**
   (ads.openai.com), détourés de leur fond vert d'eau et recadrés dans un cadre navy ; la légende
-  « Visuel : OpenAI » doit rester sous chacun. `compare.webp` et `eligibility.webp` sont des
+  « Visuel : OpenAI » doit rester sous chacun. `compare-google.webp`, `compare-chatgpt.webp` et `eligibility.webp` sont des
   illustrations générées (Codex) au style du système (aplats, trait navy, ombre décalée nette),
   décoratives (`alt` vide). L'ombre décalée des images détourées passe par
   `filter: drop-shadow(Npx Npx 0 var(--edge))`, sans flou, pour suivre leur silhouette.
+- **Pages ChatGPT Ads : une page indexée, une landing page, mêmes blocs.** `/services/chatgpt-ads`
+  (indexée) et `/lp/publicite-chatgpt` (trafic payant Google Ads ET LinkedIn Ads) sont assemblées
+  avec les composants de `src/components/chatgpt-ads/` (Hero, Offer, Format, Sectors, WhyNow,
+  Compare, TestSteps, Contact, HeadSplit, MobileCtaBar). Textes partagés (libellés d'action,
+  comparatif, étapes du test, FAQ) dans `src/data/chatgpt-ads.ts`, prix dans `tarifs.ts`, secteurs
+  dans `chatgpt-secteurs.ts` : **un bloc qui existe sur la page service s'importe, il ne se recode
+  pas**, et une correction faite à la source vaut pour les deux pages. La FAQ de la landing est un
+  filtre par identifiant (`faqById`). Libellés d'action uniques : boutons `Tester ChatGPT Ads →`,
+  envoi `Demander mon audit gratuit →` (`cta` dans `chatgpt-ads.ts`). La landing utilise
+  `src/layouts/LandingLayout.astro` : mêmes `<head>`, polices et GTM, mais logo non cliquable, sans
+  menu, un seul bouton (vers `#contact`), pied de page réduit, `noindex, nofollow`, **aucun JSON-LD** (`<FAQ schema={false}>`)
+  et exclusion du sitemap (`/lp/` dans `astro.config.mjs`). **Aucune sortie** sur la landing, hors
+  liens légaux, lien « packs Google Ads » du message « pas possible » et sources externes voulues
+  (note Google, badge Partner, documentation et règles d'OpenAI). Ne jamais y citer Ma Porte Sàrl.
+  Les chiffres de sa section Preuves sont ceux de la home (`resultCases`, composant
+  `ResultCases.astro`), présentés comme résultats **Google Ads**, jamais ChatGPT.
 - **Formulaires** : devis (`/contact`) et demande d'accès ChatGPT Ads
-  (`/services/chatgpt-ads`), tous deux via **Netlify Forms**. Plus aucune dépendance Formspree.
-- **Mesure d'audience** : Google Tag Manager, injecté par `BaseLayout.astro` depuis `site.gtmId`
-  (snippet en tête de `<head>`, `noscript` juste après `<body>`). Le `is:inline` est indispensable :
-  sans lui Astro en ferait un module différé, ce que GTM ne supporte pas. Le `dataLayer` qu'il crée
+  (`/services/chatgpt-ads` et `/lp/publicite-chatgpt`), tous via **Netlify Forms**. Plus aucune
+  dépendance Formspree.
+- **Mesure d'audience** : Google Tag Manager, injecté par `src/components/seo/Gtm.astro` (posé par
+  `BaseLayout` et `LandingLayout`) depuis `site.gtmId` (snippet en tête de `<head>`, `noscript`
+  juste après `<body>`). Le `is:inline` est indispensable : sans lui Astro en ferait un module
+  différé, ce que GTM ne supporte pas. Les snippets sont construits dans le frontmatter : écrits en
+  ligne dans le gabarit, le compilateur Astro casse sur le gabarit littéral imbriqué. Le `dataLayer` qu'il crée
   est le même que celui où le site pousse ses événements, exploitables comme déclencheurs dans le
   conteneur sans code supplémentaire : le calculateur émet `calc_start`, `calc_result`,
   `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent tous un
@@ -74,11 +93,19 @@ Comprendre ces flux transversaux avant d'éditer :
   se déclenche donc à CHAQUE tentative, y compris celles refusées par la validation et celles dont
   la requête échoue. Notre `form_submit`, lui, n'est poussé qu'après acceptation par Netlify. Les
   deux formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
-  donc ni deux leads ni deux conversions. **Exception enrichie, formulaire ChatGPT Ads** : en plus de
-  `form_submit`, il pousse `eligibility_check` au changement de secteur (`form: 'service_chatgpt'`,
-  `secteur`, `eligibilite` = `ouvert` | `validation` | `impossible` | `autre`) et `generate_lead` à
-  l'envoi accepté (mêmes paramètres + `budget_google`). Une seule des deux, `form_submit` ou
-  `generate_lead`, doit compter comme conversion dans GTM, sinon le lead est compté deux fois.
+  donc ni deux leads ni deux conversions. **Exception enrichie, pages ChatGPT Ads** (`src/lib/cgpt-track.ts`) :
+  chaque événement porte `page` (`services-chatgpt-ads` ou `lp_chatgpt`, lu sur `data-cgpt-page`
+  du formulaire) et `source_trafic` (`google` si `gclid` ou `utm_source=google`, `linkedin` si
+  `li_fat_id` ou `utm_source=linkedin`, sinon `autre` : les campagnes LinkedIn doivent donc toujours
+  porter `utm_source=linkedin`). En plus de `form_submit` : `eligibility_check` au choix d'un
+  secteur (`source` = `selecteur` | `formulaire`, `secteur`, `eligibilite` = `ouvert` |
+  `validation` | `impossible` | `autre`, et `form` = `service_chatgpt` sur la page service, valeur
+  historique déjà branchée), `cta_click` sur tout élément `data-cta` (`position` = `header` |
+  `hero` | `secteurs` | `offre` | `mobile_bar`) et `generate_lead` à l'envoi accepté (`secteur`,
+  `eligibilite`, `budget_google`). `generate_lead` est la conversion principale (Google Ads et
+  LinkedIn Ads) : une seule des deux, `form_submit` ou `generate_lead`, doit compter comme
+  conversion dans GTM, sinon le lead est compté deux fois. Le tag LinkedIn Insight se pose dans
+  GTM, pas dans le code.
   Aucune donnée personnelle (nom, e-mail, téléphone) dans le `dataLayer`.
 - **Calculateur de budget** (`/calculateur-budget`) : un seul moteur pur, `src/lib/calculator.ts`,
   appelé au build (rendu statique de l'état par défaut : SEO, pas de layout shift, résultat lisible
@@ -126,7 +153,7 @@ Comprendre ces flux transversaux avant d'éditer :
 
 ## Visuels générés (Codex)
 
-Les illustrations du site (ex. `public/images/chatgpt-ads/compare.webp` et `eligibility.webp`)
+Les illustrations du site (ex. `public/images/chatgpt-ads/compare-chatgpt.webp` et `eligibility.webp`)
 sont générées par l'outil de génération d'images de **Codex CLI** (fonctionnalité
 `image_generation`, active par défaut), puis retouchées avec ImageMagick. Méthode validée :
 
@@ -167,6 +194,13 @@ Images tierces détourées (ex. visuels OpenAI) : on recadre sur la surface util
 silhouette (`roundrectangle` + `CopyOpacity`), on remplace leur fond ou leur cadre par un trait
 `#161a28` intégré à l'image, et l'ombre décalée vient du CSS
 (`filter: drop-shadow(Npx Npx 0 var(--edge))`). Source toujours légendée.
+
+## Polices
+
+Space Grotesk et Inter sont importées par `global.css` (`@fontsource-variable`) et **préchargées**
+par `src/components/seo/FontPreload.astro` (posé par les deux layouts). Sans ce préchargement, le
+H1 change de largeur au remplacement de la police de secours et décale tout l'en-tête (CLS 0,2
+mesuré sur les pages ChatGPT Ads, 0,001 avec).
 
 ## Animations d'apparition
 
@@ -262,7 +296,8 @@ jamais un seuil élevé.
   **Liste fermée de ce qui porte le traitement** : boutons primaires et
   secondaires, les 4 cartes de tarifs (la vedette en `--shadow-edge-lg`), les 3
   cartes de services, l'aperçu d'annonce du hero, le badge Google Partner (sauf
-  dans le pied de page) et l'item de FAQ **ouvert** uniquement.
+  dans le pied de page), l'item de FAQ **ouvert** et la carte de secteur
+  **choisie** dans le sélecteur de la landing ChatGPT Ads, uniquement.
   **Ce qui ne le porte pas, volontairement** : les témoignages (filet 1px
   `--rule`, rien d'autre), la grille « Pourquoi nous choisir » (lignes de
   grille seules, ni boîte ni pastille d'icône), les tuiles de chiffres et les
@@ -343,14 +378,19 @@ sans redirection), ce qui impose trois choses à ne pas casser : poster sur un c
 le champ caché `form-name` qui route la soumission. Anti-spam : honeypot Netlify
 (`netlify-honeypot="bot-field"`).
 
-**Vérification d'éligibilité ChatGPT Ads (`/services/chatgpt-ads#contact`) : Netlify Forms**
-également, `name="chatgpt-ads"` (`EarlyBirdForm.astro`). Mêmes contraintes que ci-dessus. Champs
-secteur (obligatoire) et budget Google Ads actuel ; champs cachés `page`, `utm_source`,
-`utm_medium`, `utm_campaign` et `gclid` remplis depuis l'URL, sans aucun stockage navigateur. Les
+**Audit ChatGPT Ads (`#contact` de `/services/chatgpt-ads` et de `/lp/publicite-chatgpt`) :
+Netlify Forms** également, `name="chatgpt-ads"` (`EarlyBirdForm.astro`), le même formulaire sur
+les deux pages. Mêmes contraintes que ci-dessus. **Netlify ne garde qu'une définition par nom** :
+les deux pages doivent porter exactement les mêmes champs, seuls changent la valeur du champ caché
+`page` (`services-chatgpt-ads` / `lp_chatgpt`) et le caractère obligatoire du budget Google Ads et
+du site web (obligatoires sur la landing seulement, prop `strict` de `Contact`). Champ secteur
+obligatoire ; champs cachés `page`, `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`,
+`utm_term`, `gclid` et `li_fat_id` remplis depuis l'URL, sans aucun stockage navigateur. Les
 secteurs et leur statut viennent de `src/data/chatgpt-secteurs.ts`, **seule source** partagée avec
 les cartes « Votre secteur peut-il diffuser ? » de la page : une règle d'OpenAI qui change se
-corrige là. Un secteur fermé affiche un message (et un lien Google Ads) mais **ne bloque jamais
-l'envoi**. Les deux formulaires doivent apparaître dans « Forms » côté Netlify après le déploiement.
+corrige là. Un secteur fermé affiche un message (avec un lien Google Ads sur la page service seulement)
+mais **ne bloque jamais l'envoi** ; un budget « Aucun » affiche lui aussi un message sans bloquer.
+Sur la landing, le sélecteur de la section secteurs pré-remplit ce champ. Les deux formulaires doivent apparaître dans « Forms » côté Netlify après le déploiement.
 
 **Si des soumissions n'arrivent plus.** La détection ne tourne qu'au moment du build : toute
 modification d'un formulaire (champ renommé, nouveau formulaire, balise changée) exige un

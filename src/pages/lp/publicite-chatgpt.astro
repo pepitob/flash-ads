@@ -1,0 +1,110 @@
+---
+/**
+ * Landing page du trafic payant ChatGPT Ads (Google Ads ET LinkedIn Ads).
+ * La source se distingue par les UTM et les identifiants de clic (`gclid`,
+ * `li_fat_id`), jamais par une page différente : les campagnes LinkedIn
+ * doivent toujours porter `utm_source=linkedin`.
+ *
+ * Construite avec les blocs de `/services/chatgpt-ads` (même composants, mêmes
+ * données) : un prix ou une règle qui change se corrige à la source et vaut
+ * pour les deux pages. Aucune sortie hors pied de page légal et lien « packs
+ * Google Ads » du message « pas possible ». Une seule conversion : le
+ * formulaire `#contact` (`generate_lead`).
+ */
+import LandingLayout from "../../layouts/LandingLayout.astro";
+import FAQ from "../../components/FAQ.astro";
+import Testimonials from "../../components/Testimonials.astro";
+import ResultCases from "../../components/ResultCases.astro";
+import Hero from "../../components/chatgpt-ads/Hero.astro";
+import HeadSplit from "../../components/chatgpt-ads/HeadSplit.astro";
+import Format from "../../components/chatgpt-ads/Format.astro";
+import Sectors from "../../components/chatgpt-ads/Sectors.astro";
+import Offer from "../../components/chatgpt-ads/Offer.astro";
+import TestSteps from "../../components/chatgpt-ads/TestSteps.astro";
+import Compare from "../../components/chatgpt-ads/Compare.astro";
+import Contact from "../../components/chatgpt-ads/Contact.astro";
+import MobileCtaBar from "../../components/chatgpt-ads/MobileCtaBar.astro";
+import { chatgptAds } from "../../data/tarifs";
+import { launch, faqById } from "../../data/chatgpt-ads";
+import { preuveDiffusion } from "../../data/chatgpt-secteurs";
+
+const title = "Publicité ChatGPT en Suisse romande | Flash Ads";
+const description =
+  "Vos annonces dans ChatGPT, créées et pilotées depuis la Suisse romande. Dès 240.-/mois au tarif de lancement, audit gratuit de 15 minutes.";
+const path = "/lp/publicite-chatgpt";
+
+const faq = faqById([
+  "recommandation",
+  "audience",
+  "secteur",
+  "prix",
+  "budget-minimum",
+  "resultats",
+  "delai",
+  "autonome",
+  "remplace-google",
+]);
+---
+
+<LandingLayout title={title} description={description} path={path}>
+  <Hero
+    eyebrow={`Nouveau : ouvert en Suisse depuis le ${launch.label}`}
+    link={{ href: "#secteurs", label: "Mon secteur peut-il diffuser ?" }}
+    points={[
+      `Dès ${chatgptAds.price}/mois de gestion, prix affiché`,
+      "0 % de commission sur votre budget",
+      `Déjà en diffusion pour ${preuveDiffusion}`,
+    ]}
+  >
+    ChatGPT affiche désormais des annonces sous ses réponses. On crée et on pilote les vôtres
+    depuis la Suisse romande. Dès <b>{chatgptAds.price}{chatgptAds.unit}</b> au tarif de lancement.
+  </Hero>
+
+  <Format band="paper" compact>
+    <HeadSplit eyebrow="Comment ça marche" title="Une annonce sous la réponse, au moment où la personne décide.">
+      Les gens décrivent à ChatGPT leur projet entier : budget, contraintes, délai. Votre annonce
+      s'affiche quand la conversation correspond à ce que vous vendez.
+    </HeadSplit>
+  </Format>
+
+  <Sectors band="tint" interactive />
+
+  <Offer />
+
+  <TestSteps />
+
+  <Compare>
+    Si nous gérons aussi votre gestion Google Ads, vous voyez le coût d'une demande sur chaque
+    canal dans le même rapport. Vous décidez sur des chiffres, pas sur une impression.
+  </Compare>
+
+  <!-- PREUVES -->
+  <section class="band band--paper">
+    <div class="wrap">
+      <HeadSplit eyebrow="Preuves" title="Ce que nous savons déjà faire.">
+        La publicité ChatGPT est ouverte en Suisse depuis peu : personne n'a encore beaucoup de recul.
+        Ce que nous avons, ce sont des campagnes déjà en diffusion et une méthode qui fonctionne sur Google.
+      </HeadSplit>
+      <h3 class="proof-h">Résultats Google Ads de nos clients</h3>
+      <ResultCases />
+      <Testimonials only={["Sportmax Nyon", "Abdullah Tariq"]} />
+      <p class="proof-live">
+        <span class="live-dot" aria-hidden="true"></span>
+        Déjà en diffusion sur ChatGPT pour {preuveDiffusion}.
+      </p>
+    </div>
+  </section>
+
+  <FAQ items={faq} title="Vos questions." eyebrow="FAQ" band="tint" schema={false} />
+
+  <Contact eyebrow="Audit gratuit" page="lp_chatgpt" strict exitLinks={false} />
+
+  <MobileCtaBar />
+</LandingLayout>
+
+<style>
+  /* Même encadré que la preuve de la carte « Possible après validation ». */
+  .proof-live { font-size: 15px; font-weight: 500; color: var(--on-strong, var(--ink)); padding: 14px 16px; background: var(--fa-tint); border-radius: var(--r); margin-top: 40px; }
+  .proof-h { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -.01em; color: var(--on-strong, var(--ink)); margin: 0 0 20px; }
+  .proof-h + :global(.cases) { margin-bottom: 56px; }
+</style>

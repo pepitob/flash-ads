@@ -28,3 +28,5 @@ pnpm-debug.log*
 
 # Claude.md
 CLAUDE.md
+# Profils Chrome temporaires de Lighthouse (lancé depuis WSL)
+C:*

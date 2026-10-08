@@ -1,160 +1,37 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AnswerBlock from "../../components/AnswerBlock.astro";
-import EarlyBirdForm from "../../components/EarlyBirdForm.astro";
 import FAQ from "../../components/FAQ.astro";
 import CTA from "../../components/CTA.astro";
-import GooglePartnerBadge from "../../components/GooglePartnerBadge.astro";
-import GoogleRating from "../../components/GoogleRating.astro";
-import { chatgptAds, chatgptBetaNote, chatgptPromoNote } from "../../data/tarifs";
-import { secteurGroupes, preuveSante, openaiAdPolicies } from "../../data/chatgpt-secteurs";
+import Hero from "../../components/chatgpt-ads/Hero.astro";
+import Offer from "../../components/chatgpt-ads/Offer.astro";
+import Format from "../../components/chatgpt-ads/Format.astro";
+import Sectors from "../../components/chatgpt-ads/Sectors.astro";
+import WhyNow from "../../components/chatgpt-ads/WhyNow.astro";
+import Compare from "../../components/chatgpt-ads/Compare.astro";
+import TestSteps from "../../components/chatgpt-ads/TestSteps.astro";
+import Contact from "../../components/chatgpt-ads/Contact.astro";
+import { chatgptAds } from "../../data/tarifs";
+import { launch, cta, faqItems } from "../../data/chatgpt-ads";
 import { site } from "../../data/site";
-import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
+import { serviceSchema, breadcrumbSchema } from "../../lib/schema";
+
+/*
+ * Page indexée de l'offre ChatGPT Ads. Ses blocs vivent dans
+ * `src/components/chatgpt-ads/` et ses textes dans `src/data/chatgpt-ads.ts` :
+ * la landing page `/lp/publicite-chatgpt` les réutilise.
+ */
 
 const title = "Publicité ChatGPT (ChatGPT Ads) en Suisse romande | Flash Ads";
 const description =
   "La publicité ChatGPT en Suisse romande : prix affiché, éligibilité vérifiée, mesure installée. 240.-/mois de gestion, budget dès 20 CHF/jour.";
 const path = "/services/chatgpt-ads";
 
-/** Ouverture du canal en Suisse. Source : annonce OpenAI (lien dans la frise). */
-const launch = {
-  iso: "2026-08-24",
-  label: "24 août 2026",
-  source: "https://openai.com/index/chatgpt-ads-expands-across-europe/",
-};
-
-/** Documentation annonceurs d'OpenAI : format, ciblage, enchères, mesure. */
-const openaiDocs = "https://help.openai.com/en/articles/20001207-ads-in-chatgpt-the-basics";
-
 // Date de mise à jour visible (les moteurs génératifs privilégient le contenu frais).
 // Reprise telle quelle dans le `dateModified` du JSON-LD : une seule date à changer.
-const updated = new Date("2026-10-07");
+const updated = new Date("2026-10-08");
 const updatedStr = updated.toLocaleDateString("fr-CH", { year: "numeric", month: "long", day: "numeric" });
 const updatedISO = updated.toISOString().slice(0, 10);
-
-/** Illustrations générées (Codex) au style du design system : décoratives, `alt` vide. */
-const eligibilityVisual = { src: "/images/chatgpt-ads/eligibility.webp", width: 943, height: 849 };
-
-/** Libellé unique de tous les boutons de la page, qui mènent tous au formulaire. */
-const ctaLabel = "Vérifier mon éligibilité";
-
-/** Icône par statut : la couleur seule ne suffit pas à distinguer les cartes. */
-const statusIcon = {
-  ouvert: '<circle cx="12" cy="12" r="9" /><path d="M8.5 12.5l2.5 2.5 4.5-5" />',
-  validation: '<circle cx="12" cy="12" r="9" /><path d="M12 7.5V12l3 2" />',
-  impossible: '<circle cx="12" cy="12" r="9" /><path d="M9 9l6 6M15 9l-6 6" />',
-};
-
-const comparison = [
-  { k: "Ce qui déclenche l'annonce", g: "Les mots-clés tapés dans Google", c: "Le contexte de la conversation" },
-  { k: "Le moment", g: "La personne cherche un prestataire", c: "La personne décrit son projet, compare, demande conseil" },
-  { k: "Volume en Suisse", g: "Élevé et stable", c: "En croissance, encore limité" },
-  { k: "Mesure des résultats", g: "Très complète", c: "De base : impressions, clics, conversions via le pixel OpenAI" },
-  { k: "Budget minimum chez Flash Ads", g: "500 CHF/mois", c: `${chatgptAds.minBudgetDaily} CHF/jour, environ ${chatgptAds.minBudgetMonthly} CHF/mois` },
-  { k: "Notre conseil", g: "Le canal principal pour la plupart des PME", c: "Un test en complément, pas un remplacement" },
-];
-
-const testSteps = [
-  { t: "Premier échange gratuit (15 min).", d: "On vérifie votre secteur, votre budget et votre suivi actuel. Si ChatGPT n'est pas pour vous, on vous le dit." },
-  { t: "Mise en place (1 à 2 semaines).", d: "Compte annonceur, validation par OpenAI, pixel de suivi, première campagne." },
-  { t: "Diffusion et ajustements (semaines 3 à 8).", d: "On laisse le système apprendre et on coupe ce qui ne rapporte pas." },
-  { t: "Bilan.", d: "On décide ensemble de continuer, d'ajuster ou d'arrêter, selon un critère fixé avec vous avant le lancement." },
-];
-
-// Source unique de la FAQ : la liste visible ET le JSON-LD FAQPage (émis par
-// `FAQ.astro` depuis ces mêmes items). Les deux ne peuvent donc pas diverger.
-const faqItems: FaqItem[] = [
-  {
-    question: "La publicité ChatGPT est-elle disponible en Suisse ?",
-    answer:
-      "Oui, depuis le 24 août 2026. OpenAI a ouvert ChatGPT Ads à l'Europe, Suisse comprise. La régie s'appelle Ads Manager et reste officiellement en bêta : le canal fonctionne, mais il évolue encore et ses performances ne sont pas stabilisées.",
-  },
-  {
-    question: "Qu'est-ce que la publicité ChatGPT (ChatGPT Ads) ?",
-    answer:
-      "Ce sont des annonces sponsorisées affichées sous certaines réponses de ChatGPT, clairement labellisées comme publicités. Elles n'influencent pas le contenu des réponses générées par l'IA. Le format a été lancé en test aux États-Unis le 9 février 2026, puis ouvert en self-service aux entreprises américaines le 5 mai 2026, avant l'Europe en août 2026.",
-  },
-  {
-    question: "Qui voit ces annonces ?",
-    answer:
-      "Les utilisateurs adultes des formules Free et Go de ChatGPT. Les abonnés Plus, Pro, Business et Enterprise n'en voient pas, ni les moins de 18 ans.",
-  },
-  {
-    question: "Mon secteur peut-il diffuser ?",
-    answer:
-      "La plupart des secteurs le peuvent : habitat, artisanat, services aux entreprises, formation, tourisme, e-commerce. La santé est possible après validation par OpenAI. Les services juridiques, financiers et immobiliers ne le sont pas en Suisse aujourd'hui. On vérifie votre cas lors du premier échange.",
-  },
-  {
-    question: "À quoi ressemble une annonce ?",
-    answer:
-      "Elle apparaît sous la réponse de ChatGPT et comprend le nom de l'annonceur, son favicon, un titre, un texte de description, une image et un lien vers votre site. Le bloc est identifié comme sponsorisé et séparé visuellement de la réponse. On est proche d'une annonce Search enrichie d'un visuel.",
-  },
-  {
-    question: "Comment cible-t-on ses annonces ?",
-    answer:
-      "Pas avec des mots-clés en correspondance exacte, contrairement à Google Ads. Vous fournissez au niveau du groupe d'annonces des indices de contexte : les sujets, thèmes ou mots-clés pour lesquels votre offre est pertinente. Le système s'appuie ensuite sur l'intention de la conversation en cours, sur votre page de destination et sur vos textes pour décider s'il affiche l'annonce. Ces indices orientent la diffusion, ils ne la garantissent pas. C'est un changement de métier réel : on ne pilote plus une liste de mots-clés, on décrit un contexte.",
-  },
-  {
-    question: "Combien coûte un clic sur ChatGPT Ads ?",
-    answer:
-      "OpenAI recommande de démarrer avec une enchère maximale de 3 à 5 dollars par clic. C'est un plafond, pas le prix payé : les enchères fonctionnent au second prix pondéré par la pertinence, donc le coût réel est souvent inférieur. Trois modes de facturation existent : à l'impression, au clic, ou optimisé conversions. Ces repères viennent du lancement et bougeront avec la concurrence.",
-  },
-  {
-    question: "Combien ça coûte chez Flash Ads ?",
-    answer:
-      "Deux montants distincts, comme pour Google Ads. D'abord votre budget publicitaire, versé directement à OpenAI : 20 CHF par jour au minimum, soit environ 600 CHF par mois. Ensuite nos frais de gestion : 240.- par mois au tarif de lancement, plus 150.- de setup une seule fois. Ces deux tarifs sont réduits de moitié jusqu'au 31 décembre 2026 ; à partir du 1er janvier 2027, la gestion passe à 480.- par mois et le setup à 300.-.",
-  },
-  {
-    question: "Pourquoi un budget minimum de 20 CHF par jour ?",
-    answer:
-      "Faisons le calcul ensemble : avec une enchère de l'ordre de 3 à 5 dollars par clic, 20 CHF par jour achètent quelques clics quotidiens seulement. C'est le strict minimum pour accumuler assez de données en un mois et commencer à optimiser. En dessous, vous paieriez des frais de gestion pour un résultat purement aléatoire. C'est la même logique que notre plancher de 500.- par mois sur Google Ads.",
-  },
-  {
-    question: "Quels résultats puis-je attendre ?",
-    answer:
-      "Nous ne promettons aucun chiffre, et méfiez-vous de qui le ferait. La régie est en bêta, les volumes, les coûts par clic et les taux de conversion ne sont pas stabilisés, et personne ne dispose encore d'historique sur le marché suisse. Ce que nous garantissons, c'est le travail et la transparence : vous voyez ce qui est dépensé, ce que ça rapporte, et nous vous disons franchement si le canal ne fonctionne pas pour vous.",
-  },
-  {
-    question: "Combien de temps avant de juger les résultats ?",
-    answer:
-      "Comptez 1 à 2 semaines de mise en place, puis au moins 6 semaines de diffusion. Avant, les chiffres ne permettent pas de conclure.",
-  },
-  {
-    question: "Peut-on mesurer les résultats ?",
-    answer:
-      "Oui. L'Ads Manager remonte les impressions, les clics, la dépense, le taux de clic, le coût par clic et par mille impressions, ainsi que les conversions. Nous ajoutons à la main des paramètres UTM à vos liens (les paramètres dynamiques ne sont pas encore pris en charge par OpenAI) : ils sont conservés au clic, donc le trafic ChatGPT apparaît aussi dans votre Google Analytics, à côté de vos autres canaux. Une réserve honnête : les impressions et les clics remontent en quelques minutes, la dépense met plus longtemps, un montant à zéro ne veut donc pas dire qu'il n'y a pas eu de frais.",
-  },
-  {
-    question: "Avez-vous accès aux conversations des utilisateurs ?",
-    answer:
-      "Non, ni nous ni vous. OpenAI ne transmet que des chiffres globaux (impressions, clics, dépenses) et les conversions mesurées sur votre site.",
-  },
-  {
-    question: "Si je paie, ChatGPT va-t-il me recommander dans ses réponses ?",
-    answer:
-      "Non. L'annonce s'affiche à part, sous la réponse, et n'a aucun effet sur ce que ChatGPT répond. Être cité dans les réponses relève du référencement naturel, un autre métier que le nôtre.",
-  },
-  {
-    question: "Mes annonces peuvent-elles apparaître à côté de n'importe quelle conversation ?",
-    answer:
-      "Non. OpenAI applique une politique de brand safety : les annonces ne sont pas censées apparaître dans des contextes sensibles ou inappropriés, selon des règles publiées dans ses Ads Policies. Comme sur tout réseau publicitaire, c'est un dispositif de garde-fous, pas une garantie absolue.",
-  },
-  {
-    question: "Puis-je le faire moi-même ?",
-    answer:
-      "Oui, le compte est en libre-service. Ce qui demande du temps et de la méthode, c'est le suivi des conversions, la rédaction des contextes de diffusion et la décision d'ajuster ou d'arrêter au bon moment.",
-  },
-  {
-    question: "Est-ce que ça remplace Google Ads ?",
-    answer:
-      "Non, c'est un canal complémentaire. Google Ads reste le volume principal pour une PME romande. ChatGPT Ads capte un autre moment : celui où quelqu'un pose une question à une IA plutôt que de taper une recherche. Les deux se gèrent séparément, et vous pouvez tout à fait commencer par l'un.",
-  },
-  {
-    question: "Pourquoi lancer maintenant ?",
-    answer:
-      "Parce que le tarif de lancement court jusqu'au 31 décembre 2026, et parce qu'un canal se maîtrise en le pratiquant. Mais on ne vous recommandera pas de lancer si votre secteur, votre budget ou votre suivi ne le permettent pas.",
-  },
-];
 
 const pageUrl = `${site.url}${path}`;
 
@@ -215,322 +92,47 @@ const jsonLd = [
 ---
 
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
-  <!-- HERO -->
-  <section class="page-hero band band--tint">
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <nav class="crumbs mono" aria-label="Fil d'Ariane">
-          <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité ChatGPT</span>
-        </nav>
-        <span class="eyebrow"><span class="live-dot" aria-hidden="true"></span>Ouvert en Suisse depuis le {launch.label}</span>
-        <h1 class="display">Agence <span class="flash-word">ChatGPT Ads</span> en Suisse romande</h1>
+  <Hero
+    eyebrow={`Ouvert en Suisse depuis le ${launch.label}`}
+    link={{ href: "#offre", label: "Voir l'offre" }}
+    crumbs
+    updated={{ iso: updatedISO, label: updatedStr }}
+  >
+    Vos annonces dans ChatGPT, créées et pilotées par une agence romande. Dès
+    {" "}<b>{chatgptAds.price}{chatgptAds.unit}</b> au tarif de lancement.
+  </Hero>
 
-        <p class="hero-lead">
-          Vos annonces dans ChatGPT, créées et pilotées par une agence romande. Dès
-          {" "}<b>{chatgptAds.price}{chatgptAds.unit}</b> au tarif de lancement.
-        </p>
+  <Offer />
 
-        <div class="hero-cta">
-          <a href="#contact" class="btn btn-primary">{ctaLabel} <span class="arrow" aria-hidden="true">→</span></a>
-          <a href="#offre" class="hero-link">Voir l'offre</a>
-        </div>
-
-        <div class="hero-trust">
-          <GooglePartnerBadge height={52} />
-          <GoogleRating />
-        </div>
-        <p class="updated">Mis à jour le <time datetime={updatedISO}>{updatedStr}</time></p>
-      </div>
-
-      <figure class="hero-visual">
-        <div class="phone-wrap">
-          <img
-            src="/images/chatgpt-ads/phone.webp"
-            width="492"
-            height="1043"
-            alt="Conversation ChatGPT sur la construction d'une clôture de jardin, suivie d'une annonce sponsorisée pour un panneau brise-vue en cèdre."
-            fetchpriority="high"
-            decoding="async"
-          />
-        </div>
-        <figcaption>Exemple d'annonce dans ChatGPT. Visuel : OpenAI.</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <!-- OFFRE -->
-  <section id="offre" class="band band--paper">
-    <div class="wrap">
-      <div class="head-split">
-        <div>
-          <span class="eyebrow">Offre de lancement</span>
-          <h2 class="display">Un seul pack, toute la gestion comprise.</h2>
-        </div>
-        <p>
-          Nous ouvrons un nombre limité de comptes pour apprendre ce canal avec nos clients. D'où un
-          tarif de lancement, réduit de moitié jusqu'à la fin de l'année.
-        </p>
-      </div>
-
-      <p class="live-proof">
-        <span class="live-dot" aria-hidden="true"></span>
-        Déjà en diffusion sur ChatGPT pour un réseau de cabinets dentaires et d'orthodontie en Suisse romande.
+  <Format>
+    {/* Réponse directe (GEO) : sortie du hero pour l'alléger, elle ouvre la
+        première section de contenu sous forme de question. */}
+    <span class="eyebrow">En bref</span>
+    <AnswerBlock question="Qu'est-ce que la publicité ChatGPT ?" variant="stack">
+      <p>
+        <b>La publicité ChatGPT (ChatGPT Ads)</b> affiche des annonces sponsorisées sous certaines
+        réponses de ChatGPT, clairement labellisées et sans influence sur le contenu généré. Elle
+        est <b>disponible en Suisse depuis le {launch.label}</b>. Flash Ads gère vos campagnes pour
+        {" "}<b>{chatgptAds.price}{chatgptAds.unit}</b> au tarif de lancement, avec un budget dès
+        {" "}<b>{chatgptAds.minBudgetDaily} CHF par jour</b> versé directement à OpenAI. Canal récent :
+        aucun résultat n'est garanti.
       </p>
+    </AnswerBlock>
+  </Format>
 
-      <div class="offer-grid">
-        <div class="price feat">
-          <span class="badge">Jusqu'au 31.12</span>
-          <span class="tier">{chatgptAds.name}</span>
-          <div class="amt">
-            {chatgptAds.price}<small> {chatgptAds.unit}</small>
-          </div>
-          <p class="was">
-            au lieu de <s>{chatgptAds.regularPrice}{chatgptAds.unit}</s> · setup {chatgptAds.setup}
-            au lieu de <s>{chatgptAds.regularSetup}</s>
-          </p>
-          <div class="rows">
-            {chatgptAds.attributes.map((a) => (
-              <div class="row">
-                <span class="k">{a.label}</span>
-                <span class="v">{a.value}</span>
-              </div>
-            ))}
-          </div>
-          <a href="#contact" class="btn btn-primary offer-cta">
-            {chatgptAds.ctaLabel} <span class="arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
+  <Sectors />
 
-        <div class="offer-notes">
-          <h3>Ce que vous payez, en clair</h3>
-          <ol class="pay-list">
-            <li>
-              <span class="pay-amt">{chatgptAds.setup}</span>
-              <span class="pay-txt"><b>Une seule fois.</b> Ouverture du compte annonceur, tracking et première campagne. Au lieu de {chatgptAds.regularSetup}.</span>
-            </li>
-            <li>
-              <span class="pay-amt">{chatgptAds.price}<small>/mois</small></span>
-              <span class="pay-txt"><b>Frais de gestion</b>, jusqu'au {chatgptAds.promoEndsLabel}. Ensuite {chatgptAds.regularPrice} par mois.</span>
-            </li>
-            <li>
-              <span class="pay-amt">{chatgptAds.minBudgetDaily} CHF<small>/jour</small></span>
-              <span class="pay-txt"><b>Budget publicitaire minimum</b>, soit environ {chatgptAds.minBudgetMonthly} CHF par mois, payé directement à OpenAI sur votre propre compte. Aucune commission dessus.</span>
-            </li>
-          </ol>
-          <p class="promo-note">{chatgptPromoNote}</p>
+  <WhyNow />
 
-          <div class="beta-note">
-            <h3>Ce que nous ne promettons pas</h3>
-            <p>{chatgptBetaNote}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <Compare>
+    Si nous gérons aussi votre <a href="/services/google-ads">gestion Google Ads</a>, vous voyez
+    le coût d'une demande sur chaque canal dans le même rapport. Vous décidez sur des chiffres,
+    pas sur une impression.
+  </Compare>
 
-  <!-- FORMAT -->
-  <section class="band band--tint">
-    <div class="wrap">
-      {/* Réponse directe (GEO) : sortie du hero pour l'alléger, elle ouvre la
-          première section de contenu sous forme de question. */}
-      <span class="eyebrow">En bref</span>
-      <AnswerBlock question="Qu'est-ce que la publicité ChatGPT ?" variant="stack">
-        <p>
-          <b>La publicité ChatGPT (ChatGPT Ads)</b> affiche des annonces sponsorisées sous certaines
-          réponses de ChatGPT, clairement labellisées et sans influence sur le contenu généré. Elle
-          est <b>disponible en Suisse depuis le {launch.label}</b>. Flash Ads gère vos campagnes pour
-          {" "}<b>{chatgptAds.price}{chatgptAds.unit}</b> au tarif de lancement, avec un budget dès
-          {" "}<b>{chatgptAds.minBudgetDaily} CHF par jour</b> versé directement à OpenAI. Canal récent :
-          aucun résultat n'est garanti.
-        </p>
-      </AnswerBlock>
-      <ul class="fmt-points">
-        <li>
-          <svg class="fmt-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
-          <h3>Sous la réponse</h3>
-          <p>L'annonce apparaît après la réponse de ChatGPT, dans une zone identifiée. Elle comprend votre nom, votre favicon, un titre, un texte, une image et le lien vers votre site.</p>
-        </li>
-        <li>
-          <svg class="fmt-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg>
-          <h3>Clairement labellisée</h3>
-          <p>Chaque annonce est marquée comme publicité. L'utilisateur sait ce qui est sponsorisé et ce qui ne l'est pas.</p>
-        </li>
-        <li>
-          <svg class="fmt-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true"><path d="M12 20V10M18 20V4M6 20v-4" /></svg>
-          <h3>On paie au clic</h3>
-          <p>Vous payez quand quelqu'un clique. OpenAI recommande de démarrer autour de 3 à 5 dollars d'enchère maximale : c'est un plafond, l'enchère au second prix fait souvent payer moins.</p>
-        </li>
-      </ul>
-      <p class="fmt-source">
-        Format, ciblage, enchères et mesure :
-        <a href={openaiDocs} target="_blank" rel="noopener">documentation annonceurs d'OpenAI</a>.
-      </p>
-    </div>
-  </section>
+  <TestSteps />
 
-  <!-- QUI PEUT DIFFUSER -->
-  <section id="secteurs" class="band band--paper">
-    <div class="wrap">
-      <div class="head-split">
-        <div>
-          <span class="eyebrow">Qui peut diffuser</span>
-          <h2 class="display">Votre secteur peut-il diffuser sur ChatGPT&nbsp;?</h2>
-        </div>
-        <p>OpenAI n'accepte pas tous les secteurs. Mieux vaut le savoir avant de dépenser un franc.</p>
-      </div>
-      <div class="sect-grid">
-        {secteurGroupes.map((g) => (
-          <div class:list={["sect-card", `sect-card--${g.status}`]}>
-            <h3>
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" aria-hidden="true" set:html={statusIcon[g.status]} />
-              {g.title}
-            </h3>
-            <ul>
-              {g.sectors.map((s) => <li>{s.label}</li>)}
-            </ul>
-            {g.status === "validation" && <p class="sect-proof">{preuveSante}</p>}
-          </div>
-        ))}
-      </div>
-      <div class="sect-foot">
-        <p class="sect-note">
-          ChatGPT n'affiche pas d'annonces à côté des conversations sur la santé personnelle ou la santé
-          mentale : les thérapies sont donc peu adaptées.
-          <a href={openaiAdPolicies} target="_blank" rel="noopener">Règles publicitaires d'OpenAI</a> au
-          7 octobre 2026, susceptibles d'évoluer : on vérifie votre cas avant tout engagement.
-        </p>
-        <a href="#contact" class="btn btn-primary">{ctaLabel} <span class="arrow" aria-hidden="true">→</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- POURQUOI MAINTENANT -->
-  <section class="why band band--night">
-    <div class="wrap why-grid">
-      <div>
-        <span class="eyebrow">Pourquoi maintenant</span>
-        <h2 class="display">Un tarif de lancement jusqu'au 31 décembre 2026.</h2>
-        <p class="lead-on">
-          Le tarif de lancement court jusqu'à la fin de l'année, et un canal se maîtrise en le
-          pratiquant. Mais on ne vous recommandera pas de lancer si votre secteur, votre budget ou
-          votre suivi ne le permettent pas.
-        </p>
-      </div>
-      <div class="why-panel">
-        <span class="eyebrow">État du déploiement</span>
-        <ol class="timeline">
-          <li><b>9 fév. 2026</b><span>Test aux États-Unis (Free + Go)</span></li>
-          <li><b>5 mai 2026</b><span>Ads Manager self-serve ouvert aux entreprises US</span></li>
-          <li><b>2026</b><span>Expansion Canada, Australie, Nouvelle-Zélande</span></li>
-          <li class="live"><b>{launch.label}</b><span>Ouverture en Europe, Suisse comprise</span></li>
-        </ol>
-        <p class="tl-source">
-          Source :
-          <a href={launch.source} target="_blank" rel="noopener">annonce officielle d'OpenAI</a>.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CHATGPT ADS OU GOOGLE ADS -->
-  <section class="band band--tint">
-    <div class="wrap">
-      <div class="head-split">
-        <div>
-          <span class="eyebrow">Comparatif</span>
-          <h2 class="display">ChatGPT Ads ou Google Ads&nbsp;: lequel choisir&nbsp;?</h2>
-        </div>
-        <p>
-          Si nous gérons aussi votre <a href="/services/google-ads">gestion Google Ads</a>, vous voyez
-          le coût d'une demande sur chaque canal dans le même rapport. Vous décidez sur des chiffres,
-          pas sur une impression.
-        </p>
-      </div>
-      <table class="cmp">
-        <caption class="sr-only">Comparaison entre Google Ads et ChatGPT Ads</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="cmp-k"><span class="sr-only">Critère</span></th>
-            <th scope="col" class="cmp-ref">
-              <img src="/images/chatgpt-ads/compare-google.webp" width="320" height="372" alt="" loading="lazy" decoding="async" />
-              <span class="cmp-name">Google Ads</span>
-            </th>
-            <th scope="col" class="cmp-us">
-              <img src="/images/chatgpt-ads/compare-chatgpt.webp" width="320" height="371" alt="" loading="lazy" decoding="async" />
-              <span class="cmp-name">ChatGPT Ads</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {comparison.map((r) => (
-            <tr>
-              <th scope="row">{r.k}</th>
-              <td data-label="Google Ads" class="cmp-ref">{r.g}</td>
-              <td data-label="ChatGPT Ads" class="cmp-us">{r.c}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- COMMENT SE PASSE UN TEST -->
-  <section class="test band band--night">
-    <div class="wrap test-grid">
-      <div class="test-head">
-        <span class="eyebrow">Comment se passe un test</span>
-        <h2 class="display">De l'échange au bilan, en 8 semaines.</h2>
-        <figure class="test-visual">
-          <img
-            src="/images/chatgpt-ads/admanager.webp"
-            width="928"
-            height="482"
-            alt="Aperçu d'une annonce sponsorisée dans l'Ads Manager d'OpenAI."
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption>L'Ads Manager d'OpenAI, où vivent vos campagnes. Visuel : OpenAI.</figcaption>
-        </figure>
-      </div>
-      <ol class="steps">
-        {testSteps.map((st, i) => (
-          <li class="step">
-            <span class="no">{String(i + 1).padStart(2, "0")}</span>
-            <div><h3>{st.t}</h3><p>{st.d}</p></div>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
-
-  <!-- CONTACT : vérification d'éligibilité -->
-  <section id="contact" class="band band--paper">
-    <div class="wrap ask-grid">
-      <div class="ask-copy">
-        <span class="eyebrow">Éligibilité</span>
-        <h2 class="display">Parlons-en avant que le tarif remonte.</h2>
-        <p class="lead">
-          Dites-nous ce que vous vendez et dans quel secteur. Nous vous répondons sous un jour ouvré
-          et vous disons franchement si ChatGPT Ads a du sens pour votre activité, ou si votre budget
-          est mieux placé sur Google Ads.
-        </p>
-        <img class="ask-visual" {...eligibilityVisual} alt="" loading="lazy" decoding="async" />
-        <ul class="ask-next">
-          <li>Réponse sous un jour ouvré, par e-mail ou par téléphone.</li>
-          <li>Premier échange gratuit de 15 minutes, sans engagement.</li>
-          <li>Si ChatGPT n'est pas pour vous, on vous le dit.</li>
-        </ul>
-        <p class="ask-direct">
-          Vous préférez écrire ou appeler ?<br />
-          <a href={`mailto:${site.email}`}>{site.email}</a> ·
-          <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
-        </p>
-      </div>
-      <div class="ask-panel band--tint">
-        <EarlyBirdForm />
-      </div>
-    </div>
-  </section>
+  <Contact eyebrow="Éligibilité" page="services-chatgpt-ads" />
 
   <FAQ items={faqItems} title="Questions fréquentes sur la publicité ChatGPT" eyebrow="FAQ · ChatGPT Ads" band="tint">
     <p class="faq-help">
@@ -542,211 +144,13 @@ const jsonLd = [
   <CTA
     title="Un doute sur votre secteur ? On vous répond en 15 minutes."
     text="Le premier échange est gratuit. On vérifie votre secteur, votre budget et votre suivi, et si ChatGPT n'est pas pour vous, on vous le dit."
-    primaryLabel={ctaLabel}
+    primaryLabel={cta.label}
     primaryHref="#contact"
     secondaryLabel=""
   />
 </BaseLayout>
 
 <style>
-  /* ── En-têtes de section : titre à gauche, chapô à droite, pour ne pas
-     laisser la moitié droite de chaque bande vide. ── */
-  .head-split { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px 64px; align-items: end; margin-bottom: 44px; }
-  .head-split h2 { font-size: clamp(28px, 3.4vw, 42px); font-weight: 700; letter-spacing: -.02em; margin-top: 14px; }
-  .head-split > p { color: var(--muted-on, var(--muted)); font-size: 17px; line-height: 1.6; }
-  /* Liens dans un paragraphe : soulignés, la couleur seule ne suffit pas. */
-  .head-split a, .sect-note a, .faq-help a { color: var(--accent-on, var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
-
-  .live-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--fa-pink); margin-right: 9px; vertical-align: 1px; }
-
-  /* ── Hero ── */
-  .page-hero { padding: 56px 0 72px; }
-  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 64px; align-items: center; }
-  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
-  .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
-  .crumbs a:hover { color: var(--accent-on, var(--accent)); }
-  .page-hero h1 { font-size: clamp(36px, 5vw, 60px); font-weight: 700; line-height: 1.04; letter-spacing: -.03em; margin: 16px 0 26px; max-width: 12em; }
-  .hero-cta { display: flex; align-items: center; gap: 14px 26px; margin-top: 28px; flex-wrap: wrap; }
-  .hero-link { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--on-strong, var(--ink)); text-underline-offset: 4px; }
-  .hero-link:hover { color: var(--accent-on, var(--accent)); }
-  .hero-lead { font-size: clamp(18px, 1.6vw, 21px); line-height: 1.5; color: var(--on, var(--body)); max-width: 26em; }
-  .hero-lead b { color: var(--on-strong, var(--ink)); font-weight: 600; white-space: nowrap; }
-  .hero-trust { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 20px; margin-top: 36px; }
-  .updated { font-size: 12px; color: var(--muted-on, var(--muted)); margin-top: 18px; }
-
-  .hero-visual { display: flex; flex-direction: column; align-items: center; }
-  .phone-wrap { position: relative; width: min(100%, 330px); }
-  /* Objet héros : le trait est dans l'image, l'ombre décalée nette suit sa
-     silhouette (drop-shadow sans flou), dans la couleur --edge de la bande. */
-  .phone-wrap img { display: block; width: 100%; height: auto; filter: drop-shadow(7px 7px 0 var(--edge)); }
-  .hero-visual figcaption, .test-visual figcaption { font-size: 12px; color: var(--muted-on, var(--muted)); margin-top: 18px; }
-
-  /* Trois points du format : lignes de grille seules, ni boîte ni pastille. */
-  .fmt-points { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 56px; border-top: 1px solid var(--rule, var(--hairline)); }
-  /* Gouttières égales : le filet vertical est tracé au milieu de chacune. */
-  .fmt-points { column-gap: 64px; }
-  .fmt-points li { position: relative; padding: 32px 0 0; border-left: 0; }
-  .fmt-points li + li::before { content: ""; position: absolute; top: 0; bottom: 0; left: -32px; width: 1px; background: var(--rule, var(--hairline)); }
-  .fmt-ico { display: block; width: 24px; height: 24px; stroke: var(--accent-on, var(--accent)); margin-bottom: 18px; }
-  .fmt-points h3 { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -.01em; color: var(--on-strong, var(--ink)); }
-  .fmt-points p { margin-top: 10px; font-size: 16px; line-height: 1.6; color: var(--on, var(--body)); text-wrap: pretty; }
-  .fmt-source { font-size: 13px; color: var(--on, var(--body)); margin-top: 40px; }
-  /* Lien en encre souligné de bleu : le bleu seul ne tient pas 4,5:1 sur la bande tint. */
-  .fmt-source a { color: var(--on-strong, var(--ink)); text-decoration: underline; text-decoration-color: var(--accent-on, var(--accent)); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
-  .fmt-source a:hover { text-decoration-thickness: 2px; }
-
-  /* ── Offre ── */
-  .live-proof { display: flex; align-items: baseline; font-size: 15px; color: var(--on-strong, var(--ink)); margin: -16px 0 28px; }
-  .offer-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 56px; align-items: start; }
-  .offer-grid .price { max-width: none; }
-  .was { font-size: 13px; color: var(--muted-on, var(--muted)); margin-bottom: 4px; }
-  .was s { color: var(--on-faint, var(--faint)); }
-  .offer-cta { justify-content: center; width: 100%; margin-top: auto; }
-  .offer-notes h3 { font-family: var(--font-display); font-weight: 600; font-size: 20px; }
-  .pay-list { list-style: none; margin-top: 18px; }
-  .pay-list li { display: grid; grid-template-columns: 9.5em 1fr; gap: 20px; padding: 18px 0; border-top: 1px solid var(--rule, var(--hairline)); }
-  .pay-amt { font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: -.02em; color: var(--accent-on, var(--accent)); white-space: nowrap; }
-  .pay-amt small { font-size: 13px; font-weight: 500; color: var(--muted-on, var(--muted)); margin-left: 2px; }
-  .pay-txt { font-size: 15px; color: var(--on, var(--body)); line-height: 1.55; }
-  .pay-txt b { color: var(--on-strong, var(--ink)); font-weight: 600; }
-  .promo-note { font-size: 13px; color: var(--muted-on, var(--muted)); line-height: 1.6; padding-top: 14px; border-top: 1px solid var(--rule, var(--hairline)); }
-  /* Mention obligatoire : elle doit se remarquer, pas se fondre. */
-  .beta-note { margin-top: 28px; padding: 4px 0 4px 20px; border-left: 3px solid var(--fa-pink); }
-  .beta-note h3 { font-size: 16px; }
-  .beta-note p { font-size: 14.5px; color: var(--on, var(--body)); line-height: 1.6; margin-top: 8px; }
-
-  /* ── Qui peut diffuser ── */
-  .sect-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-  /* Le statut se lit au filet supérieur ET à l'icône du titre : la couleur
-     seule ne suffirait pas (daltonisme, impression en noir et blanc). */
-  .sect-card { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-top: 4px solid var(--sect-c); border-radius: var(--r); padding: 26px; }
-  .sect-card--ouvert { --sect-c: var(--accent-on, var(--accent)); }
-  .sect-card--validation { --sect-c: var(--fa-pink); }
-  .sect-card--impossible { --sect-c: var(--fa-slate); }
-  .sect-card h3 { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 18px; }
-  .sect-card h3 svg { width: 24px; height: 24px; flex: 0 0 auto; stroke: var(--sect-c); }
-  .sect-card ul { list-style: none; margin-top: 18px; }
-  .sect-card li { font-size: 14.5px; color: var(--on, var(--body)); line-height: 1.45; padding: 8px 0; border-top: 1px solid var(--rule, var(--hairline)); }
-  .sect-card--impossible li { color: var(--muted-on, var(--muted)); }
-  .sect-proof { font-size: 14px; font-weight: 500; color: var(--on-strong, var(--ink)); margin-top: 18px; padding: 12px 14px; background: var(--fa-tint); border-radius: var(--r); }
-  .sect-foot { display: flex; align-items: center; justify-content: space-between; gap: 24px 48px; margin-top: 32px; }
-  .sect-note { font-size: 13.5px; color: var(--muted-on, var(--muted)); line-height: 1.6; max-width: 46em; }
-  .sect-note a { color: var(--accent-on, var(--accent)); }
-  .sect-foot .btn { flex: 0 0 auto; }
-
-  /* ── Pourquoi maintenant ── */
-  .why-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: center; }
-  .why h2 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 16px; }
-  .lead-on { color: var(--on, var(--body)); font-size: 17px; line-height: 1.6; margin-top: 18px; max-width: 34em; }
-  .why-panel { border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 28px; }
-  .timeline { list-style: none; margin-top: 18px; }
-  .timeline li { display: grid; grid-template-columns: 7.5em 1fr; gap: 14px; padding: 12px 0 12px 20px; position: relative; font-size: 14px; color: var(--on, var(--body)); border-top: 1px solid var(--rule, var(--hairline)); }
-  .timeline li:first-child { border-top: none; }
-  .timeline li b { font-family: var(--font-display); font-weight: 600; color: var(--on-strong, var(--ink)); }
-  .timeline li::before { content: ""; position: absolute; left: 0; top: 18px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-on, var(--accent)); }
-  .timeline li.live span { color: var(--on-strong, var(--ink)); font-weight: 600; }
-  .timeline li.live::before { background: var(--fa-pink); }
-  .tl-source { font-size: 12px; color: var(--on-faint, var(--faint)); margin-top: 14px; }
-  .tl-source a { color: var(--on, var(--muted)); }
-
-  /* ── Comparatif ── */
-  /* Google Ads se pose sur la bande, sans fond, vignette en gris : c'est le
-     point de repère. ChatGPT Ads, objet de la page, est un panneau blanc
-     continu, encadré d'un filet bleu et coiffé d'une barre bleue (rappel des
-     cartes Secteurs). */
-  .cmp { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
-  .cmp .cmp-k { width: 24%; }
-  .cmp .cmp-ref { width: 36%; }
-  .cmp .cmp-us { width: 40%; }
-  .cmp th, .cmp td { padding: 18px 24px; font-size: 16px; line-height: 1.55; vertical-align: top; text-align: left; border-top: 1px solid var(--rule, var(--hairline)); }
-  .cmp tbody th { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--on-strong, var(--ink)); padding-left: 0; }
-  /* Pas de mot seul en fin de cellule. */
-  .cmp tbody th { text-wrap: balance; }
-  .cmp td { text-wrap: pretty; }
-  .cmp td.cmp-ref { color: var(--on, var(--body)); font-weight: 400; }
-  .cmp thead th { border-top: none; vertical-align: bottom; padding-top: 24px; padding-bottom: 18px; }
-  .cmp thead img { display: block; width: 140px; height: auto; margin-bottom: 16px; }
-  .cmp-name { display: block; font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
-  .cmp thead .cmp-ref .cmp-name { color: var(--on, var(--body)); font-weight: 600; }
-  .cmp thead .cmp-ref img { filter: grayscale(1); }
-  /* Filet entre rangées très discret dans le panneau : il se lit d'un bloc. */
-  .cmp .cmp-us { background: var(--surface-on, var(--fa-white)); color: var(--on-strong, var(--ink)); font-weight: 500; border-left: 2px solid var(--fa-blue); border-right: 2px solid var(--fa-blue); border-top-color: var(--hairline); }
-  .cmp thead .cmp-us { border-top: 6px solid var(--fa-blue); border-radius: var(--r) var(--r) 0 0; }
-  .cmp thead .cmp-us .cmp-name { color: var(--fa-blue); }
-  .cmp tbody tr:last-child .cmp-us { border-bottom: 2px solid var(--fa-blue); border-radius: 0 0 var(--r) var(--r); padding-bottom: 24px; }
-
-  /* ── Test en 8 semaines ── */
-  .test-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; }
-  .test h2 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 16px; }
-  .test-visual { margin-top: 36px; }
-  .test-visual img { display: block; width: 100%; height: auto; filter: drop-shadow(5px 5px 0 var(--edge)); }
-  .test .steps { list-style: none; }
-  .test .step { padding: 24px 0; }
-  .test .step .no { font-size: 15px; }
-  .test .step h3 { font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--on-strong, var(--ink)); }
-  .test .step p { font-size: 15px; margin-top: 6px; }
-
-  /* ── Contact ── */
-  .ask-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
-  .ask-copy h2 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 16px; }
-  .ask-copy .lead { color: var(--muted-on, var(--muted)); font-size: 16.5px; line-height: 1.6; margin-top: 16px; }
-  .ask-visual { display: block; width: 100%; max-width: 300px; height: auto; margin-top: 24px; }
-  .ask-next { list-style: none; margin-top: 26px; }
-  .ask-next li { font-size: 15px; color: var(--on, var(--body)); padding: 10px 0 10px 28px; position: relative; border-top: 1px solid var(--rule, var(--hairline)); }
-  .ask-next li::before { content: ""; position: absolute; left: 2px; top: 15px; width: 12px; height: 7px; border-left: 2px solid var(--fa-pink); border-bottom: 2px solid var(--fa-pink); transform: rotate(-45deg); }
-  .ask-direct { font-size: 14px; color: var(--muted-on, var(--muted)); margin-top: 22px; line-height: 1.7; }
-  .ask-direct a { color: var(--accent-on, var(--accent)); text-decoration: none; }
-  .ask-panel { border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 36px; }
-  .ask-panel :global(.eb-wrap) { max-width: none; }
-
   .faq-help { font-size: 15px; color: var(--muted-on, var(--muted)); line-height: 1.6; max-width: 22em; }
-  .faq-help a { color: var(--accent-on, var(--accent)); }
-
-  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-
-  @media (max-width: 900px) {
-    .head-split, .hero-grid, .offer-grid, .why-grid, .test-grid, .ask-grid { grid-template-columns: 1fr; gap: 32px; }
-    .head-split { margin-bottom: 32px; }
-    .sect-grid { grid-template-columns: 1fr; }
-    .sect-foot { flex-direction: column; align-items: flex-start; }
-    .cmp th, .cmp td { padding: 16px 18px; }
-    .fmt-points { grid-template-columns: 1fr; margin-top: 40px; column-gap: 0; }
-    .fmt-points li + li::before { display: none; }
-    .fmt-points li { padding: 24px 0; border-left: 0; border-top: 1px solid var(--rule, var(--hairline)); }
-    .fmt-points li:first-child { border-top: 0; }
-    .fmt-points li:last-child { padding-bottom: 0; }
-    .cmp thead img { width: 112px; }
-    .phone-wrap { width: min(100%, 280px); }
-    .ask-panel { padding: 24px; }
-    /* Sur mobile, l'illustration repousserait le formulaire hors de vue. */
-    .ask-visual { display: none; }
-  }
-
-  /* Sous 640 px, le tableau se lit en cartes : une par critère, chaque valeur
-     précédée du nom de son canal (repris de `data-label`). */
-  @media (max-width: 640px) {
-    .page-hero { padding-top: 40px; }
-    .hero-visual { padding-left: 0; }
-    .pay-list li { grid-template-columns: 1fr; gap: 4px; }
-    .timeline li { grid-template-columns: 1fr; gap: 2px; }
-    .phone-wrap { width: min(100%, 250px); }
-    .cmp, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; width: auto; }
-    /* L'en-tête reste visible en légende : deux tuiles, une par canal. */
-    .cmp thead { position: static; width: auto; height: auto; overflow: visible; clip: auto; display: block; margin-bottom: 16px; }
-    .cmp thead tr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .cmp thead .cmp-k { display: none; }
-    .cmp thead th { display: block; width: auto; padding: 14px; }
-    .cmp thead img { width: 100%; max-width: 120px; }
-    .cmp-name { font-size: 16px; }
-    .cmp .cmp-k, .cmp .cmp-ref, .cmp .cmp-us { width: auto; }
-    /* Bordure transparente côté Google : les deux vignettes partent du même niveau. */
-    .cmp thead .cmp-ref { border: 2px solid transparent; border-top-width: 6px; }
-    .cmp thead .cmp-us { border: 2px solid var(--fa-blue); border-top-width: 6px; border-radius: var(--r); }
-    .cmp tbody tr { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 14px 16px; margin-bottom: 12px; }
-    .cmp tbody th { border-top: none; padding: 0 0 8px; width: auto; }
-    .cmp td { border-top: 1px solid var(--rule, var(--hairline)); padding: 8px 0; font-size: 14.5px; width: auto; text-wrap: balance; }
-    .cmp tbody .cmp-us, .cmp tbody tr:last-child .cmp-us { background: none; border: 0; border-left: 3px solid var(--fa-blue); border-radius: 0; padding: 8px 0 8px 12px; margin-top: 4px; }
-    .cmp td::before { content: attr(data-label); display: block; font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--on, var(--body)); margin-bottom: 2px; }
-    .cmp td.cmp-us::before { color: var(--fa-blue); }
-  }
+  .faq-help a { color: var(--accent-on, var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
 </style>

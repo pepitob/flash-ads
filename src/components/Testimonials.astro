@@ -5,15 +5,31 @@
  *
  * Affichage : rail à défilement horizontal (scroll-snap), 2-3 cartes visibles
  * à la fois + amorce de la suivante pour signaler qu'on peut faire défiler.
+ *
+ * `only` restreint la sélection à certains auteurs, dans cet ordre (landing
+ * page). Avec deux avis, ils tiennent côte à côte : pas de flèches.
  */
 import { testimonials } from "../data/temoignages";
 import GoogleRating from "./GoogleRating.astro";
+
+interface Props {
+  only?: string[];
+}
+const { only } = Astro.props;
+const items = only
+  ? only.map((author) => {
+      const t = testimonials.find((x) => x.author === author);
+      if (!t) throw new Error(`Témoignage introuvable : « ${author} »`);
+      return t;
+    })
+  : testimonials;
+const fixed = items.length <= 2;
 ---
 
-<div class="tm-carousel">
+<div class:list={["tm-carousel", { "tm-carousel--fixed": fixed }]}>
   <div class="tm-bar">
     <GoogleRating />
-    <div class="tm-nav">
+    <div class="tm-nav" hidden={fixed}>
       <button type="button" class="tm-btn" data-tm-prev aria-label="Témoignages précédents">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
       </button>
@@ -31,7 +47,7 @@ import GoogleRating from "./GoogleRating.astro";
     tabindex="0"
   >
     {
-      testimonials.map((t) => (
+      items.map((t) => (
         <figure class="tm">
           <div class="tm-stars" aria-hidden="true">★★★★★</div>
           <blockquote>« {t.quote} »</blockquote>
@@ -113,6 +129,9 @@ import GoogleRating from "./GoogleRating.astro";
   .tm figcaption { display: flex; flex-direction: column; gap: 3px; margin-top: auto; padding-top: 4px; }
   .tm-author { font-family: var(--font-display); font-weight: 600; font-size: 15px; }
   .tm-meta { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); }
+
+  @media (min-width: 901px) { .tm-carousel--fixed .tm { flex: 1 1 0; } }
+  .tm-nav[hidden] { display: none; }
 
   @media (max-width: 900px) { .tm-carousel { --tm-per-view: 1.6; } }
   @media (max-width: 560px) {

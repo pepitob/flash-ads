@@ -282,7 +282,7 @@ export const chatgptAds = {
     { label: "Reporting", value: "Dashboard + point mensuel" },
     { label: "Support", value: "E-mail, réponse sous 48 h" },
   ],
-  ctaLabel: "Vérifier mon éligibilité",
+  ctaLabel: "Tester ChatGPT Ads",
 } as const;
 
 /**

@@ -63,9 +63,14 @@ export const secteurGroupes: SecteurGroupe[] = [
 /** Choix hors liste : aucun message, l'éligibilité se vérifie au premier échange. */
 export const secteurAutre: Secteur = { id: "autre", label: "Autre" };
 
-/** Preuve de diffusion en santé. Client non nommé : pas d'autorisation à ce jour. */
-export const preuveSante =
-  "Nous diffusons déjà pour un réseau de cabinets dentaires et d'orthodontie en Suisse romande.";
+/** Client déjà en diffusion. Jamais nommé : pas d'autorisation à ce jour. */
+export const clientSante = "un réseau de cabinets dentaires et d'orthodontie en Suisse romande";
+
+/** Preuve générale de diffusion (en-tête, offre, preuves), sans nommer de client. */
+export const preuveDiffusion = "plusieurs clients en Suisse romande";
+
+/** Preuve de diffusion en santé, sous la carte « Possible après validation ». */
+export const preuveSante = `Nous diffusons déjà pour ${clientSante}.`;
 
 /** Statut d'éligibilité par identifiant de secteur (consommé par le formulaire). */
 export const eligibiliteParSecteur: Record<string, Eligibilite> = Object.fromEntries([

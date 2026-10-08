@@ -1,0 +1,14 @@
+---
+/**
+ * Les trois résultats clients de la home (`resultCases`), repris tels quels
+ * par la landing page ChatGPT Ads. Une seule source pour les deux pages.
+ */
+import CaseStudyCard from "./CaseStudyCard.astro";
+import { resultCases } from "../data/temoignages";
+---
+
+<div class="cases">
+  {resultCases.map((c) => (
+    <CaseStudyCard metric={c.metric} who={c.who}>{c.text}</CaseStudyCard>
+  ))}
+</div>

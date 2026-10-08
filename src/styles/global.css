@@ -159,6 +159,9 @@ h1, h2, h3, h4, .display { color: var(--on-strong, var(--ink)); }
   display: inline-block;
 }
 
+/* Point « en direct » : pastille rose pleine devant un eyebrow ou une preuve. */
+.live-dot { display: inline-block; flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; background: var(--fa-pink); margin-right: 9px; vertical-align: 1px; }
+
 /* Mot mis en avant : aplat, jamais un dégradé. La couleur vient de la bande
    (--accent-on), pour rester lisible aussi bien sur fond clair que sombre. */
 .flash-word,

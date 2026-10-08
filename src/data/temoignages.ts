@@ -125,3 +125,28 @@ export const keyStats = [
   { value: "0%", label: "pris sur votre budget de pub" }, // réel (modèle)
   { value: "dès 390.-", label: "de gestion par mois" }, // réel (grille tarifaire)
 ];
+
+/**
+ * Résultats Google Ads de la home, repris par la landing page ChatGPT Ads.
+ * Ordres de grandeur d'illustration décidés par l'agence (voir CLAUDE.md), à
+ * remplacer par des mesures réelles : allégations publicitaires (LCD art. 3).
+ * Ce sont des résultats GOOGLE ADS : ne jamais les présenter comme des
+ * résultats ChatGPT.
+ */
+export const resultCases = [
+  {
+    metric: "+63%",
+    who: "Chauffage sanitaire · Valais",
+    text: "Deux tiers de demandes de devis en plus en six mois, à budget publicitaire constant.",
+  },
+  {
+    metric: "−29%",
+    who: "Cabinet dentaire · Lausanne",
+    text: "Chaque nouveau patient coûte près d'un tiers de moins qu'avant la reprise du compte.",
+  },
+  {
+    metric: "3,8×",
+    who: "Boutique en ligne · Genève",
+    text: "Pour 1 franc investi en publicité, 3,80 francs de ventes sur les douze derniers mois.",
+  },
+];

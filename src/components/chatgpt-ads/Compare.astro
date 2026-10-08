@@ -1,0 +1,105 @@
+---
+/**
+ * Comparatif ChatGPT Ads / Google Ads. Le chapô passe par le slot : la page
+ * service y met un lien vers la gestion Google Ads, la landing page non (aucune
+ * sortie).
+ */
+import HeadSplit from "./HeadSplit.astro";
+import { comparison } from "../../data/chatgpt-ads";
+
+interface Props {
+  band?: "paper" | "tint";
+}
+const { band = "tint" } = Astro.props;
+---
+
+<section class:list={["band", `band--${band}`]}>
+  <div class="wrap">
+    <HeadSplit eyebrow="Comparatif" title={"ChatGPT Ads ou Google Ads\u00a0: lequel choisir\u00a0?"}>
+      <slot />
+    </HeadSplit>
+    <table class="cmp">
+      <caption class="sr-only">Comparaison entre Google Ads et ChatGPT Ads</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="cmp-k"><span class="sr-only">Critère</span></th>
+          <th scope="col" class="cmp-ref">
+            <img src="/images/chatgpt-ads/compare-google.webp" width="320" height="372" alt="" loading="lazy" decoding="async" />
+            <span class="cmp-name">Google Ads</span>
+          </th>
+          <th scope="col" class="cmp-us">
+            <img src="/images/chatgpt-ads/compare-chatgpt.webp" width="320" height="371" alt="" loading="lazy" decoding="async" />
+            <span class="cmp-name">ChatGPT Ads</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {comparison.map((r) => (
+          <tr>
+            <th scope="row">{r.k}</th>
+            <td data-label="Google Ads" class="cmp-ref">{r.g}</td>
+            <td data-label="ChatGPT Ads" class="cmp-us">{r.c}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  /* ── Comparatif ── */
+  /* Google Ads se pose sur la bande, sans fond, vignette en gris : c'est le
+     point de repère. ChatGPT Ads, objet de la page, est un panneau blanc
+     continu, encadré d'un filet bleu et coiffé d'une barre bleue (rappel des
+     cartes Secteurs). */
+  .cmp { width: 100%; border-collapse: separate; border-spacing: 0; table-layout: fixed; }
+  .cmp .cmp-k { width: 24%; }
+  .cmp .cmp-ref { width: 36%; }
+  .cmp .cmp-us { width: 40%; }
+  .cmp th, .cmp td { padding: 18px 24px; font-size: 16px; line-height: 1.55; vertical-align: top; text-align: left; border-top: 1px solid var(--rule, var(--hairline)); }
+  .cmp tbody th { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--on-strong, var(--ink)); padding-left: 0; }
+  /* Pas de mot seul en fin de cellule. */
+  .cmp tbody th { text-wrap: balance; }
+  .cmp td { text-wrap: pretty; }
+  .cmp td.cmp-ref { color: var(--on, var(--body)); font-weight: 400; }
+  .cmp thead th { border-top: none; vertical-align: bottom; padding-top: 24px; padding-bottom: 18px; }
+  .cmp thead img { display: block; width: 140px; height: auto; margin-bottom: 16px; }
+  .cmp-name { display: block; font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
+  .cmp thead .cmp-ref .cmp-name { color: var(--on, var(--body)); font-weight: 600; }
+  .cmp thead .cmp-ref img { filter: grayscale(1); }
+  /* Filet entre rangées très discret dans le panneau : il se lit d'un bloc. */
+  .cmp .cmp-us { background: var(--surface-on, var(--fa-white)); color: var(--on-strong, var(--ink)); font-weight: 500; border-left: 2px solid var(--fa-blue); border-right: 2px solid var(--fa-blue); border-top-color: var(--hairline); }
+  .cmp thead .cmp-us { border-top: 6px solid var(--fa-blue); border-radius: var(--r) var(--r) 0 0; }
+  .cmp thead .cmp-us .cmp-name { color: var(--fa-blue); }
+  .cmp tbody tr:last-child .cmp-us { border-bottom: 2px solid var(--fa-blue); border-radius: 0 0 var(--r) var(--r); padding-bottom: 24px; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  @media (max-width: 900px) {
+    .cmp th, .cmp td { padding: 16px 18px; }
+    .cmp thead img { width: 112px; }
+  }
+
+  /* Sous 640 px, le tableau se lit en cartes : une par critère, chaque valeur
+     précédée du nom de son canal (repris de `data-label`). */
+  @media (max-width: 640px) {
+    .cmp, .cmp tbody, .cmp tr, .cmp th, .cmp td { display: block; width: auto; }
+    /* L'en-tête reste visible en légende : deux tuiles, une par canal. */
+    .cmp thead { position: static; width: auto; height: auto; overflow: visible; clip: auto; display: block; margin-bottom: 16px; }
+    .cmp thead tr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .cmp thead .cmp-k { display: none; }
+    .cmp thead th { display: block; width: auto; padding: 14px; }
+    .cmp thead img { width: 100%; max-width: 120px; }
+    .cmp-name { font-size: 16px; }
+    .cmp .cmp-k, .cmp .cmp-ref, .cmp .cmp-us { width: auto; }
+    /* Bordure transparente côté Google : les deux vignettes partent du même niveau. */
+    .cmp thead .cmp-ref { border: 2px solid transparent; border-top-width: 6px; }
+    .cmp thead .cmp-us { border: 2px solid var(--fa-blue); border-top-width: 6px; border-radius: var(--r); }
+    .cmp tbody tr { background: var(--surface-on, var(--paper)); border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 14px 16px; margin-bottom: 12px; }
+    .cmp tbody th { border-top: none; padding: 0 0 8px; width: auto; }
+    .cmp td { border-top: 1px solid var(--rule, var(--hairline)); padding: 8px 0; font-size: 14.5px; width: auto; text-wrap: balance; }
+    .cmp tbody .cmp-us, .cmp tbody tr:last-child .cmp-us { background: none; border: 0; border-left: 3px solid var(--fa-blue); border-radius: 0; padding: 8px 0 8px 12px; margin-top: 4px; }
+    .cmp td::before { content: attr(data-label); display: block; font-family: var(--font-display); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--on, var(--body)); margin-bottom: 2px; }
+    .cmp td.cmp-us::before { color: var(--fa-blue); }
+  }
+</style>

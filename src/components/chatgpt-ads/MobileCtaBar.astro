@@ -1,0 +1,61 @@
+---
+/**
+ * Barre d'action fixe en bas d'écran, sous 768 px (landing page).
+ * Masquée tant que l'en-tête est à l'écran (son bouton suffit) et dès que le
+ * formulaire `#contact` y entre. Sans JavaScript, elle reste masquée.
+ */
+import { cta } from "../../data/chatgpt-ads";
+---
+
+<div class="mcta" data-mcta hidden>
+  <a href="#contact" class="btn btn-primary" data-cta="mobile_bar" tabindex="-1">{cta.label} <span class="arrow" aria-hidden="true">→</span></a>
+</div>
+
+<style>
+  .mcta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: var(--fa-midnight);
+    border-top: 1px solid rgba(255, 255, 255, .16);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform .2s, visibility .2s;
+    /* Bouton sur midnight : l'ombre décalée passe au blanc, comme sur la bande night. */
+    --edge: #ffffff;
+  }
+  .mcta.is-on { transform: none; visibility: visible; }
+  .mcta .btn { width: 100%; justify-content: center; }
+  @media (min-width: 768px) { .mcta { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .mcta { transition: none; } }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-mcta]");
+  const hero = document.querySelector(".page-hero");
+  const contact = document.getElementById("contact");
+  const link = bar?.querySelector<HTMLAnchorElement>("a");
+
+  if (bar && hero && contact && link && "IntersectionObserver" in window) {
+    bar.hidden = false;
+    const seen = { hero: true, contact: false };
+    const sync = () => {
+      const on = !seen.hero && !seen.contact;
+      bar.classList.toggle("is-on", on);
+      // Hors de l'écran, la barre sort aussi de l'ordre de tabulation.
+      link.tabIndex = on ? 0 : -1;
+    };
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.target === hero) seen.hero = e.isIntersecting;
+        if (e.target === contact) seen.contact = e.isIntersecting;
+      }
+      sync();
+    });
+    io.observe(hero);
+    io.observe(contact);
+  }
+</script>

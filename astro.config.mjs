@@ -27,11 +27,12 @@ export default defineConfig({
 
   integrations: [
     mdx(),
-    // Exclut du sitemap les pages légales (CGV, confidentialité) : ce ne sont pas
-    // des cibles de référencement.
+    // Exclut du sitemap les pages légales (CGV, confidentialité), qui ne sont pas
+    // des cibles de référencement, et les landing pages du trafic payant (/lp/),
+    // en noindex.
     sitemap({
       filter: (page) =>
-        !page.includes('/cgv') && !page.includes('/confidentialite'),
+        !page.includes('/cgv') && !page.includes('/confidentialite') && !page.includes('/lp/'),
     }),
   ],
 });

@@ -11,8 +11,10 @@ interface Props {
   eyebrow?: string;
   /** Fond de la bande. À régler pour que l'alternance de la page reste juste. */
   band?: "paper" | "tint";
+  /** JSON-LD FAQPage. `false` sur une page non indexée (landing page). */
+  schema?: boolean;
 }
-const { items, title = "Questions fréquentes", eyebrow = "FAQ", band = "tint" } = Astro.props;
+const { items, title = "Questions fréquentes", eyebrow = "FAQ", band = "tint", schema: withSchema = true } = Astro.props;
 const schema = faqSchema(items);
 ---
 
@@ -39,7 +41,7 @@ const schema = faqSchema(items);
   </div>
 </section>
 
-<script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+{withSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />}
 
 <style>
   /* Head à gauche, accordéon à droite : occupe toute la largeur du conteneur. */

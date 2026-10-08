@@ -1,0 +1,14 @@
+---
+/**
+ * Précharge les deux polices du système (sous-ensemble latin). Sans cela, elles
+ * arrivent après le premier rendu : le H1 en Space Grotesk change de largeur
+ * en remplaçant la police de secours et pousse tout l'en-tête (décalage de mise
+ * en page mesuré à 0,2 par Lighthouse). Mêmes fichiers que ceux importés par
+ * `global.css`, donc aucun téléchargement en double.
+ */
+import spaceGrotesk from "@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url";
+import inter from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+---
+
+<link rel="preload" href={spaceGrotesk} as="font" type="font/woff2" crossorigin />
+<link rel="preload" href={inter} as="font" type="font/woff2" crossorigin />

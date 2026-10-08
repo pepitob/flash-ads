@@ -1,0 +1,54 @@
+---
+/** « Pourquoi maintenant » et frise du déploiement (page service seulement). */
+import { launch } from "../../data/chatgpt-ads";
+---
+
+<section class="why band band--night">
+  <div class="wrap why-grid">
+    <div>
+      <span class="eyebrow">Pourquoi maintenant</span>
+      <h2 class="display">Un tarif de lancement jusqu'au 31 décembre 2026.</h2>
+      <p class="lead-on">
+        Le tarif de lancement court jusqu'à la fin de l'année, et un canal se maîtrise en le
+        pratiquant. Mais on ne vous recommandera pas de lancer si votre secteur, votre budget ou
+        votre suivi ne le permettent pas.
+      </p>
+    </div>
+    <div class="why-panel">
+      <span class="eyebrow">État du déploiement</span>
+      <ol class="timeline">
+        <li><b>9 fév. 2026</b><span>Test aux États-Unis (Free + Go)</span></li>
+        <li><b>5 mai 2026</b><span>Ads Manager self-serve ouvert aux entreprises US</span></li>
+        <li><b>2026</b><span>Expansion Canada, Australie, Nouvelle-Zélande</span></li>
+        <li class="live"><b>{launch.label}</b><span>Ouverture en Europe, Suisse comprise</span></li>
+      </ol>
+      <p class="tl-source">
+        Source :
+        <a href={launch.source} target="_blank" rel="noopener">annonce officielle d'OpenAI</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .why-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 64px; align-items: center; }
+  .why h2 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 16px; }
+  .lead-on { color: var(--on, var(--body)); font-size: 17px; line-height: 1.6; margin-top: 18px; max-width: 34em; }
+  .why-panel { border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 28px; }
+  .timeline { list-style: none; margin-top: 18px; }
+  .timeline li { display: grid; grid-template-columns: 7.5em 1fr; gap: 14px; padding: 12px 0 12px 20px; position: relative; font-size: 14px; color: var(--on, var(--body)); border-top: 1px solid var(--rule, var(--hairline)); }
+  .timeline li:first-child { border-top: none; }
+  .timeline li b { font-family: var(--font-display); font-weight: 600; color: var(--on-strong, var(--ink)); }
+  .timeline li::before { content: ""; position: absolute; left: 0; top: 18px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-on, var(--accent)); }
+  .timeline li.live span { color: var(--on-strong, var(--ink)); font-weight: 600; }
+  .timeline li.live::before { background: var(--fa-pink); }
+  .tl-source { font-size: 12px; color: var(--on-faint, var(--faint)); margin-top: 14px; }
+  .tl-source a { color: var(--on, var(--muted)); }
+
+  @media (max-width: 900px) {
+    .why-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 640px) {
+    .timeline li { grid-template-columns: 1fr; gap: 2px; }
+  }
+</style>
