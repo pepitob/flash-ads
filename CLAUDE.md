@@ -154,6 +154,9 @@ Comprendre ces flux transversaux avant d'éditer :
 ## Visuels générés (Codex)
 
 Les illustrations du site (ex. `public/images/chatgpt-ads/compare-chatgpt.webp` et `eligibility.webp`)
+et celles des autres pages (`home/problem.webp` + `home/solution.webp` dans le diptyque de la
+home, `agence/hero.webp`, `tracking/hero.webp`, `calculateur/hero.webp` en colonne droite du hero,
+`contact/envoi.webp` sous la liste de réassurance, masquée sur mobile)
 sont générées par l'outil de génération d'images de **Codex CLI** (fonctionnalité
 `image_generation`, active par défaut), puis retouchées avec ImageMagick. Méthode validée :
 

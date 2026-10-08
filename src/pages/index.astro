@@ -142,6 +142,7 @@ const jsonLd = [
 
       <div class="problem-grid">
         <div class="tile">
+          <img class="tile-visual" src="/images/home/problem.webp" width="1189" height="903" alt="" loading="lazy" decoding="async" />
           <span class="eyebrow">Le problème</span>
           <h2 class="display">Avec la plupart des agences, on ne sait pas ce qu'on paie.</h2>
           <p class="muted">
@@ -151,6 +152,7 @@ const jsonLd = [
           </p>
         </div>
         <div class="tile">
+          <img class="tile-visual" src="/images/home/solution.webp" width="1050" height="933" alt="" loading="lazy" decoding="async" />
           <span class="eyebrow">Notre façon de faire</span>
           <h2 class="display">Un seul métier, des prix affichés, zéro mauvaise surprise.</h2>
           <p class="muted">
@@ -349,6 +351,8 @@ const jsonLd = [
     border-radius: var(--r);
     padding: 34px 32px;
   }
+  /* Illustrations générées (Codex), décoratives : la boîte fermée, puis la boîte ouverte. */
+  .tile-visual { display: block; width: 100%; max-width: 200px; height: auto; margin-bottom: 22px; }
   .problem-grid h2 { font-size: clamp(23px, 2.7vw, 31px); font-weight: 600; margin-top: 14px; }
   .muted { font-size: 16px; margin-top: 14px; max-width: 33em; }
 

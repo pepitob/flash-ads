@@ -56,20 +56,26 @@ const jsonLd = [
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Savoir ce qui marche</span>
       </nav>
-      <span class="eyebrow">Mesure & suivi des résultats</span>
-      <h1 class="display">Savoir exactement <span class="flash-word">d'où viennent vos clients.</span></h1>
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Mesure & suivi des résultats</span>
+          <h1 class="display">Savoir exactement <span class="flash-word">d'où viennent vos clients.</span></h1>
 
-      <AnswerBlock question="Pourquoi c'est important ?">
-        <p>
-          <b>Sans mesure, on dépense à l'aveugle.</b> Si on ne sait pas quelles annonces vous amènent
-          vraiment des clients, l'argent part un peu partout. Flash Ads installe proprement les
-          <b>outils de mesure de Google</b> et vérifie, un par un, que tout fonctionne. Possible
-          <b>seul</b>, ou compris quand vous nous confiez votre publicité.
-        </p>
-      </AnswerBlock>
+          <AnswerBlock question="Pourquoi c'est important ?">
+            <p>
+              <b>Sans mesure, on dépense à l'aveugle.</b> Si on ne sait pas quelles annonces vous amènent
+              vraiment des clients, l'argent part un peu partout. Flash Ads installe proprement les
+              <b>outils de mesure de Google</b> et vérifie, un par un, que tout fonctionne. Possible
+              <b>seul</b>, ou compris quand vous nous confiez votre publicité.
+            </p>
+          </AnswerBlock>
 
-      <div class="hero-cta">
-        <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
+          <div class="hero-cta">
+            <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+        <!-- Illustration générée (Codex), décorative : appels, formulaires et achats convergent vers un seul tableau vérifié. -->
+        <img class="hero-visual" src="/images/tracking/hero.webp" width="1200" height="731" alt="" decoding="async" />
       </div>
     </div>
   </section>
@@ -109,10 +115,16 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
+  .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 56px; align-items: center; }
+  .hero-visual { display: block; width: 100%; max-width: 420px; height: auto; justify-self: end; }
   .page-hero { padding: 72px 0 20px; }
   .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
   .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
   .crumbs a:hover { color: var(--accent-on, var(--accent)); }
   .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 15em; }
   .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .hero-visual { max-width: 300px; justify-self: start; }
+  }
 </style>

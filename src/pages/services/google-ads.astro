@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdPreview from "../../components/AdPreview.astro";
 import AnswerBlock from "../../components/AnswerBlock.astro";
 import PricingGrid from "../../components/PricingGrid.astro";
 import CaseStudyCard from "../../components/CaseStudyCard.astro";
@@ -95,24 +96,36 @@ const jsonLd = [
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité Google</span>
       </nav>
-      <span class="eyebrow">Publicité sur Google</span>
-      <h1 class="display">Vos annonces sur Google, <span class="flash-word">sans commission</span> sur votre budget.</h1>
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Publicité sur Google</span>
+          <h1 class="display">Vos annonces sur Google, <span class="flash-word">sans commission</span> sur votre budget.</h1>
 
-      <AnswerBlock>
-        <p>
-          <b>Flash Ads s'occupe de vos publicités sur Google</b> pour les PME en Suisse romande : on
-          crée vos annonces, on choisit les bons mots et on améliore tout en continu pour vous amener
-          plus de clients. Vous payez un <b>montant fixe chaque mois</b>, de 390.- à 1190.- selon
-          votre budget publicitaire. Aucune commission sur votre budget de pub, que vous versez
-          directement à Google. Le pack se choisit sur un seul critère : votre budget mensuel.
-        </p>
-      </AnswerBlock>
+          <AnswerBlock>
+            <p>
+              <b>Flash Ads s'occupe de vos publicités sur Google</b> pour les PME en Suisse romande : on
+              crée vos annonces, on choisit les bons mots et on améliore tout en continu pour vous amener
+              plus de clients. Vous payez un <b>montant fixe chaque mois</b>, de 390.- à 1190.- selon
+              votre budget publicitaire. Aucune commission sur votre budget de pub, que vous versez
+              directement à Google. Le pack se choisit sur un seul critère : votre budget mensuel.
+            </p>
+          </AnswerBlock>
 
-      <div class="hero-cta">
-        <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
-        <a href="#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
+          <div class="hero-cta">
+            <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
+            <a href="#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
+          </div>
+          <div class="hero-badge"><GooglePartnerBadge height={56} /><span class="mono">Agence certifiée Google Partner</span></div>
+        </div>
+        <!-- Même aperçu d'annonce que sur la home, avec un autre exemple de métier. -->
+        <AdPreview
+          query="électricien lausanne"
+          domain="votre-electricien.ch"
+          headline="Électricien à Lausanne | Dépannage le jour même"
+          description="Intervention rapide dans tout le canton de Vaud. Devis gratuit, prix annoncés à l'avance, sans surprise."
+          sitelinks={["Dépannage", "Nos tarifs", "Demander un devis"]}
+        />
       </div>
-      <div class="hero-badge"><GooglePartnerBadge height={56} /><span class="mono">Agence certifiée Google Partner</span></div>
     </div>
   </section>
 
@@ -229,6 +242,7 @@ const jsonLd = [
   .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
   .crumbs a:hover { color: var(--accent-on, var(--accent)); }
   .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 16em; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
   .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
   .hero-badge { display: flex; align-items: center; gap: 14px; margin-top: 28px; }
   .hero-badge .mono { font-size: 12px; letter-spacing: .06em; color: var(--muted-on, var(--muted)); }
@@ -247,6 +261,7 @@ const jsonLd = [
   .proc-list .no { color: var(--accent-on, var(--accent)); font-size: 13px; flex: 0 0 auto; }
 
   @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
     .process-grid { grid-template-columns: 1fr; gap: 36px; }
   }
 </style>

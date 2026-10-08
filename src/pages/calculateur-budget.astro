@@ -54,20 +54,26 @@ const jsonLd = [
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
         <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Calculateur de budget</span>
       </nav>
-      <span class="eyebrow">Outil gratuit, sans inscription</span>
-      <h1 class="display">Calculateur de budget <span class="flash-word">Google Ads</span> (Suisse)</h1>
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Outil gratuit, sans inscription</span>
+          <h1 class="display">Calculateur de budget <span class="flash-word">Google Ads</span> (Suisse)</h1>
 
-      <AnswerBlock>
-        <p>
-          <b>Pour estimer un budget Google Ads, on part du nombre de clients visés, pas d'un montant
-          au hasard.</b> Il faut plusieurs demandes entrantes pour signer un client, et plusieurs
-          clics pour obtenir une demande : le budget mensuel est donc le nombre de clics nécessaires
-          multiplié par le coût du clic dans votre secteur. En Suisse romande, ce coût va d'environ
-          0.40 CHF (tourisme, commerce) à 9 CHF (plomberie, déménagement) selon la concurrence. Le
-          calculateur ci-dessous fait ce calcul en direct pour 18 secteurs : il affiche un budget
-          recommandé, la fourchette réaliste autour, et le coût par client que cela représente.
-        </p>
-      </AnswerBlock>
+          <AnswerBlock>
+            <p>
+              <b>Pour estimer un budget Google Ads, on part du nombre de clients visés, pas d'un montant
+              au hasard.</b> Il faut plusieurs demandes entrantes pour signer un client, et plusieurs
+              clics pour obtenir une demande : le budget mensuel est donc le nombre de clics nécessaires
+              multiplié par le coût du clic dans votre secteur. En Suisse romande, ce coût va d'environ
+              0.40 CHF (tourisme, commerce) à 9 CHF (plomberie, déménagement) selon la concurrence. Le
+              calculateur ci-dessous fait ce calcul en direct pour 18 secteurs : il affiche un budget
+              recommandé, la fourchette réaliste autour, et le coût par client que cela représente.
+            </p>
+          </AnswerBlock>
+        </div>
+        <!-- Illustration générée (Codex), décorative. -->
+        <img class="hero-visual" src="/images/calculateur/hero.webp" width="1200" height="785" alt="" decoding="async" />
+      </div>
     </div>
   </section>
 
@@ -90,10 +96,16 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
+  .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 56px; align-items: center; }
+  .hero-visual { display: block; width: 100%; max-width: 420px; height: auto; justify-self: end; }
   .page-hero { padding: 72px 0 12px; }
   .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
   .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
   .crumbs a:hover { color: var(--accent-on, var(--accent)); }
   .page-hero h1 { font-size: clamp(34px, 4.6vw, 54px); font-weight: 600; margin: 18px 0 22px; max-width: 16em; }
   .calc-section { padding: 40px 0 84px; }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .hero-visual { max-width: 300px; justify-self: start; }
+  }
 </style>

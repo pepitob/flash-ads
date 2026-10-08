@@ -22,15 +22,21 @@ const jsonLd = [
 <BaseLayout title={title} description={description} path={path} jsonLd={jsonLd}>
   <section class="page-hero band band--tint">
     <div class="wrap">
-      <span class="eyebrow">L'agence</span>
-      <h1 class="display">Un seul métier : la pub en ligne. Et on le fait <span class="flash-word">bien.</span></h1>
-      <p class="lead">
-        Flash Ads est née d'une conviction simple : la publicité en ligne ne devrait pas être une
-        boîte noire. On ne fait que ça (pas de site web, pas de logo, pas de réseaux sociaux) pour
-        le faire vraiment bien. Prix affichés, budget qui reste chez vous, rapports clairs. C'est tout.
-      </p>
-      <p class="baseline mono">{site.baseline}</p>
-      <div class="hero-badge"><GooglePartnerBadge height={60} /><span class="mono">Agence certifiée Google Partner</span></div>
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">L'agence</span>
+          <h1 class="display">Un seul métier : la pub en ligne. Et on le fait <span class="flash-word">bien.</span></h1>
+          <p class="lead">
+            Flash Ads est née d'une conviction simple : la publicité en ligne ne devrait pas être une
+            boîte noire. On ne fait que ça (pas de site web, pas de logo, pas de réseaux sociaux) pour
+            le faire vraiment bien. Prix affichés, budget qui reste chez vous, rapports clairs. C'est tout.
+          </p>
+          <p class="baseline mono">{site.baseline}</p>
+          <div class="hero-badge"><GooglePartnerBadge height={60} /><span class="mono">Agence certifiée Google Partner</span></div>
+        </div>
+        <!-- Illustration générée (Codex), décorative : deux profils complémentaires, une boîte ouverte. -->
+        <img class="hero-visual" src="/images/agence/hero.webp" width="1200" height="874" alt="" decoding="async" />
+      </div>
     </div>
   </section>
 
@@ -119,6 +125,8 @@ const jsonLd = [
 </BaseLayout>
 
 <style>
+  .hero-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 56px; align-items: center; }
+  .hero-visual { display: block; width: 100%; max-width: 420px; height: auto; justify-self: end; }
   .page-hero { padding: 80px 0 20px; }
   .page-hero h1 { font-size: clamp(34px, 5vw, 60px); font-weight: 600; margin: 18px 0 0; max-width: 16em; }
   .lead { font-size: 19px; color: var(--muted-on, var(--muted)); max-width: 34em; margin-top: 22px; }
@@ -148,5 +156,9 @@ const jsonLd = [
     .cards2 { grid-template-columns: 1fr; }
     .method-detail .steps-full { grid-template-columns: 1fr; column-gap: 0; }
     .step-full { gap: 18px; }
+  }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .hero-visual { max-width: 300px; justify-self: start; }
   }
 </style>
