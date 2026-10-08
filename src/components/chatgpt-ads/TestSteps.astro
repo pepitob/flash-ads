@@ -1,0 +1,49 @@
+---
+/** « Comment se passe un test » : les 4 étapes et l'Ads Manager d'OpenAI. */
+import { testSteps } from "../../data/chatgpt-ads";
+---
+
+<section class="test band band--night">
+  <div class="wrap test-grid">
+    <div class="test-head">
+      <span class="eyebrow">Comment se passe un test</span>
+      <h2 class="display">De l'échange au bilan, en 8 semaines.</h2>
+      <figure class="test-visual">
+        <img
+          src="/images/chatgpt-ads/admanager.webp"
+          width="928"
+          height="482"
+          alt="Aperçu d'une annonce sponsorisée dans l'Ads Manager d'OpenAI."
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>L'Ads Manager d'OpenAI, où vivent vos campagnes. Visuel : OpenAI.</figcaption>
+      </figure>
+    </div>
+    <ol class="steps">
+      {testSteps.map((st, i) => (
+        <li class="step">
+          <span class="no">{String(i + 1).padStart(2, "0")}</span>
+          <div><h3>{st.t}</h3><p>{st.d}</p></div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .test-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+  .test h2 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 16px; }
+  .test-visual { margin-top: 36px; }
+  .test-visual img { display: block; width: 100%; height: auto; filter: drop-shadow(5px 5px 0 var(--edge)); }
+  .test-visual figcaption { font-size: 12px; color: var(--muted-on, var(--muted)); margin-top: 18px; }
+  .test .steps { list-style: none; }
+  .test .step { padding: 24px 0; }
+  .test .step .no { font-size: 15px; }
+  .test .step h3 { font-family: var(--font-display); font-weight: 600; font-size: 18px; color: var(--on-strong, var(--ink)); }
+  .test .step p { font-size: 15px; margin-top: 6px; }
+
+  @media (max-width: 900px) {
+    .test-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+/**
+ * Section `#contact` des pages ChatGPT Ads : texte, coches, coordonnées et
+ * formulaire (`EarlyBirdForm`). Les réglages du formulaire passent tels quels.
+ */
+import EarlyBirdForm from "../EarlyBirdForm.astro";
+import { site } from "../../data/site";
+
+interface Props {
+  eyebrow: string;
+  /** Identifiant de page : champ caché `page` et paramètre `page` du dataLayer. */
+  page: string;
+  /** Budget Google Ads et site web obligatoires (landing page). */
+  strict?: boolean;
+  /** Liens vers le reste du site dans les messages du formulaire. */
+  exitLinks?: boolean;
+}
+const { eyebrow, page, strict = false, exitLinks = true } = Astro.props;
+
+/** Illustration générée (Codex) au style du design system : décorative, `alt` vide. */
+const eligibilityVisual = { src: "/images/chatgpt-ads/eligibility.webp", width: 943, height: 849 };
+---
+
+<section id="contact" class="band band--paper">
+  <div class="wrap ask-grid">
+    <div class="ask-copy">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2 class="display">Parlons-en avant que le tarif remonte.</h2>
+      <p class="lead">
+        Dites-nous ce que vous vendez et dans quel secteur. Nous vous répondons sous un jour ouvré
+        et vous disons franchement si ChatGPT Ads a du sens pour votre activité, ou si votre budget
+        est mieux placé sur Google Ads.
+      </p>
+      <img class="ask-visual" {...eligibilityVisual} alt="" loading="lazy" decoding="async" />
+      <ul class="ask-next">
+        <li>Réponse sous un jour ouvré, par e-mail ou par téléphone.</li>
+        <li>Premier échange gratuit de 15 minutes, sans engagement.</li>
+        <li>Si ChatGPT n'est pas pour vous, on vous le dit.</li>
+      </ul>
+      <p class="ask-direct">
+        Vous préférez écrire ou appeler ?<br />
+        <a href={`mailto:${site.email}`}>{site.email}</a> ·
+        <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+      </p>
+    </div>
+    <div class="ask-panel band--tint">
+      <EarlyBirdForm page={page} budgetRequired={strict} siteRequired={strict} exitLinks={exitLinks} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ask-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
+  .ask-copy h2 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 16px; }
+  .ask-copy .lead { color: var(--muted-on, var(--muted)); font-size: 16.5px; line-height: 1.6; margin-top: 16px; }
+  .ask-visual { display: block; width: 100%; max-width: 300px; height: auto; margin-top: 24px; }
+  .ask-next { list-style: none; margin-top: 26px; }
+  .ask-next li { font-size: 15px; color: var(--on, var(--body)); padding: 10px 0 10px 28px; position: relative; border-top: 1px solid var(--rule, var(--hairline)); }
+  .ask-next li::before { content: ""; position: absolute; left: 2px; top: 15px; width: 12px; height: 7px; border-left: 2px solid var(--fa-pink); border-bottom: 2px solid var(--fa-pink); transform: rotate(-45deg); }
+  .ask-direct { font-size: 14px; color: var(--muted-on, var(--muted)); margin-top: 22px; line-height: 1.7; }
+  .ask-direct a { color: var(--accent-on, var(--accent)); text-decoration: none; }
+  .ask-panel { border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 36px; }
+  .ask-panel :global(.eb-wrap) { max-width: none; }
+
+  @media (max-width: 900px) {
+    .ask-grid { grid-template-columns: 1fr; gap: 32px; }
+    .ask-panel { padding: 24px; }
+    /* Sur mobile, l'illustration repousserait le formulaire hors de vue. */
+    .ask-visual { display: none; }
+  }
+</style>

@@ -4,9 +4,9 @@ import AdPreview from "../components/AdPreview.astro";
 import AnswerBlock from "../components/AnswerBlock.astro";
 import SectionHead from "../components/SectionHead.astro";
 import ServiceCard from "../components/ServiceCard.astro";
-import CaseStudyCard from "../components/CaseStudyCard.astro";
 import PricingGrid from "../components/PricingGrid.astro";
 import Testimonials from "../components/Testimonials.astro";
+import ResultCases from "../components/ResultCases.astro";
 import LogoMarquee from "../components/LogoMarquee.astro";
 import GooglePartnerBadge from "../components/GooglePartnerBadge.astro";
 import FAQ from "../components/FAQ.astro";
@@ -281,17 +281,7 @@ const jsonLd = [
         title="Des chiffres, pas des promesses."
         text="Trois exemples parmi les PME romandes que nous accompagnons. Résultats mesurés sur le compte du client, tracking en place."
       />
-      <div class="cases">
-        <CaseStudyCard metric="+63%" who="Chauffage sanitaire · Valais">
-          Deux tiers de demandes de devis en plus en six mois, à budget publicitaire constant.
-        </CaseStudyCard>
-        <CaseStudyCard metric="−29%" who="Cabinet dentaire · Lausanne">
-          Chaque nouveau patient coûte près d'un tiers de moins qu'avant la reprise du compte.
-        </CaseStudyCard>
-        <CaseStudyCard metric="3,8×" who="Boutique en ligne · Genève">
-          Pour 1 franc investi en publicité, 3,80 francs de ventes sur les douze derniers mois.
-        </CaseStudyCard>
-      </div>
+      <ResultCases />
     </div>
   </section>
 

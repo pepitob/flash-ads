@@ -14,11 +14,35 @@
  * Les secteurs et leur éligibilité viennent de `src/data/chatgpt-secteurs.ts`,
  * la même source que les cartes de la page : le message affiché sous le champ
  * ne peut donc pas contredire ce que la section annonce.
+ *
+ * Utilisé par la page service et par la landing page, sous le MÊME nom de
+ * formulaire : Netlify ne garde qu'une définition par nom, les deux versions
+ * doivent donc porter exactement les mêmes champs (seuls changent la valeur du
+ * champ caché `page` et le caractère obligatoire de deux champs).
+ * Les messages sont rendus ici dans des blocs masqués, le script les clone.
  */
 import { ui } from "../i18n/fr";
 import { secteurGroupes, secteurAutre, eligibiliteParSecteur } from "../data/chatgpt-secteurs";
+import { cta } from "../data/chatgpt-ads";
+import { site } from "../data/site";
+
+interface Props {
+  /** Identifiant de page : champ caché `page` et paramètre `page` du dataLayer. */
+  page?: string;
+  budgetRequired?: boolean;
+  siteRequired?: boolean;
+  /** Lien vers la page Google Ads dans le message « pas possible » (page service). */
+  exitLinks?: boolean;
+}
+const { page = "services-chatgpt-ads", budgetRequired = false, siteRequired = false, exitLinks = true } = Astro.props;
 
 const FORM_NAME = "chatgpt-ads";
+/** Paramètre `form` du dataLayer : `service_chatgpt` historique sur la page service (déjà branché dans GTM). */
+const formId = page === "services-chatgpt-ads" ? "service_chatgpt" : page;
+
+/** Paramètres d'attribution repris de l'URL d'arrivée (voir le script). */
+const trackingFields = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "li_fat_id"];
+const phoneHref = `tel:${site.phone.replace(/\s/g, "")}`;
 
 const budgets = [
   { value: "aucun", label: "Aucun" },
@@ -40,17 +64,15 @@ const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
     action="/"
     data-netlify="true"
     netlify-honeypot="bot-field"
-    novalidate
+    data-cgpt-page={page}
+    data-form-id={formId}
     data-eligibility={JSON.stringify(eligibiliteParSecteur)}
   >
     <input type="hidden" name="form-name" value={FORM_NAME} />
     <input type="hidden" name="offre" value="chatgpt-ads-early-bird" />
-    <input type="hidden" name="page" value="services-chatgpt-ads" />
+    <input type="hidden" name="page" value={page} />
     {/* Remplis depuis l'URL au chargement s'ils y figurent, rien n'est stocké. */}
-    <input type="hidden" name="utm_source" value="" />
-    <input type="hidden" name="utm_medium" value="" />
-    <input type="hidden" name="utm_campaign" value="" />
-    <input type="hidden" name="gclid" value="" />
+    {trackingFields.map((f) => <input type="hidden" name={f} value="" />)}
 
     <div class="grid2">
       <label>Nom et prénom*<input type="text" name="nom" required autocomplete="name" /></label>
@@ -60,7 +82,7 @@ const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
       <label>{ui.form.phone} (facultatif)<input type="tel" name="telephone" autocomplete="tel" /></label>
       <label>{ui.form.company}<input type="text" name="entreprise" autocomplete="organization" /></label>
     </div>
-    <label>Site web<input type="url" name="site_web" placeholder="https://" /></label>
+    <label>Site web{siteRequired && "*"}<input type="url" name="site_web" placeholder="https://" required={siteRequired} autocomplete="url" /></label>
 
     <div class="field">
       <label>
@@ -71,15 +93,24 @@ const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
         </select>
       </label>
       <p class="eligibility" id="chatgpt-eligibility" aria-live="polite"></p>
+      <div class="msg-src" hidden data-msg="impossible">
+        Les règles d'OpenAI ne permettent pas encore la publicité pour ce secteur en Suisse. On vous
+        dira si Google Ads est une meilleure option.{exitLinks && <Fragment>{" "}Voir notre <a href="/services/google-ads">gestion Google Ads</a>.</Fragment>}
+      </div>
+      <div class="msg-src" hidden data-msg="validation">Possible après validation par OpenAI. On prépare le dossier avec vous.</div>
     </div>
 
-    <label>
-      Budget Google Ads actuel par mois
-      <select name="budget_google">
-        <option value="">Choisir</option>
-        {budgets.map((b) => <option value={b.value}>{b.label}</option>)}
-      </select>
-    </label>
+    <div class="field">
+      <label>
+        Budget Google Ads actuel par mois{budgetRequired && "*"}
+        <select name="budget_google" id="chatgpt-budget" required={budgetRequired} aria-describedby="chatgpt-budget-msg">
+          <option value="">Choisir</option>
+          {budgets.map((b) => <option value={b.value}>{b.label}</option>)}
+        </select>
+      </label>
+      <p class="eligibility" id="chatgpt-budget-msg" aria-live="polite"></p>
+      <div class="msg-src" hidden data-msg="aucun">Pas encore de publicité ? On regarde aussi si Google Ads est un meilleur point de départ.</div>
+    </div>
 
     <label>
       Ce que vous vendez, en une phrase
@@ -90,16 +121,20 @@ const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
       <label>Ne remplissez pas ce champ<input type="text" name="bot-field" tabindex="-1" autocomplete="off" /></label>
     </p>
 
-    <button type="submit" class="btn btn-primary">Vérifier mon éligibilité <span class="arrow" aria-hidden="true">→</span></button>
+    <div class="submit">
+      <button type="submit" class="btn btn-primary">{cta.submit} <span class="arrow" aria-hidden="true">→</span></button>
+      <p class="submit-note">{cta.note}</p>
+    </div>
 
     <p class="form-error" id="chatgpt-error" hidden role="alert">
-      Une erreur est survenue. Réessayez ou écrivez-nous directement.
+      L'envoi n'a pas abouti. Réessayez dans un instant, ou écrivez-nous directement à
+      {" "}<a href={`mailto:${site.email}`}>{site.email}</a>.
     </p>
   </form>
 
   <p class="form-success" id="chatgpt-success" hidden role="status" tabindex="-1">
-    <strong>Merci, votre demande est bien partie.</strong><br />
-    Nous revenons vers vous sous un jour ouvré pour vérifier que ChatGPT Ads a du sens pour votre activité.
+    <strong>Merci.</strong> On vous recontacte sous un jour ouvré pour fixer l'échange de 15 minutes.
+    Une question d'ici là : <a href={`mailto:${site.email}`}>{site.email}</a> ou <a href={phoneHref}>{site.phone}</a>.
   </p>
 </div>
 
@@ -124,7 +159,8 @@ const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
   .eligibility:empty { display: none; }
   .eligibility :global(a) { color: var(--accent-on, var(--accent)); }
   .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-  .eb-form .btn { align-self: flex-start; margin-top: 4px; }
+  .submit { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 4px; }
+  .submit-note { font-size: 13.5px; color: var(--muted-on, var(--muted)); }
   .form-success {
     background: rgba(37, 99, 255, .06);
     border: 1px solid var(--rule, var(--hairline));
@@ -134,61 +170,62 @@ const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
     font-size: 15px;
   }
   .form-success:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .form-success a, .form-error a { color: var(--accent-on, var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
   .form-error { color: #b00020; font-size: 14px; }
   .btn:disabled { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
   @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
 </style>
 
 <script>
+  import { push, trackCtaClicks, type Eligibilite } from "../lib/cgpt-track";
+
   const form = document.getElementById("chatgpt-form") as HTMLFormElement | null;
   const ok = document.getElementById("chatgpt-success");
   const err = document.getElementById("chatgpt-error");
   const sector = document.getElementById("chatgpt-secteur") as HTMLSelectElement | null;
-  const eligibilityMsg = document.getElementById("chatgpt-eligibility");
+  const sectorMsg = document.getElementById("chatgpt-eligibility");
+  const budget = document.getElementById("chatgpt-budget") as HTMLSelectElement | null;
+  const budgetMsg = document.getElementById("chatgpt-budget-msg");
 
-  type Eligibilite = "ouvert" | "validation" | "impossible" | "autre";
   const eligibility: Record<string, Eligibilite> = JSON.parse(form?.dataset.eligibility || "{}");
+  const formId = form?.dataset.formId || "";
 
-  const w = window as unknown as { dataLayer?: unknown[] };
-  const push = (data: Record<string, unknown>) => {
-    w.dataLayer = w.dataLayer || [];
-    w.dataLayer.push(data);
-  };
+  trackCtaClicks();
 
   // Attribution : reprise des paramètres de l'URL d'arrivée, sans stockage.
   // Une visite qui a quitté la page d'arrivée ne les porte plus, c'est voulu.
   const params = new URLSearchParams(location.search);
-  for (const key of ["utm_source", "utm_medium", "utm_campaign", "gclid"]) {
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "li_fat_id"]) {
     const value = params.get(key);
     const input = form?.elements.namedItem(key) as HTMLInputElement | null;
     if (value && input) input.value = value.slice(0, 200);
   }
 
+  /** Affiche sous un champ le bloc masqué `.msg-src` correspondant, ou rien. */
+  const showMsg = (target: HTMLElement | null, key: string | undefined) => {
+    if (!target) return;
+    target.textContent = "";
+    const tpl = key && target.parentElement?.querySelector<HTMLElement>(`.msg-src[data-msg="${key}"]`);
+    if (tpl) target.append(...[...tpl.childNodes].map((n) => n.cloneNode(true)));
+  };
+
   /**
    * Message sous le champ secteur. Il informe sans jamais bloquer l'envoi : un
    * secteur fermé sur ChatGPT reste un prospect Google Ads. Aucune donnée
    * personnelle dans le dataLayer, seulement le secteur et son statut.
+   * `cgpt-prefill` : valeur posée par le sélecteur de la section secteurs, qui
+   * a déjà poussé son propre `eligibility_check`.
    */
-  const showEligibility = () => {
-    if (!sector || !eligibilityMsg) return;
+  const updateSector = () => showMsg(sectorMsg, eligibility[sector?.value || ""]);
+  sector?.addEventListener("cgpt-prefill", updateSector);
+  sector?.addEventListener("change", () => {
+    updateSector();
     const status = eligibility[sector.value];
-    eligibilityMsg.textContent = "";
-    if (status === "impossible") {
-      eligibilityMsg.append(
-        "Les règles d'OpenAI ne permettent pas encore la publicité pour ce secteur en Suisse. Google Ads reste possible : ",
-      );
-      const link = document.createElement("a");
-      link.href = "/services/google-ads";
-      link.textContent = "gestion Google Ads";
-      eligibilityMsg.append(link, ".");
-    } else if (status === "validation") {
-      eligibilityMsg.textContent = "Possible après validation par OpenAI. On prépare le dossier avec vous.";
-    }
     if (status) {
-      push({ event: "eligibility_check", form: "service_chatgpt", secteur: sector.value, eligibilite: status });
+      push({ event: "eligibility_check", form: formId, source: "formulaire", secteur: sector.value, eligibilite: status });
     }
-  };
-  sector?.addEventListener("change", showEligibility);
+  });
+  budget?.addEventListener("change", () => showMsg(budgetMsg, budget.value));
 
   /**
    * Un envoi à la fois. Sans ce verrou, un double clic part deux fois : deux
@@ -215,7 +252,7 @@ const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
     const data = new FormData(form);
     const secteur = String(data.get("secteur") || "");
     const lead = {
-      form: "service_chatgpt",
+      form: formId,
       secteur,
       eligibilite: eligibility[secteur] ?? "autre",
       budget_google: String(data.get("budget_google") || ""),

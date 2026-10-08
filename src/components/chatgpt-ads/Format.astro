@@ -1,0 +1,68 @@
+---
+/**
+ * Le format en trois points (sous la réponse, labellisée, au clic ou à l'affichage) et le lien
+ * vers la documentation d'OpenAI. L'en-tête de la section passe par le slot :
+ * réponse « En bref » (GEO) sur la page service, titre court sur la landing.
+ */
+import { openaiDocs } from "../../data/chatgpt-ads";
+
+interface Props {
+  band?: "paper" | "tint";
+  /** En-tête court (HeadSplit) : les points suivent sans marge supplémentaire. */
+  compact?: boolean;
+}
+const { band = "tint", compact = false } = Astro.props;
+---
+
+<section class:list={["band", `band--${band}`]}>
+  <div class="wrap">
+    <slot />
+    <ul class:list={["fmt-points", { compact }]}>
+      <li>
+        <svg class="fmt-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>
+        <h3>Sous la réponse</h3>
+        <p>L'annonce apparaît après la réponse de ChatGPT, dans une zone identifiée. Elle comprend votre nom, votre favicon, un titre, un texte, une image et le lien vers votre site.</p>
+      </li>
+      <li>
+        <svg class="fmt-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg>
+        <h3>Clairement labellisée</h3>
+        <p>Chaque annonce est marquée comme publicité. L'utilisateur sait ce qui est sponsorisé et ce qui ne l'est pas.</p>
+      </li>
+      <li>
+        <svg class="fmt-ico" viewBox="0 0 24 24" fill="none" stroke-width="1.8" aria-hidden="true"><path d="M12 20V10M18 20V4M6 20v-4" /></svg>
+        <h3>Au clic ou à l'affichage</h3>
+        <p>Vous payez au clic, ou aux mille affichages si l'objectif est d'être vu. Au clic, OpenAI recommande de démarrer autour de 3 à 5 dollars d'enchère maximale : c'est un plafond, l'enchère au second prix fait souvent payer moins.</p>
+      </li>
+    </ul>
+    <p class="fmt-source">
+      Format, ciblage, enchères et mesure :
+      <a href={openaiDocs} target="_blank" rel="noopener">documentation annonceurs d'OpenAI</a>.
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Trois points du format : lignes de grille seules, ni boîte ni pastille. */
+  .fmt-points { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 56px; border-top: 1px solid var(--rule, var(--hairline)); }
+  .fmt-points.compact { margin-top: 0; }
+  /* Gouttières égales : le filet vertical est tracé au milieu de chacune. */
+  .fmt-points { column-gap: 64px; }
+  .fmt-points li { position: relative; padding: 32px 0 0; border-left: 0; }
+  .fmt-points li + li::before { content: ""; position: absolute; top: 0; bottom: 0; left: -32px; width: 1px; background: var(--rule, var(--hairline)); }
+  .fmt-ico { display: block; width: 24px; height: 24px; stroke: var(--accent-on, var(--accent)); margin-bottom: 18px; }
+  .fmt-points h3 { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -.01em; color: var(--on-strong, var(--ink)); }
+  .fmt-points p { margin-top: 10px; font-size: 16px; line-height: 1.6; color: var(--on, var(--body)); text-wrap: pretty; }
+  .fmt-source { font-size: 13px; color: var(--on, var(--body)); margin-top: 40px; }
+  /* Lien en encre souligné de bleu : le bleu seul ne tient pas 4,5:1 sur la bande tint. */
+  .fmt-source a { color: var(--on-strong, var(--ink)); text-decoration: underline; text-decoration-color: var(--accent-on, var(--accent)); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  .fmt-source a:hover { text-decoration-thickness: 2px; }
+
+  @media (max-width: 900px) {
+    .fmt-points { grid-template-columns: 1fr; margin-top: 40px; column-gap: 0; }
+    .fmt-points.compact { margin-top: 0; }
+    .fmt-points li + li::before { display: none; }
+    .fmt-points li { padding: 24px 0; border-left: 0; border-top: 1px solid var(--rule, var(--hairline)); }
+    .fmt-points li:first-child { border-top: 0; }
+    .fmt-points li:last-child { padding-bottom: 0; }
+  }
+</style>
