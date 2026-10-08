@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import GoogleRating from "../components/GoogleRating.astro";
 import QuoteForm from "../components/QuoteForm.astro";
 import { site } from "../data/site";
 import { breadcrumbSchema } from "../lib/schema";
@@ -27,12 +28,16 @@ const jsonLd = [
           Décrivez votre situation en deux lignes. On vous répond sous un jour ouvré avec une première
           lecture honnête, et le pack adapté à votre budget publicitaire, à prix fixe et public.
         </p>
+        <GoogleRating spaced />
 
         <ul class="reassure">
           <li><span class="chk" aria-hidden="true">✓</span> Audit gratuit de votre compte ou de votre marché</li>
           <li><span class="chk" aria-hidden="true">✓</span> Prix fixes et publics, 0% de commission sur votre budget</li>
           <li><span class="chk" aria-hidden="true">✓</span> Engagement initial de 3 mois, puis résiliable chaque mois</li>
         </ul>
+
+        <!-- Illustration générée (Codex), décorative. -->
+        <img class="intro-visual" src="/images/contact/envoi.webp" width="1200" height="734" alt="" loading="lazy" decoding="async" />
 
         <div class="direct">
           <p class="mono lbl">Ou directement</p>
@@ -56,6 +61,7 @@ const jsonLd = [
   .reassure { list-style: none; margin: 28px 0; display: flex; flex-direction: column; gap: 12px; }
   .reassure li { display: flex; gap: 11px; align-items: center; font-size: 15px; }
   .chk { color: var(--accent-on, var(--accent)); font-weight: 700; }
+  .intro-visual { display: block; width: 100%; max-width: 300px; height: auto; margin: 4px 0 28px; }
   .direct { border-top: 1px solid var(--rule, var(--hairline)); padding-top: 22px; margin-top: 8px; display: flex; flex-direction: column; gap: 8px; }
   .direct .lbl { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 4px; }
   .direct a { font-size: 14px; color: var(--on-strong, var(--ink)); text-decoration: none; }
@@ -67,5 +73,7 @@ const jsonLd = [
   @media (max-width: 900px) {
     .contact-grid { grid-template-columns: 1fr; gap: 40px; }
     .form-wrap { padding: 24px; }
+    /* Sur mobile, le formulaire passe avant le décor. */
+    .intro-visual { display: none; }
   }
 </style>

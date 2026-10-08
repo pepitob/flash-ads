@@ -1,0 +1,424 @@
+---
+/**
+ * Formulaire de lead des pages d'offre - Netlify Forms.
+ *
+ * Deux offres, un seul composant :
+ * - `chatgpt-ads` : vérification d'éligibilité ChatGPT Ads (page service et
+ *   landing page), formulaire Netlify `chatgpt-ads` ;
+ * - `google-ads` : demande d'audit gratuit de la page Gestion Google Ads,
+ *   formulaire Netlify `audit-google-ads`.
+ *
+ * Le cadre est commun : identité, site web, message, honeypot, attribution
+ * (UTM, gclid, li_fat_id), verrou anti double clic, envoi AJAX, messages de
+ * succès et d'erreur. Seuls les champs métier changent. Les deux offres portent
+ * des champs différents, donc deux noms de formulaire : Netlify ne garde qu'une
+ * définition par nom. Pour une même offre, toutes les pages doivent porter
+ * exactement les mêmes champs (seuls changent la valeur du champ caché `page`
+ * et le caractère obligatoire de deux champs côté ChatGPT).
+ *
+ * Même mécanique que `QuoteForm.astro` : détection par Netlify sur le HTML
+ * statique (`data-netlify` + `name` unique), corps url-encodé posté sur un
+ * chemin du site, champ caché `form-name` qui route la soumission. Voir
+ * CLAUDE.md §Formulaires. Tout champ ajouté ou renommé exige un redéploiement.
+ *
+ * Le message de succès vit HORS du <form> : celui-ci est masqué à l'envoi.
+ * Les messages sous les champs sont rendus ici dans des blocs masqués
+ * (`.msg-src`), le script les clone. Ils informent, ils ne bloquent jamais.
+ */
+import { ui } from "../i18n/fr";
+import { secteurGroupes, secteurAutre, eligibiliteParSecteur } from "../data/chatgpt-secteurs";
+import { cta } from "../data/chatgpt-ads";
+import { site } from "../data/site";
+import { tiers, type TierId } from "../data/tarifs";
+
+interface Props {
+  offer: "chatgpt-ads" | "google-ads";
+  /** Identifiant de page : champ caché `page` et paramètre `page` du dataLayer. */
+  page: string;
+  /** ChatGPT Ads : budget Google Ads obligatoire (landing page). */
+  budgetRequired?: boolean;
+  /** ChatGPT Ads : site web obligatoire (landing page). Toujours obligatoire côté Google Ads. */
+  siteRequired?: boolean;
+  /** ChatGPT Ads : lien vers la page Google Ads dans le message « pas possible ». */
+  exitLinks?: boolean;
+}
+const { offer, page, budgetRequired = false, siteRequired = false, exitLinks = true } = Astro.props;
+
+const isGpt = offer === "chatgpt-ads";
+/** Préfixe des identifiants : `chatgpt-secteur` est visé par le sélecteur de secteurs. */
+const id = isGpt ? "chatgpt" : "gads";
+const FORM_NAME = isGpt ? "chatgpt-ads" : "audit-google-ads";
+/** Paramètre `form` du dataLayer : `service_chatgpt` historique sur la page service (déjà branché dans GTM). */
+const formId = isGpt ? (page === "services-chatgpt-ads" ? "service_chatgpt" : page) : "google_ads";
+
+/** Paramètres d'attribution repris de l'URL d'arrivée (voir le script). */
+const trackingFields = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "li_fat_id"];
+const phoneHref = `tel:${site.phone.replace(/\s/g, "")}`;
+
+/* ChatGPT Ads */
+const gptBudgets = [
+  { value: "aucun", label: "Aucun" },
+  { value: "moins-500", label: "Moins de 500 CHF" },
+  { value: "500-1500", label: "500 à 1 500 CHF" },
+  { value: "1500-5000", label: "1 500 à 5 000 CHF" },
+  { value: "plus-5000", label: "Plus de 5 000 CHF" },
+];
+const sectors = [...secteurGroupes.flatMap((g) => g.sectors), secteurAutre];
+
+/* Google Ads : tranches alignées sur `budgetRange` des packs (tarifs.ts). */
+const adBudgets: { value: string; label: string; tier?: TierId }[] = [
+  { value: "moins-500", label: "Moins de 500 CHF" },
+  { value: "500-1200", label: "500 à 1 200 CHF", tier: "starter" },
+  { value: "1200-5000", label: "1 200 à 5 000 CHF", tier: "croissance" },
+  { value: "5000-15000", label: "5 000 à 15 000 CHF", tier: "performance" },
+  { value: "plus-15000", label: "Plus de 15 000 CHF", tier: "sur-mesure" },
+  { value: "ne-sait-pas", label: "Je ne sais pas encore" },
+];
+const adTiers = adBudgets
+  .filter((b) => b.tier)
+  .map((b) => ({ ...b, t: tiers.find((t) => t.id === b.tier)! }));
+/** Tranche -> pack conseillé, et pack cliqué dans la grille -> tranche pré-sélectionnée. */
+const budgetToPack = Object.fromEntries(adTiers.map((b) => [b.value, b.t.id]));
+const comptes = [
+  { value: "oui", label: "Oui" },
+  { value: "non", label: "Non" },
+  { value: "ne-sait-pas", label: "Je ne sais pas" },
+];
+---
+
+<div class="eb-wrap">
+  <form
+    class="eb-form"
+    id={`${id}-form`}
+    name={FORM_NAME}
+    method="POST"
+    action="/"
+    data-netlify="true"
+    netlify-honeypot="bot-field"
+    data-lead-form
+    data-offer={offer}
+    data-track-page={page}
+    data-form-id={formId}
+    data-eligibility={isGpt ? JSON.stringify(eligibiliteParSecteur) : undefined}
+    data-budget-pack={isGpt ? undefined : JSON.stringify(budgetToPack)}
+  >
+    <input type="hidden" name="form-name" value={FORM_NAME} />
+    <input type="hidden" name="offre" value={isGpt ? "chatgpt-ads-early-bird" : "gestion-google-ads"} />
+    <input type="hidden" name="page" value={page} />
+    {!isGpt && <input type="hidden" name="pack" value="" />}
+    {/* Remplis depuis l'URL au chargement s'ils y figurent, rien n'est stocké. */}
+    {trackingFields.map((f) => <input type="hidden" name={f} value="" />)}
+
+    <div class="grid2">
+      <label>Nom et prénom*<input type="text" name="nom" required autocomplete="name" /></label>
+      <label>{ui.form.email}*<input type="email" name="email" required autocomplete="email" /></label>
+    </div>
+    <div class="grid2">
+      <label>{ui.form.phone} (facultatif)<input type="tel" name="telephone" autocomplete="tel" /></label>
+      <label>{ui.form.company}<input type="text" name="entreprise" autocomplete="organization" /></label>
+    </div>
+    {isGpt ? (
+      <label>Site web{siteRequired && "*"}<input type="url" name="site_web" placeholder="https://" required={siteRequired} autocomplete="url" /></label>
+    ) : (
+      <label>Site web*<input type="url" name="site_web" placeholder="https://" required autocomplete="url" /></label>
+    )}
+
+    {isGpt ? (
+      <Fragment>
+        <div class="field">
+          <label>
+            Secteur*
+            <select name="secteur" id={`${id}-secteur`} required aria-describedby={`${id}-eligibility`} data-msg-target={`${id}-eligibility`} data-msg-by="eligibility">
+              <option value="">Choisir votre secteur</option>
+              {sectors.map((s) => <option value={s.id}>{s.label}</option>)}
+            </select>
+          </label>
+          <p class="eligibility" id={`${id}-eligibility`} aria-live="polite"></p>
+          <div class="msg-src" hidden data-msg="impossible">
+            Les règles d'OpenAI ne permettent pas encore la publicité pour ce secteur en Suisse. On vous
+            dira si Google Ads est une meilleure option.{exitLinks && <Fragment>{" "}Voir notre <a href="/services/google-ads">gestion Google Ads</a>.</Fragment>}
+          </div>
+          <div class="msg-src" hidden data-msg="validation">Possible après validation par OpenAI. On prépare le dossier avec vous.</div>
+        </div>
+
+        <div class="field">
+          <label>
+            Budget Google Ads actuel par mois{budgetRequired && "*"}
+            <select name="budget_google" id={`${id}-budget`} required={budgetRequired} aria-describedby={`${id}-budget-msg`} data-msg-target={`${id}-budget-msg`}>
+              <option value="">Choisir</option>
+              {gptBudgets.map((b) => <option value={b.value}>{b.label}</option>)}
+            </select>
+          </label>
+          <p class="eligibility" id={`${id}-budget-msg`} aria-live="polite"></p>
+          <div class="msg-src" hidden data-msg="aucun">Pas encore de publicité ? On regarde aussi si Google Ads est un meilleur point de départ.</div>
+        </div>
+      </Fragment>
+    ) : (
+      <Fragment>
+        <div class="field">
+          <label>
+            Budget publicitaire mensuel prévu*
+            <select name="budget" id={`${id}-budget`} required aria-describedby={`${id}-budget-msg`} data-msg-target={`${id}-budget-msg`}>
+              <option value="">Choisir</option>
+              {adBudgets.map((b) => <option value={b.value}>{b.label}</option>)}
+            </select>
+          </label>
+          <p class="eligibility" id={`${id}-budget-msg`} aria-live="polite"></p>
+          <div class="msg-src" hidden data-msg="moins-500">
+            En dessous de 500 CHF par mois, les campagnes n'ont pas assez de données pour être
+            optimisées. On vous le dira franchement dans l'audit.
+          </div>
+          {adTiers.map((b) => (
+            <div class="msg-src" hidden data-msg={b.value}>
+              Pack conseillé : {b.t.name}, {b.t.price}{b.t.unit}.
+            </div>
+          ))}
+          <div class="msg-src" hidden data-msg="ne-sait-pas">
+            <a href="/calculateur-budget">Estimez-le avec notre calculateur de budget</a>.
+          </div>
+        </div>
+
+        <label>
+          Avez-vous déjà un compte Google Ads ?
+          <select name="compte_google">
+            <option value="">Choisir</option>
+            {comptes.map((c) => <option value={c.value}>{c.label}</option>)}
+          </select>
+        </label>
+      </Fragment>
+    )}
+
+    <label>
+      {isGpt ? "Ce que vous vendez, en une phrase" : "Message"}
+      <textarea
+        name="message"
+        rows="3"
+        placeholder={isGpt ? "Pour préparer le premier échange." : "Votre activité, vos objectifs, ce qui coince aujourd'hui."}
+      ></textarea>
+    </label>
+
+    <p class="gotcha" aria-hidden="true">
+      <label>Ne remplissez pas ce champ<input type="text" name="bot-field" tabindex="-1" autocomplete="off" /></label>
+    </p>
+
+    <div class="submit">
+      <button type="submit" class="btn btn-primary">{cta.submit} <span class="arrow" aria-hidden="true">→</span></button>
+      {isGpt && <p class="submit-note">{cta.note}</p>}
+    </div>
+
+    <p class="form-error" data-form-error hidden role="alert">
+      L'envoi n'a pas abouti. Réessayez dans un instant, ou écrivez-nous directement à
+      {" "}<a href={`mailto:${site.email}`}>{site.email}</a>.
+    </p>
+  </form>
+
+  <p class="form-success" data-form-success hidden role="status" tabindex="-1">
+    {isGpt ? (
+      <Fragment>
+        <strong>Merci.</strong> On vous recontacte sous un jour ouvré pour fixer l'échange de 15 minutes.
+        Une question d'ici là : <a href={`mailto:${site.email}`}>{site.email}</a> ou <a href={phoneHref}>{site.phone}</a>.
+      </Fragment>
+    ) : (
+      <Fragment>
+        <strong>Merci.</strong> Vous recevez votre audit sous quelques jours ouvrés. On vous recontacte
+        d'ici là si on a besoin d'un accès à votre compte.
+      </Fragment>
+    )}
+  </p>
+</div>
+
+<style>
+  .eb-wrap { max-width: 620px; }
+  .eb-form { display: flex; flex-direction: column; gap: 16px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  label { display: flex; flex-direction: column; gap: 7px; font-size: 14px; font-weight: 500; color: var(--on-strong, var(--ink)); }
+  input, textarea, select {
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1px solid var(--rule, var(--hairline));
+    border-radius: var(--r);
+    background: var(--surface-on, var(--paper));
+    color: var(--on-strong, var(--ink));
+    width: 100%;
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: var(--ring-accent); }
+  textarea { resize: vertical; }
+  .eligibility { font-size: 13.5px; line-height: 1.55; color: var(--muted-on, var(--muted)); margin-top: 8px; }
+  .eligibility:empty { display: none; }
+  .eligibility :global(a) { color: var(--accent-on, var(--accent)); }
+  .gotcha { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .submit { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 4px; }
+  .submit-note { font-size: 13.5px; color: var(--muted-on, var(--muted)); }
+  .form-success {
+    background: rgba(37, 99, 255, .06);
+    border: 1px solid var(--rule, var(--hairline));
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r);
+    padding: 16px 18px;
+    font-size: 15px;
+  }
+  .form-success:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .form-success a, .form-error a { color: var(--accent-on, var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
+  .form-error { color: #b00020; font-size: 14px; }
+  .btn:disabled { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import { push, trackCtaClicks, type Eligibilite } from "../lib/lead-track";
+
+  const form = document.querySelector<HTMLFormElement>("form[data-lead-form]");
+  const wrap = form?.parentElement;
+  const ok = wrap?.querySelector<HTMLElement>("[data-form-success]");
+  const err = form?.querySelector<HTMLElement>("[data-form-error]");
+  const isGpt = form?.dataset.offer === "chatgpt-ads";
+  const formId = form?.dataset.formId || "";
+  const eligibility: Record<string, Eligibilite> = JSON.parse(form?.dataset.eligibility || "{}");
+  const budgetToPack: Record<string, string> = JSON.parse(form?.dataset.budgetPack || "{}");
+
+  trackCtaClicks();
+
+  const field = <T extends Element>(name: string) => form?.elements.namedItem(name) as T | null;
+
+  // Attribution : reprise des paramètres de l'URL d'arrivée, sans stockage.
+  // Une visite qui a quitté la page d'arrivée ne les porte plus, c'est voulu.
+  const params = new URLSearchParams(location.search);
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "li_fat_id"]) {
+    const value = params.get(key);
+    const input = field<HTMLInputElement>(key);
+    if (value && input) input.value = value.slice(0, 200);
+  }
+
+  /** Affiche sous un champ le bloc masqué `.msg-src` correspondant, ou rien. */
+  const showMsg = (target: HTMLElement | null, key: string | undefined) => {
+    if (!target) return;
+    target.textContent = "";
+    const tpl = key && target.parentElement?.querySelector<HTMLElement>(`.msg-src[data-msg="${CSS.escape(key)}"]`);
+    if (tpl) target.append(...[...tpl.childNodes].map((n) => n.cloneNode(true)));
+  };
+
+  /**
+   * Chaque liste qui porte `data-msg-target` affiche le message de sa valeur.
+   * `data-msg-by="eligibility"` (secteur ChatGPT) : la clé est le statut du
+   * secteur, pas sa valeur.
+   */
+  const msgSelects = [...(form?.querySelectorAll<HTMLSelectElement>("select[data-msg-target]") ?? [])];
+  const refresh = (sel: HTMLSelectElement) => {
+    const key = sel.dataset.msgBy === "eligibility" ? eligibility[sel.value] : sel.value;
+    showMsg(document.getElementById(sel.dataset.msgTarget || ""), key);
+  };
+  for (const sel of msgSelects) {
+    sel.addEventListener("change", () => refresh(sel));
+    // `cgpt-prefill` : valeur posée par le sélecteur de la section secteurs
+    // (landing ChatGPT), qui a déjà poussé son propre `eligibility_check`.
+    sel.addEventListener("cgpt-prefill", () => refresh(sel));
+  }
+
+  // ChatGPT Ads : le choix d'un secteur pousse `eligibility_check`. Il informe
+  // sans jamais bloquer l'envoi : un secteur fermé reste un prospect Google Ads.
+  const sector = field<HTMLSelectElement>("secteur");
+  if (isGpt && sector) {
+    sector.addEventListener("change", () => {
+      const status = eligibility[sector.value];
+      if (status) push({ event: "eligibility_check", form: formId, source: "formulaire", secteur: sector.value, eligibilite: status });
+    });
+  }
+
+  /**
+   * Google Ads : le pack cliqué dans la grille (`?pack=<id>`) remplit le champ
+   * caché `pack` et pré-sélectionne la tranche de budget correspondante. Sur
+   * cette page, les boutons de la grille ne rechargent pas la page : l'URL est
+   * réécrite et le formulaire défile en vue (sans JS, le lien recharge et le
+   * pré-remplissage se fait au chargement, même résultat).
+   */
+  const packInput = field<HTMLInputElement>("pack");
+  const budget = field<HTMLSelectElement>("budget");
+  const prefillPack = (pack: string | null) => {
+    if (!packInput || !pack) return;
+    const range = Object.keys(budgetToPack).find((k) => budgetToPack[k] === pack);
+    if (!range) return;
+    packInput.value = pack;
+    if (budget) { budget.value = range; refresh(budget); }
+  };
+  if (!isGpt && packInput) {
+    prefillPack(params.get("pack"));
+    document.addEventListener("click", (e) => {
+      const a = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[href^="?pack="]');
+      if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      const url = new URL(a.href);
+      prefillPack(url.searchParams.get("pack"));
+      history.replaceState(null, "", url.pathname + url.search + url.hash);
+      document.getElementById(url.hash.slice(1))?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      budget?.focus({ preventScroll: true });
+    });
+  }
+
+  /**
+   * Un envoi à la fois. Sans ce verrou, un double clic part deux fois : deux
+   * soumissions Netlify (donc deux fois le même lead) et deux conversions
+   * dans le dataLayer.
+   */
+  let pending = false;
+  const submitBtn = form?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null;
+  const btnLabel = submitBtn?.innerHTML ?? "";
+  const lock = (on: boolean) => {
+    pending = on;
+    if (!submitBtn) return;
+    submitBtn.disabled = on;
+    submitBtn.innerHTML = on ? "Envoi…" : btnLabel;
+  };
+
+  /** Paramètres de `generate_lead`, lus avant le reset. Aucune donnée personnelle. */
+  const leadOf = (data: FormData) => {
+    const get = (k: string) => String(data.get(k) || "");
+    if (isGpt) {
+      const secteur = get("secteur");
+      return { form: formId, secteur, eligibilite: eligibility[secteur] ?? "autre", budget_google: get("budget_google") };
+    }
+    const b = get("budget");
+    // Le pack cliqué dans la grille, sinon celui que conseille la tranche choisie.
+    return { form: formId, budget: b, pack: get("pack") || budgetToPack[b] || "", compte_existant: get("compte_google") };
+  };
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (pending) return;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    err?.setAttribute("hidden", "");
+    lock(true);
+    const data = new FormData(form);
+    const lead = leadOf(data);
+    try {
+      // Netlify Forms en AJAX : corps url-encodé, posté sur un chemin du site.
+      // Le champ caché `form-name` (présent dans le FormData) fait le routage.
+      const res = await fetch(form.getAttribute("action") || "/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      form.reset();
+      form.style.display = "none";
+      ok?.removeAttribute("hidden");
+      // Deux événements, un seul à compter comme conversion dans GTM :
+      // `form_submit` est l'événement commun à tous les formulaires du site ;
+      // `generate_lead` porte en plus les paramètres de qualification.
+      push({ event: "form_submit", form_name: form.getAttribute("name") });
+      push({ event: "generate_lead", ...lead });
+
+      // Le focus était sur le bouton, qui vient d'être masqué : sans cela il
+      // retombe sur <body> et la confirmation passe inaperçue au clavier.
+      ok?.focus();
+    } catch (e) {
+      // Sur le site déployé, le statut dit tout : un 404 signifie que Netlify n'a
+      // pas détecté ce formulaire (détection désactivée, ou déploiement non refait
+      // depuis sa dernière modification). Tout le reste vient du réseau.
+      console.warn("[Flash Ads] Envoi du formulaire refusé :", String(e));
+      err?.removeAttribute("hidden");
+      // Rendre la main : l'envoi a échoué, le visiteur doit pouvoir réessayer.
+      lock(false);
+    }
+  });
+</script>

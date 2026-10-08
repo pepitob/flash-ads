@@ -52,15 +52,18 @@ export type Tier = {
   stripeLink: string;
 };
 
+/**
+ * Grille simplifiée (call du 15.09, brief du 08.10.2026) : quatre lignes sous la
+ * tranche de budget, plus « Inclus » là où le pack ajoute quelque chose. Les
+ * langues, la connexion CRM et le point de suivi passent en options ; les
+ * délais de support ne figurent plus sur le site (contrat et onboarding).
+ */
 const commonLabels = {
   canaux: "Canaux",
-  langues: "Langues",
   campagnes: "Campagnes spéciales/an",
   reporting: "Reporting",
-  crm: "Connexion CRM",
-  support: "Support",
-  contact: "Point de contact",
   engagement: "Engagement initial",
+  inclus: "Inclus",
 };
 
 export const tiers: Tier[] = [
@@ -76,12 +79,8 @@ export const tiers: Tier[] = [
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Search" },
-      { label: commonLabels.langues, value: "1 langue" },
       { label: commonLabels.campagnes, value: "1", footnote: true },
-      { label: commonLabels.reporting, value: "Dashboard + PDF mensuel auto" },
-      { label: commonLabels.crm, value: "En option (+200.-/mois)" },
-      { label: commonLabels.support, value: "E-mail, réponse sous 72 h" },
-      { label: commonLabels.contact, value: "Aucun" },
+      { label: commonLabels.reporting, value: "Dashboard + PDF mensuel" },
       { label: commonLabels.engagement, value: "3 mois" },
     ],
     ctaLabel: "Choisir Starter",
@@ -100,12 +99,8 @@ export const tiers: Tier[] = [
     badge: "Le plus choisi",
     attributes: [
       { label: commonLabels.canaux, value: "2 canaux au choix" },
-      { label: commonLabels.langues, value: "2 langues" },
       { label: commonLabels.campagnes, value: "3", footnote: true },
-      { label: commonLabels.reporting, value: "Dashboard + PDF mensuel auto" },
-      { label: commonLabels.crm, value: "En option (+200.-/mois)" },
-      { label: commonLabels.support, value: "E-mail, réponse sous 48 h" },
-      { label: commonLabels.contact, value: "30 min par trimestre" },
+      { label: commonLabels.reporting, value: "Dashboard + PDF mensuel" },
       { label: commonLabels.engagement, value: "3 mois" },
     ],
     ctaLabel: "Choisir Croissance",
@@ -123,13 +118,10 @@ export const tiers: Tier[] = [
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Search, Display, Shopping" },
-      { label: commonLabels.langues, value: "3 langues" },
       { label: commonLabels.campagnes, value: "5", footnote: true },
-      { label: commonLabels.reporting, value: "Dashboard + PDF + vidéo mensuelle (Loom)" },
-      { label: commonLabels.crm, value: "Incluse" },
-      { label: commonLabels.support, value: "E-mail + WhatsApp, réponse sous 24 h" },
-      { label: commonLabels.contact, value: "30 min par mois" },
+      { label: commonLabels.reporting, value: "Dashboard + PDF + vidéo mensuelle" },
       { label: commonLabels.engagement, value: "3 mois" },
+      { label: commonLabels.inclus, value: "Connexion CRM, point de suivi mensuel" },
     ],
     ctaLabel: "Choisir Performance",
     stripeLink: "",
@@ -146,13 +138,10 @@ export const tiers: Tier[] = [
     featured: false,
     attributes: [
       { label: commonLabels.canaux, value: "Tous" },
-      { label: commonLabels.langues, value: "Sur mesure" },
       { label: commonLabels.campagnes, value: "Illimitées", footnote: true },
       { label: commonLabels.reporting, value: "Sur mesure" },
-      { label: commonLabels.crm, value: "Incluse" },
-      { label: commonLabels.support, value: "Dédié" },
-      { label: commonLabels.contact, value: "Sur mesure" },
       { label: commonLabels.engagement, value: "Sur mesure" },
+      { label: commonLabels.inclus, value: "Tout, sur mesure" },
     ],
     ctaLabel: "Discutons-en",
     stripeLink: "",
@@ -206,6 +195,14 @@ export const addOns: AddOn[] = [
     label: "Langue supplémentaire",
     price: "+100.-",
     unit: "/mois",
+    availability: "Chaque pack inclut une langue",
+  },
+  {
+    id: "point-suivi",
+    label: "Point de suivi mensuel de 30 minutes en visio",
+    price: "+100.-",
+    unit: "/mois",
+    availability: "Starter et Croissance (inclus dès Performance)",
   },
 ];
 

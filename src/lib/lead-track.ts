@@ -1,9 +1,10 @@
 /**
- * Suivi des pages ChatGPT Ads (page service et landing page) : contexte commun
- * à tous les événements poussés dans le dataLayer de GTM.
+ * Suivi enrichi des pages à formulaire de lead (ChatGPT Ads : page service et
+ * landing page ; Gestion Google Ads) : contexte commun à tous les événements
+ * poussés dans le dataLayer de GTM.
  *
- * - `page` : identifiant de la page, lu sur l'attribut `data-cgpt-page` posé par
- *   le formulaire (présent sur les deux pages), le même que son champ caché.
+ * - `page` : identifiant de la page, lu sur l'attribut `data-track-page` posé par
+ *   le formulaire, le même que son champ caché `page`.
  * - `source_trafic` : `google` (gclid ou utm_source=google), `linkedin`
  *   (li_fat_id ou utm_source=linkedin), sinon `autre`. Calculé depuis l'URL
  *   d'arrivée, sans aucun stockage navigateur.
@@ -23,8 +24,8 @@ export function sourceTrafic(): "google" | "linkedin" | "autre" {
 }
 
 export function context() {
-  const el = document.querySelector<HTMLElement>("[data-cgpt-page]");
-  return { page: el?.dataset.cgptPage || "", source_trafic: sourceTrafic() };
+  const el = document.querySelector<HTMLElement>("[data-track-page]");
+  return { page: el?.dataset.trackPage || "", source_trafic: sourceTrafic() };
 }
 
 export function push(data: Record<string, unknown>) {

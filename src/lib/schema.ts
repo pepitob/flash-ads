@@ -37,6 +37,7 @@ export function organizationSchema() {
       addressRegion: site.region,
       addressCountry: site.country,
     },
+    founder: site.founders.map((f) => ({ "@type": "Person", name: f.name, sameAs: [f.linkedin] })),
     ...(sameAs.length ? { sameAs } : {}),
   };
 }
@@ -56,7 +57,8 @@ function pricingOffers() {
       ...tiers.map((t) => ({
         "@type": "Offer",
         name: t.name,
-        description: t.forBudget,
+        // La carte telle qu'affichée : tranche de budget puis lignes de la grille.
+        description: [t.forBudget, ...t.attributes.map((a) => `${a.label} : ${a.value}`)].join(". "),
         priceCurrency: "CHF",
         // « dès X » (Sur mesure) → minPrice uniquement, jamais un prix fixe trompeur.
         ...(t.priceIsFrom ? {} : { price: t.priceValue }),
@@ -131,7 +133,12 @@ export function toolSchema(opts: { name: string; description: string; url: strin
   };
 }
 
-export type FaqItem = { question: string; answer: string };
+export type FaqItem = {
+  question: string;
+  answer: string;
+  /** Lien affiché sous la réponse visible. Hors JSON-LD : ce n'est pas du texte de réponse. */
+  link?: { href: string; label: string };
+};
 
 /** FAQPage - toutes les FAQ (clé pour le GEO). */
 export function faqSchema(items: FaqItem[]) {

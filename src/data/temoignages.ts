@@ -19,6 +19,7 @@ export const proofPlaceholder = false;
 /** Note agrégée de la fiche Google. Réel - mettre à jour si de nouveaux avis arrivent. */
 export const googleReviews = {
   rating: 5.0,
+  // Non affiché sur le site (trop faible pour l'instant) : la note seule, avec « Avis vérifiés ».
   count: 6,
   profileUrl:
     "https://www.google.com/maps/place/?q=place_id:ChIJf_0JGAUxjEcRdBaOc1yOMBk",
@@ -36,13 +37,11 @@ export type Testimonial = {
   date: string;
 };
 
+/**
+ * Avis publiés sur le site. Ma Porte Sàrl n'y figure plus (ni avis, ni logo) :
+ * ne pas le réintroduire. Aucun avis ne doit nommer un membre de l'équipe.
+ */
 export const testimonials: Testimonial[] = [
-  {
-    quote:
-      "Nous collaborons étroitement avec Flash Ads dans le cadre de notre stratégie SEA. C'est un très agréable de travailler avec Hippolyte Bourban, qui est toujours à l'écoute des spécificités métier, et qui est très réactif. Nous adaptons en continu les actions, et cela fonctionne très bien. La collaboration est également très simple. Merci pour l'étroite collaboration.",
-    author: "Ma Porte Sàrl",
-    date: "il y a un an",
-  },
   {
     quote:
       "Nous collaborons depuis 2020 avec Flash Ads pour des questions en lien avec notre site internet www.espacetriathlon.com, notamment pour le paramétrage de Google Ads et Google Merchant Center. Le travail effectué nous a permis d'accroître significativement les ventes online. Nous avons par ailleurs toujours apprécié le support et la maintenance offertes, toujours très efficaces et rapides. Pour cette raison, nous ne pouvons que conseiller Flash Ads.",
@@ -112,7 +111,6 @@ export const clientLogos: ClientLogo[] = [
   { name: "Zoé4Life", src: "/logos/zoe4life.webp" },
   { name: "Ofinto", src: "/logos/ofinto.webp" },
   { name: "Proxident", src: "/logos/proxident.webp" },
-  { name: "Ma Porte Sàrl", src: "/logos/maporte.webp" },
   { name: "PanaDent", src: "/logos/panadent.webp" },
   { name: "Simonin Électroménager SA", src: "/logos/simonin.webp" },
   { name: "Solution Bois", src: "/logos/solution-bois.webp" },
@@ -133,16 +131,29 @@ export const keyStats = [
  * Ce sont des résultats GOOGLE ADS : ne jamais les présenter comme des
  * résultats ChatGPT.
  */
-export const resultCases = [
+export type ResultCase = {
+  metric: string;
+  who: string;
+  text: string;
+  /** Format Contexte / Action (page Gestion Google Ads). Omis si le texte n'existe pas. */
+  context?: string;
+  action?: string;
+};
+
+export const resultCases: ResultCase[] = [
   {
     metric: "+63%",
     who: "Chauffage sanitaire · Valais",
     text: "Deux tiers de demandes de devis en plus en six mois, à budget publicitaire constant.",
+    context: "Annonces dispersées : le budget partait sur des recherches trop larges, sans intention d'achat.",
+    action: "On a resserré les campagnes sur les recherches de dépannage et écarté ce qui ne rapportait rien.",
   },
   {
     metric: "−29%",
     who: "Cabinet dentaire · Lausanne",
     text: "Chaque nouveau patient coûte près d'un tiers de moins qu'avant la reprise du compte.",
+    context: "Chaque nouveau patient coûtait cher, et le compte ne mesurait ni les appels ni les prises de rendez-vous.",
+    action: "On a remis le suivi des conversions d'aplomb, puis réécrit les annonces autour des soins recherchés.",
   },
   {
     metric: "3,8×",

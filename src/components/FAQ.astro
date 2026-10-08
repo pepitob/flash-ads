@@ -33,7 +33,10 @@ const schema = faqSchema(items);
               <span>{it.question}</span>
               <span class="chev" aria-hidden="true">+</span>
             </summary>
-            <div class="faq-answer"><p>{it.answer}</p></div>
+            <div class="faq-answer">
+              <p>{it.answer}</p>
+              {it.link && <p class="faq-link"><a href={it.link.href}>{it.link.label} <span aria-hidden="true">→</span></a></p>}
+            </div>
           </details>
         ))
       }
@@ -96,6 +99,9 @@ const schema = faqSchema(items);
   .faq-item[open] .chev { transform: rotate(45deg); }
   .faq-answer { padding: 0 4px 22px; }
   .faq-answer p { font-size: 16px; max-width: 70ch; }
+  .faq-answer .faq-link { margin-top: 10px; }
+  .faq-link a { color: var(--accent-on, var(--accent)); font-weight: 500; text-decoration: none; }
+  .faq-link a:hover { text-decoration: underline; }
 
   @media (max-width: 900px) {
     .faq-layout { grid-template-columns: 1fr; gap: 32px; }
