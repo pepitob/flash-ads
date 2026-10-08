@@ -1,0 +1,75 @@
+---
+/**
+ * Section `#contact` des pages d'offre : texte, coches, coordonnées et
+ * formulaire de lead (`LeadForm`). Utilisée par les pages ChatGPT Ads (via
+ * `chatgpt-ads/Contact.astro`) et par la page Gestion Google Ads.
+ *
+ * Le panneau du formulaire prend toujours la surface opposée à la bande :
+ * tint sur une bande paper, blanc sur une bande tint.
+ */
+import LeadForm from "./LeadForm.astro";
+import { site } from "../data/site";
+
+type FormProps = {
+  offer: "chatgpt-ads" | "google-ads";
+  page: string;
+  budgetRequired?: boolean;
+  siteRequired?: boolean;
+  exitLinks?: boolean;
+};
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  text: string;
+  checks: string[];
+  /** Illustration décorative (`alt` vide), masquée sur mobile. */
+  visual?: { src: string; width: number; height: number };
+  band?: "paper" | "tint";
+  form: FormProps;
+}
+const { eyebrow, title, text, checks, visual, band = "paper", form } = Astro.props;
+---
+
+<section id="contact" class:list={["band", `band--${band}`]}>
+  <div class="wrap ask-grid">
+    <div class="ask-copy">
+      <span class="eyebrow">{eyebrow}</span>
+      <h2 class="display">{title}</h2>
+      <p class="lead">{text}</p>
+      {visual && <img class="ask-visual" {...visual} alt="" loading="lazy" decoding="async" />}
+      <ul class="ask-next">
+        {checks.map((c) => <li>{c}</li>)}
+      </ul>
+      <p class="ask-direct">
+        Vous préférez écrire ou appeler ?<br />
+        <a href={`mailto:${site.email}`}>{site.email}</a> ·
+        <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+      </p>
+    </div>
+    <div class:list={["ask-panel", band === "tint" ? "surface-paper" : "band--tint"]}>
+      <LeadForm {...form} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ask-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 64px; align-items: start; }
+  .ask-copy h2 { font-size: clamp(28px, 3.2vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 16px; }
+  .ask-copy .lead { color: var(--muted-on, var(--muted)); font-size: 16.5px; line-height: 1.6; margin-top: 16px; }
+  .ask-visual { display: block; width: 100%; max-width: 300px; height: auto; margin-top: 24px; }
+  .ask-next { list-style: none; margin-top: 26px; }
+  .ask-next li { font-size: 15px; color: var(--on, var(--body)); padding: 10px 0 10px 28px; position: relative; border-top: 1px solid var(--rule, var(--hairline)); }
+  .ask-next li::before { content: ""; position: absolute; left: 2px; top: 15px; width: 12px; height: 7px; border-left: 2px solid var(--fa-pink); border-bottom: 2px solid var(--fa-pink); transform: rotate(-45deg); }
+  .ask-direct { font-size: 14px; color: var(--muted-on, var(--muted)); margin-top: 22px; line-height: 1.7; }
+  .ask-direct a { color: var(--accent-on, var(--accent)); text-decoration: none; }
+  .ask-panel { border: 1px solid var(--rule, var(--hairline)); border-radius: var(--r); padding: 36px; }
+  .ask-panel :global(.eb-wrap) { max-width: none; }
+
+  @media (max-width: 900px) {
+    .ask-grid { grid-template-columns: 1fr; gap: 32px; }
+    .ask-panel { padding: 24px; }
+    /* Sur mobile, l'illustration repousserait le formulaire hors de vue. */
+    .ask-visual { display: none; }
+  }
+</style>

@@ -1,14 +1,26 @@
 ---
 /**
  * Les trois résultats clients de la home (`resultCases`), repris tels quels
- * par la landing page ChatGPT Ads. Une seule source pour les deux pages.
+ * par la landing page ChatGPT Ads et par la page Gestion Google Ads. Une seule
+ * source pour les trois pages. `detailed` ajoute le format Contexte / Action
+ * pour les cas qui le portent.
  */
 import CaseStudyCard from "./CaseStudyCard.astro";
 import { resultCases } from "../data/temoignages";
+
+interface Props {
+  detailed?: boolean;
+}
+const { detailed = false } = Astro.props;
 ---
 
 <div class="cases">
   {resultCases.map((c) => (
-    <CaseStudyCard metric={c.metric} who={c.who}>{c.text}</CaseStudyCard>
+    <CaseStudyCard
+      metric={c.metric}
+      who={c.who}
+      context={detailed ? c.context : undefined}
+      action={detailed ? c.action : undefined}
+    >{c.text}</CaseStudyCard>
   ))}
 </div>

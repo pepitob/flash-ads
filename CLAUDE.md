@@ -71,11 +71,12 @@ Comprendre ces flux transversaux avant d'éditer :
   menu, un seul bouton (vers `#contact`), pied de page réduit, `noindex, nofollow`, **aucun JSON-LD** (`<FAQ schema={false}>`)
   et exclusion du sitemap (`/lp/` dans `astro.config.mjs`). **Aucune sortie** sur la landing, hors
   liens légaux, lien « packs Google Ads » du message « pas possible » et sources externes voulues
-  (note Google, badge Partner, documentation et règles d'OpenAI). Ne jamais y citer Ma Porte Sàrl.
+  (note Google, badge Partner, documentation et règles d'OpenAI). Ma Porte Sàrl ne figure plus nulle part sur le site (ni avis, ni logo) : ne pas le réintroduire.
   Les chiffres de sa section Preuves sont ceux de la home (`resultCases`, composant
   `ResultCases.astro`), présentés comme résultats **Google Ads**, jamais ChatGPT.
-- **Formulaires** : devis (`/contact`) et demande d'accès ChatGPT Ads
-  (`/services/chatgpt-ads` et `/lp/publicite-chatgpt`), tous via **Netlify Forms**. Plus aucune
+- **Formulaires** : devis (`/contact`), demande d'accès ChatGPT Ads
+  (`/services/chatgpt-ads` et `/lp/publicite-chatgpt`) et audit Google Ads (`#contact` de
+  `/services/google-ads`), tous via **Netlify Forms**. Plus aucune
   dépendance Formspree.
 - **Mesure d'audience** : Google Tag Manager, injecté par `src/components/seo/Gtm.astro` (posé par
   `BaseLayout` et `LandingLayout`) depuis `site.gtmId` (snippet en tête de `<head>`, `noscript`
@@ -85,16 +86,17 @@ Comprendre ces flux transversaux avant d'éditer :
   est le même que celui où le site pousse ses événements, exploitables comme déclencheurs dans le
   conteneur sans code supplémentaire : le calculateur émet `calc_start`, `calc_result`,
   `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent tous un
-  `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis` ou
-  `chatgpt-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
+  `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis`,
+  `chatgpt-ads` ou `audit-google-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
   événement par formulaire : une seule balise de conversion suffit, la condition se met sur le
   paramètre. **Côté GTM, brancher la conversion sur l'événement personnalisé `form_submit`, jamais
   sur le déclencheur « Form Submission » intégré** : celui-ci écoute l'événement natif `submit` et
   se déclenche donc à CHAQUE tentative, y compris celles refusées par la validation et celles dont
   la requête échoue. Notre `form_submit`, lui, n'est poussé qu'après acceptation par Netlify. Les
   deux formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
-  donc ni deux leads ni deux conversions. **Exception enrichie, pages ChatGPT Ads** (`src/lib/cgpt-track.ts`) :
-  chaque événement porte `page` (`services-chatgpt-ads` ou `lp_chatgpt`, lu sur `data-cgpt-page`
+  donc ni deux leads ni deux conversions. **Exception enrichie, pages à formulaire de lead** (`src/lib/lead-track.ts`, pages ChatGPT Ads et
+  Gestion Google Ads) : chaque événement porte `page` (`services-chatgpt-ads`, `lp_chatgpt` ou
+  `service_google_ads`, lu sur `data-track-page`
   du formulaire) et `source_trafic` (`google` si `gclid` ou `utm_source=google`, `linkedin` si
   `li_fat_id` ou `utm_source=linkedin`, sinon `autre` : les campagnes LinkedIn doivent donc toujours
   porter `utm_source=linkedin`). En plus de `form_submit` : `eligibility_check` au choix d'un
@@ -156,7 +158,11 @@ Comprendre ces flux transversaux avant d'éditer :
 Les illustrations du site (ex. `public/images/chatgpt-ads/compare-chatgpt.webp` et `eligibility.webp`)
 et celles des autres pages (`home/problem.webp` + `home/solution.webp` dans le diptyque de la
 home, `agence/hero.webp`, `tracking/hero.webp`, `calculateur/hero.webp` en colonne droite du hero,
-`contact/envoi.webp` sous la liste de réassurance, masquée sur mobile)
+`contact/envoi.webp` sous la liste de réassurance, masquée sur mobile ; `google-ads/channels.webp` en
+sixième case de la grille « Ce que nous gérons », `google-ads/audit.webp` et `home/questions.webp`
+dans la colonne d'intro de la FAQ via son slot, `tracking/verification.webp` et `tracking/crm.webp`
+sous le texte des sections « Ce qu'on compte » et « Connexion CRM » ; les décors de grille et de FAQ
+sont masqués sous 900px)
 sont générées par l'outil de génération d'images de **Codex CLI** (fonctionnalité
 `image_generation`, active par défaut), puis retouchées avec ImageMagick. Méthode validée :
 
@@ -322,7 +328,11 @@ jamais un seuil élevé.
   grille, FAQ home + Google Ads, formulaire de contact, CGV, `llms.txt`, article de blog
   budget, et `budgetRange` de chaque pack (consommé par le calculateur).
   Prix validés (`pricingValidated: true`, brief pricing 2026-08). Un `stripeLink`
-  vide = le CTA du pack renvoie vers `/contact?pack=<id>` (pré-sélection du budget).
+  vide = le CTA du pack renvoie vers `/contact?pack=<id>` (pré-sélection du budget), sauf sur
+  `/services/google-ads` (`<PricingGrid inPage>`) où il pointe vers `?pack=<id>#contact`, le
+  formulaire de la page. Grille simplifiée (08.10.2026) : canaux, campagnes spéciales, reporting,
+  engagement, plus « Inclus » dès Performance ; langues, CRM et point de suivi en options, aucun
+  délai de support affiché.
 - **ChatGPT Ads** : offre séparée (`chatgptAds` dans `tarifs.ts`), un seul pack tout compris, sans
   rapport avec la grille Google Ads qui se choisit sur le budget. Le tarif de lancement est une
   **remise à durée limitée** : 240.-/mois et 150.- de setup jusqu'au 31.12.2026, puis 480.-/mois et
@@ -382,7 +392,7 @@ le champ caché `form-name` qui route la soumission. Anti-spam : honeypot Netlif
 (`netlify-honeypot="bot-field"`).
 
 **Audit ChatGPT Ads (`#contact` de `/services/chatgpt-ads` et de `/lp/publicite-chatgpt`) :
-Netlify Forms** également, `name="chatgpt-ads"` (`EarlyBirdForm.astro`), le même formulaire sur
+Netlify Forms** également, `name="chatgpt-ads"` (`LeadForm.astro offer="chatgpt-ads"`), le même formulaire sur
 les deux pages. Mêmes contraintes que ci-dessus. **Netlify ne garde qu'une définition par nom** :
 les deux pages doivent porter exactement les mêmes champs, seuls changent la valeur du champ caché
 `page` (`services-chatgpt-ads` / `lp_chatgpt`) et le caractère obligatoire du budget Google Ads et
@@ -394,6 +404,15 @@ les cartes « Votre secteur peut-il diffuser ? » de la page : une règle d'Open
 corrige là. Un secteur fermé affiche un message (avec un lien Google Ads sur la page service seulement)
 mais **ne bloque jamais l'envoi** ; un budget « Aucun » affiche lui aussi un message sans bloquer.
 Sur la landing, le sélecteur de la section secteurs pré-remplit ce champ. Les deux formulaires doivent apparaître dans « Forms » côté Netlify après le déploiement.
+
+**Audit Google Ads (`#contact` de `/services/google-ads`) : Netlify Forms**, `name="audit-google-ads"`
+(`LeadForm.astro offer="google-ads"`, section `LeadSection.astro`). Nom distinct du formulaire
+ChatGPT parce que les champs diffèrent (une définition par nom chez Netlify). Champs : nom*,
+e-mail*, téléphone, entreprise, site web*, `budget`* (tranches alignées sur `budgetRange`),
+`compte_google`, message, plus les champs cachés `pack` (depuis `?pack=`), `page=service_google_ads`,
+UTM, `gclid`, `li_fat_id`. Le message sous le budget (pack conseillé, plancher de 500.-, lien vers
+le calculateur) vient de `tarifs.ts` et ne bloque jamais l'envoi. `generate_lead` y porte `form:
+'google_ads'`, `budget`, `pack` (cliqué, sinon conseillé) et `compte_existant`.
 
 **Si des soumissions n'arrivent plus.** La détection ne tourne qu'au moment du build : toute
 modification d'un formulaire (champ renommé, nouveau formulaire, balise changée) exige un

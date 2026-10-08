@@ -5,12 +5,42 @@ import SectionHead from "../../components/SectionHead.astro";
 import FAQ from "../../components/FAQ.astro";
 import CTA from "../../components/CTA.astro";
 import { ui } from "../../i18n/fr";
+import { addOns } from "../../data/tarifs";
 import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
 
 const title = "Savoir d'où viennent vos clients (mesure & suivi) | Flash Ads";
 const description =
-  "Si vous ne mesurez pas d'où viennent vos clients, vous dépensez à l'aveugle. Flash Ads installe proprement les outils de mesure de Google (GA4, Tag Manager) et vérifie que tout fonctionne. En prestation seule ou avec la gestion.";
+  "Flash Ads installe GA4, Tag Manager et le suivi des conversions Google Ads, teste chaque élément et relie votre CRM pour compter vos vrais clients.";
 const path = "/services/tracking-analytics";
+
+// Prix lus dans tarifs.ts (seule source) : jamais recopiés en dur.
+const setup = addOns.find((a) => a.id === "setup-tracking")!;
+const crm = addOns.find((a) => a.id === "crm")!;
+
+/** Ce qui compte comme une demande, selon l'activité. */
+const tracked = [
+  "Les appels passés depuis l'annonce ou depuis votre site",
+  "Les formulaires de contact et de devis envoyés",
+  "Les clics sur votre adresse e-mail ou sur WhatsApp",
+  "Les achats en ligne, avec la valeur du panier",
+  "Le téléchargement d'un PDF ou la visite d'une page clé",
+  "Les demandes devenues clients, grâce à votre CRM",
+];
+
+const crmGains = [
+  {
+    title: "Google apprend ce qu'est un bon client",
+    text: "Les campagnes s'orientent vers les personnes qui ressemblent à vos vrais clients, plus vers celles qui remplissent un formulaire et disparaissent.",
+  },
+  {
+    title: "Vous voyez ce que chaque campagne rapporte",
+    text: "Pas seulement combien de demandes elle amène, mais combien sont devenues des clients et pour quel montant.",
+  },
+  {
+    title: "Les demandes sans suite ne faussent plus les chiffres",
+    text: "Un démarchage ou une demande hors zone compte pour ce qu'il vaut : rien. Le coût par client affiché est le vrai.",
+  },
+];
 
 const faqItems: FaqItem[] = [
   {
@@ -29,6 +59,25 @@ const faqItems: FaqItem[] = [
       "Oui. La mise en place de la mesure peut se faire seule, sans nous confier vos campagnes. Elle est aussi comprise dans la mise en place quand vous nous confiez votre publicité.",
   },
   {
+    question: "Que change la connexion avec mon CRM ?",
+    answer:
+      "Sans elle, Google sait qu'un formulaire a été envoyé, mais pas si cette personne est devenue cliente. Avec elle, on renvoie à Google Ads les demandes qui ont abouti, et leur valeur. Les campagnes apprennent alors à chercher des clients, pas des formulaires, et vous voyez ce que chaque campagne rapporte vraiment.",
+  },
+  {
+    question: "Faut-il avoir un CRM pour travailler avec vous ?",
+    answer:
+      "Non. Le suivi des appels, formulaires et achats fonctionne sans CRM, et c'est déjà la base indispensable. La connexion CRM vient en plus, quand vous recevez assez de demandes pour qu'il soit utile de distinguer les bonnes des moins bonnes.",
+  },
+  {
+    question: "Mes données clients sont-elles envoyées à Google ?",
+    answer:
+      "Seulement sous forme chiffrée. Les adresses e-mail ou numéros de téléphone sont transformés en une empreinte illisible (hachage) avant l'envoi, ce qui permet à Google de faire le lien avec un clic sans recevoir les coordonnées en clair. Le tout est déclaré dans votre politique de confidentialité, comme le demandent la nLPD et le RGPD.",
+  },
+  {
+    question: "Combien coûte la mise en place ?",
+    answer: `Avec la gestion de vos campagnes, le setup tracking standard coûte ${setup.price} ${setup.unit}, avant le lancement. La connexion CRM est en option à ${crm.price}${crm.unit} sur Starter et Croissance, et incluse dès le pack Performance. Pour une mise en place seule, sans gestion, on vous fait un prix après un premier regard sur votre site.`,
+  },
+  {
     question: "Et la protection des données ?",
     answer:
       "On respecte la loi suisse (nLPD) et le RGPD : gestion du consentement, et respect du choix de vos visiteurs sur les cookies non essentiels. C'est fait proprement.",
@@ -44,7 +93,6 @@ const jsonLd = [
   }),
   breadcrumbSchema([
     { name: "Accueil", url: "/" },
-    { name: "Services", url: path },
     { name: "Savoir ce qui marche", url: path },
   ]),
 ];
@@ -65,13 +113,15 @@ const jsonLd = [
             <p>
               <b>Sans mesure, on dépense à l'aveugle.</b> Si on ne sait pas quelles annonces vous amènent
               vraiment des clients, l'argent part un peu partout. Flash Ads installe proprement les
-              <b>outils de mesure de Google</b> et vérifie, un par un, que tout fonctionne. Possible
-              <b>seul</b>, ou compris quand vous nous confiez votre publicité.
+              <b>outils de mesure de Google</b>, vérifie un par un que tout fonctionne et, si vous le
+              souhaitez, <b>relie votre CRM</b> pour compter les clients, pas seulement les demandes.
+              Possible <b>seul</b>, ou compris quand vous nous confiez votre publicité.
             </p>
           </AnswerBlock>
 
           <div class="hero-cta">
             <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
+            <a href="#crm" class="btn btn-ghost">La connexion CRM</a>
           </div>
         </div>
         <!-- Illustration générée (Codex), décorative : appels, formulaires et achats convergent vers un seul tableau vérifié. -->
@@ -80,6 +130,7 @@ const jsonLd = [
     </div>
   </section>
 
+  <!-- CE QU'ON MET EN PLACE -->
   <section class="band band--paper">
     <div class="wrap">
       <SectionHead
@@ -106,7 +157,117 @@ const jsonLd = [
     </div>
   </section>
 
-  <FAQ items={faqItems} title="Vos questions sur la mesure" eyebrow="FAQ · Mesure" />
+  <!-- CE QU'ON COMPTE -->
+  <section class="band band--tint">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Ce qu'on compte</span>
+        <h2 class="display">Une demande de client, chez vous, c'est quoi ?</h2>
+        <p class="muted">
+          Un plombier vit du téléphone, une boutique en ligne de ses paniers, un cabinet de ses
+          formulaires de rendez-vous. On commence donc par définir avec vous ce qui compte vraiment,
+          puis on suit exactement ça, et rien de superflu.
+        </p>
+        <!-- Illustration générée (Codex), décorative : chaque élément testé un par un. -->
+        <img class="split-visual" src="/images/tracking/verification.webp" width="1200" height="861" alt="" loading="lazy" decoding="async" />
+      </div>
+      <ul class="tracked">
+        {tracked.map((t) => (
+          <li><span class="chk" aria-hidden="true">✓</span> {t}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- COMMENT ON PROCÈDE -->
+  <section class="process band band--night">
+    <div class="wrap process-grid">
+      <div>
+        <span class="eyebrow">Comment on procède</span>
+        <h2 class="display">Quatre étapes, et des chiffres auxquels vous pouvez vous fier.</h2>
+        <p class="muted">
+          C'est l'étape 2 de notre <a href="/agence#methode">méthode</a> : avant de dépenser un franc
+          en publicité, on s'assure de pouvoir mesurer ce qu'il rapporte.
+        </p>
+      </div>
+      <ol class="proc-list">
+        <li><span class="mono no">01</span> On fait l'état des lieux de votre mesure actuelle</li>
+        <li><span class="mono no">02</span> On définit avec vous ce qui compte comme une demande</li>
+        <li><span class="mono no">03</span> On installe Analytics, Tag Manager et les conversions Google Ads</li>
+        <li><span class="mono no">04</span> On teste chaque élément, puis on vous explique les chiffres</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- CONNEXION CRM -->
+  <section id="crm" class="band band--paper">
+    <div class="wrap split">
+      <div>
+        <span class="eyebrow">Connexion CRM</span>
+        <h2 class="display">Compter les clients, pas seulement les formulaires.</h2>
+        <p class="muted">
+          Toutes les demandes ne deviennent pas des clients. Google, lui, ne voit que la demande :
+          il traite de la même façon un vrai projet et un démarchage. En reliant votre CRM (HubSpot,
+          Salesforce, Pipedrive ou un autre outil de suivi de vos clients), on renvoie à Google Ads les
+          demandes qui ont abouti et leur valeur. C'est ce qu'on appelle les conversions hors ligne et
+          les conversions améliorées.
+        </p>
+        <!-- Illustration générée (Codex), décorative : le client signé dans le CRM revient vers l'annonce. -->
+        <img class="split-visual" src="/images/tracking/crm.webp" width="1200" height="752" alt="" loading="lazy" decoding="async" />
+      </div>
+      <div class="gains">
+        {crmGains.map((g) => (
+          <div class="gain">
+            <h3>{g.title}</h3>
+            <p>{g.text}</p>
+          </div>
+        ))}
+        <p class="gain-note">
+          Option à {crm.price}{crm.unit} sur les packs Starter et Croissance, incluse dès le pack
+          Performance. Les coordonnées sont chiffrées avant tout envoi à Google.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CE QUE ÇA COÛTE -->
+  <section class="band band--tint">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Ce que ça coûte"
+        title="Un prix fixe, connu avant de commencer."
+        text="La mesure fait partie de la mise en place quand vous nous confiez vos campagnes Google Ads."
+      />
+      <ul class="costs">
+        <li>
+          <div>
+            <h3>{setup.label}</h3>
+            <p>{setup.note}</p>
+          </div>
+          <span class="cost">{setup.price} <small>{setup.unit}</small></span>
+        </li>
+        <li>
+          <div>
+            <h3>{crm.label}</h3>
+            <p>{crm.availability}.</p>
+          </div>
+          <span class="cost">{crm.price}<small>{crm.unit}</small></span>
+        </li>
+        <li>
+          <div>
+            <h3>Mise en place seule, sans gestion des campagnes</h3>
+            <p>Prix communiqué après un premier regard sur votre site et vos outils actuels.</p>
+          </div>
+          <span class="cost">Sur devis</span>
+        </li>
+      </ul>
+      <p class="costs-more">
+        Le détail des packs est sur la page <a href="/services/google-ads#tarifs">gestion Google Ads</a>.
+      </p>
+    </div>
+  </section>
+
+  <FAQ items={faqItems} title="Vos questions sur la mesure" eyebrow="FAQ · Mesure" band="paper" />
 
   <CTA
     title="Vous savez vraiment d'où viennent vos clients ?"
@@ -123,8 +284,62 @@ const jsonLd = [
   .crumbs a:hover { color: var(--accent-on, var(--accent)); }
   .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 15em; }
   .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
+
+  /* Texte + illustration à gauche, liste à droite. */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+  .split h2, .process h2 { font-size: clamp(26px, 3vw, 38px); font-weight: 600; margin-top: 16px; }
+  .split-visual { display: block; width: 100%; max-width: 380px; height: auto; margin-top: 28px; }
+  .muted { color: var(--muted-on, var(--muted)); font-size: 16px; margin-top: 14px; max-width: 34em; }
+  .muted a { color: var(--accent-on, var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
+
+  .tracked { list-style: none; display: flex; flex-direction: column; }
+  .tracked li {
+    display: flex; gap: 12px; align-items: baseline;
+    padding: 16px 0; border-top: 1px solid var(--rule, var(--hairline));
+    font-size: 16px; color: var(--on-strong, var(--ink));
+  }
+  .tracked li:last-child { border-bottom: 1px solid var(--rule, var(--hairline)); }
+  .chk { color: var(--accent-on, var(--accent)); font-weight: 700; }
+
+  .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .proc-list { list-style: none; display: flex; flex-direction: column; }
+  .proc-list li {
+    display: flex; gap: 16px; align-items: baseline;
+    padding: 18px 0; border-top: 1px solid var(--rule, var(--hairline));
+    font-size: 16px;
+  }
+  .proc-list li:last-child { border-bottom: 1px solid var(--rule, var(--hairline)); }
+  .proc-list .no { color: var(--accent-on, var(--accent)); font-size: 13px; flex: 0 0 auto; }
+
+  .gains { display: flex; flex-direction: column; }
+  .gain { padding: 20px 0; border-top: 1px solid var(--rule, var(--hairline)); }
+  .gain:first-child { border-top: 0; padding-top: 0; }
+  .gain h3 { font-family: var(--font-display); font-size: 19px; font-weight: 600; letter-spacing: -.01em; }
+  .gain p { margin-top: 8px; font-size: 15px; color: var(--muted-on, var(--muted)); }
+  .gain-note { margin-top: 8px; padding-top: 20px; border-top: 1px solid var(--rule, var(--hairline)); font-size: 14px; color: var(--muted-on, var(--muted)); }
+
+  /* Liste de compléments, pas des cartes : aucun contour ni ombre. */
+  .costs { list-style: none; max-width: 860px; margin: 0 auto; }
+  .costs li {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 24px;
+    padding: 20px 0; border-top: 1px solid var(--rule, var(--hairline));
+  }
+  .costs li:last-child { border-bottom: 1px solid var(--rule, var(--hairline)); }
+  .costs h3 { font-family: var(--font-display); font-size: 17px; font-weight: 600; }
+  .costs p { margin-top: 6px; font-size: 14px; color: var(--muted-on, var(--muted)); max-width: 40em; }
+  .cost { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--accent-on, var(--accent)); white-space: nowrap; }
+  .cost small { font-size: 13px; font-weight: 500; color: var(--muted-on, var(--muted)); margin-left: 2px; }
+  .costs-more { text-align: center; margin-top: 22px; font-size: 14px; color: var(--muted-on, var(--muted)); }
+  .costs-more a { color: var(--accent-on, var(--accent)); font-weight: 500; text-decoration: none; }
+  .costs-more a:hover { text-decoration: underline; }
+
   @media (max-width: 900px) {
     .hero-grid { grid-template-columns: 1fr; gap: 32px; }
     .hero-visual { max-width: 300px; justify-self: start; }
+    .split, .process-grid { grid-template-columns: 1fr; gap: 36px; }
+    .split-visual { max-width: 280px; }
+  }
+  @media (max-width: 640px) {
+    .costs li { flex-direction: column; gap: 8px; }
   }
 </style>
