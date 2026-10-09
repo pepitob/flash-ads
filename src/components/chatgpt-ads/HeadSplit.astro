@@ -1,0 +1,31 @@
+---
+/**
+ * En-tête de section des pages ChatGPT Ads : titre à gauche, chapô à droite,
+ * pour ne pas laisser la moitié droite de chaque bande vide.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+}
+const { eyebrow, title } = Astro.props;
+---
+
+<div class="head-split">
+  <div>
+    <span class="eyebrow">{eyebrow}</span>
+    <h2 class="display">{title}</h2>
+  </div>
+  <p><slot /></p>
+</div>
+
+<style>
+  .head-split { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px 64px; align-items: end; margin-bottom: 44px; }
+  .head-split h2 { font-size: clamp(28px, 3.4vw, 42px); font-weight: 700; letter-spacing: -.02em; margin-top: 14px; }
+  .head-split > p { color: var(--muted-on, var(--muted)); font-size: 17px; line-height: 1.6; }
+  /* Liens dans un paragraphe : soulignés, la couleur seule ne suffit pas. */
+  .head-split :global(a) { color: var(--accent-on, var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
+
+  @media (max-width: 900px) {
+    .head-split { grid-template-columns: 1fr; gap: 32px; margin-bottom: 32px; }
+  }
+</style>

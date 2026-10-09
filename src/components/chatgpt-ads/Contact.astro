@@ -1,0 +1,31 @@
+---
+/**
+ * Section `#contact` des pages ChatGPT Ads : textes propres à l'offre, posés
+ * sur la section générique `LeadSection` (formulaire `chatgpt-ads`).
+ */
+import LeadSection from "../LeadSection.astro";
+
+interface Props {
+  eyebrow: string;
+  /** Identifiant de page : champ caché `page` et paramètre `page` du dataLayer. */
+  page: string;
+  /** Budget Google Ads et site web obligatoires (landing page). */
+  strict?: boolean;
+  /** Liens vers le reste du site dans les messages du formulaire. */
+  exitLinks?: boolean;
+}
+const { eyebrow, page, strict = false, exitLinks = true } = Astro.props;
+---
+
+<LeadSection
+  eyebrow={eyebrow}
+  title="Parlons-en avant que le tarif remonte."
+  text="Dites-nous ce que vous vendez et dans quel secteur. Nous vous répondons sous un jour ouvré et vous disons franchement si ChatGPT Ads a du sens pour votre activité, ou si votre budget est mieux placé sur Google Ads."
+  checks={[
+    "Réponse sous un jour ouvré, par e-mail ou par téléphone.",
+    "Premier échange gratuit de 15 minutes, sans engagement.",
+    "Si ChatGPT n'est pas pour vous, on vous le dit.",
+  ]}
+  visual={{ src: "/images/chatgpt-ads/eligibility.webp", width: 943, height: 849 }}
+  form={{ offer: "chatgpt-ads", page, budgetRequired: strict, siteRequired: strict, exitLinks }}
+/>

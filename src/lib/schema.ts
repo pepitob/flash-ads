@@ -9,6 +9,9 @@ import { pricingValidated, tiers, addOns } from "../data/tarifs";
 const abs = (path: string) =>
   path.startsWith("http") ? path : `${site.url}${path.startsWith("/") ? "" : "/"}${path}`;
 
+/** Identifiant stable de l'Organization : les autres schémas s'y rattachent par `@id`. */
+export const organizationId = `${site.url}/#organization`;
+
 /** Organization - injecté globalement dans le layout. */
 export function organizationSchema() {
   // Liens d'identité externes vérifiables (E-E-A-T / GEO) : réseaux sociaux (à compléter)
@@ -17,6 +20,7 @@ export function organizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": organizationId,
     name: site.name,
     legalName: site.legalName,
     url: site.url,
@@ -33,6 +37,7 @@ export function organizationSchema() {
       addressRegion: site.region,
       addressCountry: site.country,
     },
+    founder: site.founders.map((f) => ({ "@type": "Person", name: f.name, sameAs: [f.linkedin] })),
     ...(sameAs.length ? { sameAs } : {}),
   };
 }
@@ -52,7 +57,8 @@ function pricingOffers() {
       ...tiers.map((t) => ({
         "@type": "Offer",
         name: t.name,
-        description: t.forBudget,
+        // La carte telle qu'affichée : tranche de budget puis lignes de la grille.
+        description: [t.forBudget, ...t.attributes.map((a) => `${a.label} : ${a.value}`)].join(". "),
         priceCurrency: "CHF",
         // « dès X » (Sur mesure) → minPrice uniquement, jamais un prix fixe trompeur.
         ...(t.priceIsFrom ? {} : { price: t.priceValue }),
@@ -86,8 +92,12 @@ export function serviceSchema(opts: {
   url: string;
   serviceType?: string;
   withPricing?: boolean;
+  /** Remplace la zone par défaut (ex. cantons romands pour un service local). */
+  areaServed?: unknown;
+  /** Offres propres au service, quand elles ne viennent pas de la grille Google Ads. */
+  offers?: unknown;
 }) {
-  const offers = opts.withPricing ? pricingOffers() : undefined;
+  const offers = opts.offers ?? (opts.withPricing ? pricingOffers() : undefined);
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -95,8 +105,8 @@ export function serviceSchema(opts: {
     serviceType: opts.serviceType ?? opts.name,
     description: opts.description,
     url: abs(opts.url),
-    provider: { "@type": "Organization", name: site.name, url: site.url },
-    areaServed: ["Suisse romande", "Suisse", "France", "Belgique"],
+    provider: { "@type": "Organization", "@id": organizationId, name: site.name, url: site.url },
+    areaServed: opts.areaServed ?? ["Suisse romande", "Suisse", "France", "Belgique"],
     audience: { "@type": "Audience", audienceType: "PME" },
     ...(offers ? { offers } : {}),
   };
@@ -123,7 +133,12 @@ export function toolSchema(opts: { name: string; description: string; url: strin
   };
 }
 
-export type FaqItem = { question: string; answer: string };
+export type FaqItem = {
+  question: string;
+  answer: string;
+  /** Lien affiché sous la réponse visible. Hors JSON-LD : ce n'est pas du texte de réponse. */
+  link?: { href: string; label: string };
+};
 
 /** FAQPage - toutes les FAQ (clé pour le GEO). */
 export function faqSchema(items: FaqItem[]) {

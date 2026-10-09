@@ -5,9 +5,18 @@
  * Prix fixes et publics : CTA « Choisir [pack] » → /contact?pack=<id>
  * (pré-sélection du budget dans le formulaire). Seul « Sur mesure » invite
  * à l'échange. Un lien Stripe configuré remplace le lien contact.
+ *
+ * `inPage` : la page porte son propre formulaire `#contact` (Gestion Google
+ * Ads). Les CTA y pointent (`?pack=<id>#contact`), qui pré-remplit le pack.
  */
 import AddOnsTable from "./AddOnsTable.astro";
 import { tiers, pricingNotes, specialCampaignsNote } from "../data/tarifs";
+
+interface Props {
+  inPage?: boolean;
+}
+const { inPage = false } = Astro.props;
+const packHref = (id: string) => (inPage ? `?pack=${id}#contact` : `/contact?pack=${id}`);
 ---
 
 <div class="price-grid">
@@ -31,7 +40,7 @@ import { tiers, pricingNotes, specialCampaignsNote } from "../data/tarifs";
         </div>
         <div class="price-cta">
           <a
-            href={tier.stripeLink || `/contact?pack=${tier.id}`}
+            href={tier.stripeLink || packHref(tier.id)}
             class:list={["btn", tier.featured ? "btn-primary" : "btn-ghost"]}
             rel={tier.stripeLink ? "nofollow" : undefined}
           >

@@ -35,8 +35,8 @@ Comprendre ces flux transversaux avant d'éditer :
   Breadcrumb). `BaseLayout` injecte `organizationSchema()` **globalement** ; les pages ajoutent
   leurs schémas via la prop `jsonLd`. Le composant `FAQ.astro` émet **lui-même** son `FAQPage`
   (ne pas le dupliquer dans `jsonLd`).
-- **Sources de données uniques** (`src/data/`) : `site.ts` (identité, coordonnées, nav →
-  alimente footer + meta + Organization schema), `tarifs.ts` (**seul** endroit pour les prix,
+- **Sources de données uniques** (`src/data/`) : `site.ts` (identité, coordonnées, nav, associés
+  et leurs LinkedIn → alimente footer + meta + Organization schema, dont `founder`, et les badges de `/agence`), `tarifs.ts` (**seul** endroit pour les prix,
   répercuté home + page Google Ads), `temoignages.ts` (preuves/logos). Éditer la donnée, pas les pages.
 - **Content Collections** (`src/content.config.ts`, schémas Zod) : `blog/` (articles MD/MDX,
   schema Article + dates auto) et `cas-clients/` (réservée ; les cas sont actuellement inline
@@ -51,23 +51,72 @@ Comprendre ces flux transversaux avant d'éditer :
   fichiers est neutralisé à l'affichage par `mix-blend-mode: multiply` : ne pas détourer les
   blancs, cela percerait les blancs intérieurs des logos. Ajouter un logo = déposer le WebP
   traité et compléter `clientLogos` dans `src/data/temoignages.ts`.
-- **Formulaires** : devis (`/contact`) et demande d'accès ChatGPT Ads
-  (`/services/chatgpt-ads`), tous deux via **Netlify Forms**. Plus aucune dépendance Formspree.
-- **Mesure d'audience** : Google Tag Manager, injecté par `BaseLayout.astro` depuis `site.gtmId`
-  (snippet en tête de `<head>`, `noscript` juste après `<body>`). Le `is:inline` est indispensable :
-  sans lui Astro en ferait un module différé, ce que GTM ne supporte pas. Le `dataLayer` qu'il crée
+- **Visuels de `/services/chatgpt-ads`** (`public/images/chatgpt-ads/`) : `phone.webp` (conversation +
+  annonce, hero) et `admanager.webp` (carte d'annonce de l'Ads Manager) sont des **visuels OpenAI**
+  (ads.openai.com), détourés de leur fond vert d'eau et recadrés dans un cadre navy ; la légende
+  « Visuel : OpenAI » doit rester sous chacun. `compare-google.webp`, `compare-chatgpt.webp` et `eligibility.webp` sont des
+  illustrations générées (Codex) au style du système (aplats, trait navy, ombre décalée nette),
+  décoratives (`alt` vide). L'ombre décalée des images détourées passe par
+  `filter: drop-shadow(Npx Npx 0 var(--edge))`, sans flou, pour suivre leur silhouette.
+- **Pages ChatGPT Ads : une page indexée, une landing page, mêmes blocs.** `/services/chatgpt-ads`
+  (indexée) et `/lp/publicite-chatgpt` (trafic payant Google Ads ET LinkedIn Ads) sont assemblées
+  avec les composants de `src/components/chatgpt-ads/` (Hero, Offer, Format, Sectors, WhyNow,
+  Compare, TestSteps, Contact, HeadSplit, MobileCtaBar). Textes partagés (libellés d'action,
+  comparatif, étapes du test, FAQ) dans `src/data/chatgpt-ads.ts`, prix dans `tarifs.ts`, secteurs
+  dans `chatgpt-secteurs.ts` : **un bloc qui existe sur la page service s'importe, il ne se recode
+  pas**, et une correction faite à la source vaut pour les deux pages. La FAQ de la landing est un
+  filtre par identifiant (`faqById`). Libellés d'action uniques : boutons `Tester ChatGPT Ads →`,
+  envoi `Demander mon audit gratuit →` (`cta` dans `chatgpt-ads.ts`). La landing utilise
+  `src/layouts/LandingLayout.astro` : mêmes `<head>`, polices et GTM, mais logo non cliquable, sans
+  menu, un seul bouton (vers `#contact`), pied de page réduit, `noindex, nofollow`, **aucun JSON-LD** (`<FAQ schema={false}>`)
+  et exclusion du sitemap (`/lp/` dans `astro.config.mjs`). **Aucune sortie** sur la landing, hors
+  liens légaux, lien « packs Google Ads » du message « pas possible » et sources externes voulues
+  (note Google, badge Partner, documentation et règles d'OpenAI). Ma Porte Sàrl ne figure plus nulle part sur le site (ni avis, ni logo) : ne pas le réintroduire.
+  Les chiffres de sa section Preuves sont ceux de la home (`resultCases`, composant
+  `ResultCases.astro`), présentés comme résultats **Google Ads**, jamais ChatGPT.
+- **Formulaires** : devis (`/contact`), demande d'accès ChatGPT Ads
+  (`/services/chatgpt-ads` et `/lp/publicite-chatgpt`) et audit Google Ads (`#contact` de
+  `/services/google-ads`), tous via **Netlify Forms**. Plus aucune
+  dépendance Formspree.
+- **Mesure d'audience** : Google Tag Manager, injecté par `src/components/seo/Gtm.astro` (posé par
+  `BaseLayout` et `LandingLayout`) depuis `site.gtmId` (snippet en tête de `<head>`, `noscript`
+  juste après `<body>`). Le `is:inline` est indispensable : sans lui Astro en ferait un module
+  différé, ce que GTM ne supporte pas. Les snippets sont construits dans le frontmatter : écrits en
+  ligne dans le gabarit, le compilateur Astro casse sur le gabarit littéral imbriqué. Le `dataLayer` qu'il crée
   est le même que celui où le site pousse ses événements, exploitables comme déclencheurs dans le
   conteneur sans code supplémentaire : le calculateur émet `calc_start`, `calc_result`,
-  `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent un **unique**
-  `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis` ou
-  `chatgpt-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
+  `calc_floor_hit`, `calc_low_margin` et `calc_pack_click` ; les formulaires émettent tous un
+  `form_submit`, le formulaire concerné étant porté par le paramètre `form_name` (`devis`,
+  `chatgpt-ads` ou `audit-google-ads`, lu sur l'attribut `name` du `<form>`, donc jamais dupliqué). Ne pas repartir sur un
   événement par formulaire : une seule balise de conversion suffit, la condition se met sur le
-  paramètre. **Côté GTM, brancher la conversion sur l'événement personnalisé `form_submit`, jamais
+  paramètre. **La conversion est `generate_lead`, émis par les trois formulaires** juste après
+  `form_submit` (qui reste un simple événement de suivi : ne jamais compter les deux, sinon le
+  lead est compté deux fois). **Côté GTM, la brancher sur l'événement personnalisé, jamais
   sur le déclencheur « Form Submission » intégré** : celui-ci écoute l'événement natif `submit` et
   se déclenche donc à CHAQUE tentative, y compris celles refusées par la validation et celles dont
-  la requête échoue. Notre `form_submit`, lui, n'est poussé qu'après acceptation par Netlify. Les
-  deux formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
-  donc ni deux leads ni deux conversions.
+  la requête échoue. Nos événements, eux, ne sont poussés qu'après acceptation par Netlify. Les
+  formulaires posent un verrou (bouton désactivé pendant l'envoi) : un double clic ne produit
+  donc ni deux leads ni deux conversions. Tous passent par `push()` de `src/lib/lead-track.ts`,
+  qui ajoute à chaque événement `page` (`contact`, `services-chatgpt-ads`, `lp_chatgpt` ou
+  `service_google_ads`, lu sur `data-track-page` du formulaire) et `source_trafic` (`google` si
+  `gclid` ou `utm_source=google`, `linkedin` si `li_fat_id` ou `utm_source=linkedin`, sinon
+  `autre` : les campagnes LinkedIn doivent donc toujours porter `utm_source=linkedin`).
+  `generate_lead` porte `form` (`devis`, `service_chatgpt` sur la page service ChatGPT, valeur
+  historique déjà branchée, `lp_chatgpt` ou `google_ads`) puis, selon le formulaire : `budget`
+  et `pack` (devis et audit Google Ads, mêmes tranches `moins-500` … `plus-15000`),
+  `compte_existant` (audit Google Ads), `secteur`, `eligibilite` et `budget_google` (ChatGPT).
+  Pages ChatGPT : `eligibility_check` au choix d'un secteur (`source` = `selecteur` |
+  `formulaire`, `secteur`, `eligibilite` = `ouvert` | `validation` | `impossible` | `autre`).
+  **Aucun suivi des clics de boutons** (`cta_click` retiré à la demande de l'agence : ne pas le
+  réintroduire). Le tag LinkedIn Insight se pose dans GTM, pas dans le code.
+  **Données personnelles : uniquement dans `user_data` de `generate_lead`** (`userData()` de
+  `lead-track.ts` : `email` en minuscules, `phone_number` en E.164 `+41…`, `address.first_name`,
+  `address.last_name` et `address.country = CH` tirés du champ unique « Prénom et nom »), pour
+  les **conversions améliorées** Google Ads. Jamais dans un autre événement ni en paramètre à plat.
+  Dans GTM : variable « Données fournies par l'utilisateur » liée à la balise de conversion,
+  **jamais mappées en paramètre GA4** (les données personnelles y sont interdites), et soumises
+  au consentement `ad_user_data` (Consent Mode v2, bandeau à poser). La politique de
+  confidentialité mentionne cette transmission hachée.
 - **Calculateur de budget** (`/calculateur-budget`) : un seul moteur pur, `src/lib/calculator.ts`,
   appelé au build (rendu statique de l'état par défaut : SEO, pas de layout shift, résultat lisible
   sans JS) puis repris par l'îlot client de `src/components/calculator/BudgetCalculator.astro`.
@@ -111,6 +160,73 @@ Comprendre ces flux transversaux avant d'éditer :
   valeur déduite dès qu'on touche à la marge ou au réachat. Les 18 marges de `defaults.json` sont des estimations à valider. Le composant accepte `variant="compact"` pour être posé dans une section d'une
   page existante. Mode expert : `?pro=1` ou le bouton en bas (outil de vente, non indexé via le
   canonique sans paramètre).
+
+## Visuels générés (Codex)
+
+Les illustrations du site (ex. `public/images/chatgpt-ads/compare-chatgpt.webp` et `eligibility.webp`)
+et celles des autres pages (`home/problem.webp` + `home/solution.webp` dans le diptyque de la
+home, `agence/hero.webp`, `tracking/hero.webp`, `calculateur/hero.webp` en colonne droite du hero,
+`contact/envoi.webp` sous la liste de réassurance, masquée sur mobile ; `google-ads/channels.webp` en
+sixième case de la grille « Ce que nous gérons », `google-ads/audit.webp` et `home/questions.webp`
+dans la colonne d'intro de la FAQ via son slot, `tracking/verification.webp` et `tracking/crm.webp`
+sous le texte des sections « Ce qu'on compte » et « Connexion CRM » ; les décors de grille et de FAQ
+sont masqués sous 900px)
+sont générées par l'outil de génération d'images de **Codex CLI** (fonctionnalité
+`image_generation`, active par défaut), puis retouchées avec ImageMagick. Méthode validée :
+
+1. Écrire le prompt dans un fichier, dans un dossier de travail **hors du dépôt** (scratchpad),
+   puis lancer Codex en non interactif :
+   `codex exec --skip-git-repo-check --sandbox workspace-write -C <dossier> - < prompt.txt`.
+   Lui demander d'enregistrer les PNG **sous des noms précis dans le dossier courant** et de ne
+   rien faire d'autre. Compter quelques minutes pour deux images.
+2. Le prompt reprend toujours ce bloc de direction artistique, sans le modifier, suivi d'une
+   description par image (composition, objets, accents) :
+
+   ```text
+   - Flat vector illustration, editorial and minimal, lots of breathing room.
+   - TRANSPARENT background (no backdrop, no floor, no scene).
+   - Every object: solid white (#FFFFFF) fill, crisp 3px dark navy outline (#161A28).
+   - Relief ONLY via a hard flat offset shadow: a solid navy (#161A28) copy of the shape shifted
+     down-right by a few pixels. Absolutely no blur, no soft shadow, no gradient, no glow, no 3D,
+     no texture, no glassmorphism.
+   - Accent colors used sparingly as flat fills: electric blue #2563FF and pink #FF2E8B.
+     Light tint #EEF3FF allowed for secondary surfaces.
+   - Corners nearly square (small 4px radius), except pill-shaped buttons/badges.
+   - NO readable text, no letters, no numbers, no logos, no brand marks. Represent text with
+     simple grey/navy horizontal lines.
+   - Landscape 3:2, 1536x1024.
+   ```
+
+   « Aucun texte » est indispensable : le texte généré sort avec des fautes, et un logo ou une
+   marque inventée n'a rien à faire sur le site.
+3. Vérifier la transparence (`magick f.png -format "%[pixel:p{3,3}]" info:` doit donner
+   `srgba(0,0,0,0)`), puis rogner, aérer et convertir :
+   `magick f.png -trim +repage -bordercolor none -border 8 -resize '1200x1200>' -quality 88 f.webp`.
+4. Les déposer dans `public/images/<page>/` et les poser en `<img>` avec `width`/`height` réels
+   (pas de décalage de mise en page), `loading="lazy"` hors du hero, et `alt=""` : elles sont
+   décoratives, le texte voisin porte le sens. Une illustration se place **dans le flux d'une
+   colonne de texte** (sous un chapô, à côté d'une liste), jamais seule à hauteur d'un titre.
+
+Photos de l'équipe (`public/images/equipe/`) : `hippo.webp` et `karim.webp` (portraits 560x700,
+cadrés à mi-poitrine, affichés à 220px de large dans les cartes associés de `/agence`) et `duo.webp`
+(1000x667, section valeurs) sont générées par Codex à partir de photos réelles des deux associés,
+toutes en noir et blanc, même fond gris studio, même pull sombre. Elles sont volontairement
+adoucies pour ne pas faire « IA » : `-gaussian-blur 0x0.7 -level 4%,98% -attenuate 0.35 +noise
+Gaussian`, qualité 78. Une nouvelle photo doit reprendre ce traitement et ces proportions (tête
+d'environ 28 % de la hauteur, épaules entières).
+Simple filet `--rule`, jamais d'ombre décalée (hors liste fermée).
+
+Images tierces détourées (ex. visuels OpenAI) : on recadre sur la surface utile, on masque la
+silhouette (`roundrectangle` + `CopyOpacity`), on remplace leur fond ou leur cadre par un trait
+`#161a28` intégré à l'image, et l'ombre décalée vient du CSS
+(`filter: drop-shadow(Npx Npx 0 var(--edge))`). Source toujours légendée.
+
+## Polices
+
+Space Grotesk et Inter sont importées par `global.css` (`@fontsource-variable`) et **préchargées**
+par `src/components/seo/FontPreload.astro` (posé par les deux layouts). Sans ce préchargement, le
+H1 change de largeur au remplacement de la police de secours et décale tout l'en-tête (CLS 0,2
+mesuré sur les pages ChatGPT Ads, 0,001 avec).
 
 ## Animations d'apparition
 
@@ -161,6 +277,17 @@ jamais un seuil élevé.
   bande (header). Un îlot clair posé sur une bande sombre prend `.surface-paper`,
   qui redéclare ces variables pour lui-même. Sur midnight : texte blanc ou
   `--fa-slate-light`, accent `--fa-blue-light`, jamais `--fa-blue`.
+  **Contraste du texte, partout ≥ 4,5:1** : les gris de texte sont `--muted`
+  `#5c637d` et `--faint` `#666d87`, valables sur blanc, offwhite et tint. Tout
+  texte rose (eyebrows, chiffres d'accent) lit `--fa-pink-text` `#c60061`
+  (5,88:1 sur blanc) : le rose vif `#ff2e8b` ne tient que 3,49:1 et reste
+  réservé aux formes (coches, points « en direct », badges à texte navy,
+  filets). Le bleu `#2563ff` tient sur blanc (4,88:1) mais pas sur tint
+  (4,39:1), où la bande lit `--fa-blue-on-tint` `#2259f0`. La bande night garde
+  le rose vif et `--fa-blue-light`, lisibles sur midnight. Ne jamais écrire
+  `var(--fa-blue)` ou `var(--fa-pink)` pour du texte dans un composant : lire
+  `--accent-on` / `--eyebrow-on`. Seule exception : le mot « Ads » du logo
+  (`Brand.astro`, `--fa-slate`), logotype exempté par le WCAG.
   Règle d'assemblage d'une page : hero en `tint`, puis alternance
   `paper` / `tint`, FAQ (`<FAQ band="paper|tint">`, `tint` par défaut) réglée
   pour que l'alternance reste juste, puis CTA et pied de page en `night`. Jamais
@@ -195,7 +322,8 @@ jamais un seuil élevé.
   **Liste fermée de ce qui porte le traitement** : boutons primaires et
   secondaires, les 4 cartes de tarifs (la vedette en `--shadow-edge-lg`), les 3
   cartes de services, l'aperçu d'annonce du hero, le badge Google Partner (sauf
-  dans le pied de page) et l'item de FAQ **ouvert** uniquement.
+  dans le pied de page), l'item de FAQ **ouvert** et la carte de secteur
+  **choisie** dans le sélecteur de la landing ChatGPT Ads, uniquement.
   **Ce qui ne le porte pas, volontairement** : les témoignages (filet 1px
   `--rule`, rien d'autre), la grille « Pourquoi nous choisir » (lignes de
   grille seules, ni boîte ni pastille d'icône), les tuiles de chiffres et les
@@ -211,13 +339,19 @@ jamais un seuil élevé.
   Résultats** (home + page Publicité Google) sont en revanche des ordres de grandeur
   d'illustration décidés par l'agence, à remplacer par des mesures réelles dès qu'elles sont
   disponibles : ce sont des allégations publicitaires (LCD art. 3). Ne jamais inventer d'avis
-  client ni de prix. Plus aucun marqueur `⚠️ PLACEHOLDER` ne doit apparaître sur le site.
+  client ni de prix. La note Google (`GoogleRating.astro` : logo G, 5 étoiles, note, « Avis vérifiés »)
+  figure dans le hero de chaque page principale ; le **nombre d'avis n'est pas affiché** tant
+  qu'il reste faible (choix de l'agence, `googleReviews.count` conservé dans les données). Plus aucun marqueur `⚠️ PLACEHOLDER` ne doit apparaître sur le site.
 - **Cohérence des prix** : `src/data/tarifs.ts` est la seule source (répercutée home, page
   Google Ads, `/pricing.txt`, JSON-LD), mais si un montant change il change **partout** :
   grille, FAQ home + Google Ads, formulaire de contact, CGV, `llms.txt`, article de blog
   budget, et `budgetRange` de chaque pack (consommé par le calculateur).
   Prix validés (`pricingValidated: true`, brief pricing 2026-08). Un `stripeLink`
-  vide = le CTA du pack renvoie vers `/contact?pack=<id>` (pré-sélection du budget).
+  vide = le CTA du pack renvoie vers `/contact?pack=<id>` (pré-sélection du budget), sauf sur
+  `/services/google-ads` (`<PricingGrid inPage>`) où il pointe vers `?pack=<id>#contact`, le
+  formulaire de la page. Grille simplifiée (08.10.2026) : canaux, campagnes spéciales, reporting,
+  engagement, plus « Inclus » dès Performance ; langues, CRM et point de suivi en options, aucun
+  délai de support affiché.
 - **ChatGPT Ads** : offre séparée (`chatgptAds` dans `tarifs.ts`), un seul pack tout compris, sans
   rapport avec la grille Google Ads qui se choisit sur le budget. Le tarif de lancement est une
   **remise à durée limitée** : 240.-/mois et 150.- de setup jusqu'au 31.12.2026, puis 480.-/mois et
@@ -276,9 +410,28 @@ sans redirection), ce qui impose trois choses à ne pas casser : poster sur un c
 le champ caché `form-name` qui route la soumission. Anti-spam : honeypot Netlify
 (`netlify-honeypot="bot-field"`).
 
-**Demande d'accès ChatGPT Ads (`/services/chatgpt-ads`) : Netlify Forms** également,
-`name="chatgpt-ads"` (`EarlyBirdForm.astro`). Mêmes contraintes que ci-dessus. Les deux formulaires
-doivent apparaître dans « Forms » côté Netlify après le déploiement.
+**Audit ChatGPT Ads (`#contact` de `/services/chatgpt-ads` et de `/lp/publicite-chatgpt`) :
+Netlify Forms** également, `name="chatgpt-ads"` (`LeadForm.astro offer="chatgpt-ads"`), le même formulaire sur
+les deux pages. Mêmes contraintes que ci-dessus. **Netlify ne garde qu'une définition par nom** :
+les deux pages doivent porter exactement les mêmes champs, seuls changent la valeur du champ caché
+`page` (`services-chatgpt-ads` / `lp_chatgpt`) et le caractère obligatoire du budget Google Ads et
+du site web (obligatoires sur la landing seulement, prop `strict` de `Contact`). Champ secteur
+obligatoire ; champs cachés `page`, `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`,
+`utm_term`, `gclid` et `li_fat_id` remplis depuis l'URL, sans aucun stockage navigateur. Les
+secteurs et leur statut viennent de `src/data/chatgpt-secteurs.ts`, **seule source** partagée avec
+les cartes « Votre secteur peut-il diffuser ? » de la page : une règle d'OpenAI qui change se
+corrige là. Un secteur fermé affiche un message (avec un lien Google Ads sur la page service seulement)
+mais **ne bloque jamais l'envoi** ; un budget « Aucun » affiche lui aussi un message sans bloquer.
+Sur la landing, le sélecteur de la section secteurs pré-remplit ce champ. Les deux formulaires doivent apparaître dans « Forms » côté Netlify après le déploiement.
+
+**Audit Google Ads (`#contact` de `/services/google-ads`) : Netlify Forms**, `name="audit-google-ads"`
+(`LeadForm.astro offer="google-ads"`, section `LeadSection.astro`). Nom distinct du formulaire
+ChatGPT parce que les champs diffèrent (une définition par nom chez Netlify). Champs : nom*,
+e-mail*, téléphone, entreprise, site web*, `budget`* (tranches alignées sur `budgetRange`),
+`compte_google`, message, plus les champs cachés `pack` (depuis `?pack=`), `page=service_google_ads`,
+UTM, `gclid`, `li_fat_id`. Le message sous le budget (pack conseillé, plancher de 500.-, lien vers
+le calculateur) vient de `tarifs.ts` et ne bloque jamais l'envoi. `generate_lead` y porte `form:
+'google_ads'`, `budget`, `pack` (cliqué, sinon conseillé), `compte_existant` et `user_data`.
 
 **Si des soumissions n'arrivent plus.** La détection ne tourne qu'au moment du build : toute
 modification d'un formulaire (champ renommé, nouveau formulaire, balise changée) exige un
@@ -305,7 +458,7 @@ resterait possible, mais il faudrait rebrancher ce formulaire. Définir l'URL de
 - [ ] Coller les **liens de paiement Stripe** par pack (`stripeLink` dans `src/data/tarifs.ts`).
 - [ ] Remplacer les **chiffres de la section Résultats** (home + page Publicité Google) par des
       mesures réelles : ce sont aujourd'hui des ordres de grandeur d'illustration.
-- [ ] Compléter les **bios des associés** (`src/pages/agence.astro`).
+- [ ] Compléter les **bios des associés** (`src/pages/agence.astro`) : photos et prénoms en place, bios encore génériques.
 - [ ] Compléter **mentions légales** et **politique de confidentialité** (IDE, hébergeur, juriste).
 - [ ] Mettre en place le **bandeau de consentement** avant la mise en ligne : Google Tag Manager
       (`site.gtmId`) est chargé sur toutes les pages, la politique de confidentialité l'annonce et

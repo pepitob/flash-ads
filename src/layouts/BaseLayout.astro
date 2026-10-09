@@ -1,10 +1,11 @@
 ---
 import "../styles/global.css";
 import SEOHead from "../components/seo/SEOHead.astro";
+import Gtm from "../components/seo/Gtm.astro";
+import FontPreload from "../components/seo/FontPreload.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { organizationSchema } from "../lib/schema";
-import { site } from "../data/site";
 
 interface Props {
   title: string;
@@ -29,17 +30,8 @@ const allSchemas = [organizationSchema(), ...jsonLd];
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    {/* Google Tag Manager. `is:inline` est indispensable : sans lui, Astro
-        transformerait ce snippet en module différé et il ne serait plus chargé
-        en tête, ce que GTM demande. `dataLayer` est aussi le canal des
-        événements du calculateur (calc_start, calc_result, calc_pack_click). */}
-    {site.gtmId && (
-      <script is:inline set:html={`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${site.gtmId}');`} />
-    )}
+    <Gtm part="head" />
+    <FontPreload />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <SEOHead
@@ -53,13 +45,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     />
   </head>
   <body>
-    {/* Google Tag Manager (noscript), juste après l'ouverture du body. */}
-    {site.gtmId && (
-      <noscript
-        set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${site.gtmId}"
-height="0" width="0" style="display:none;visibility:hidden"></iframe>`}
-      />
-    )}
+    <Gtm part="body" />
 
     <Header />
     <main id="main">

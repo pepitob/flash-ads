@@ -13,8 +13,10 @@ interface Props {
    * `card` (défaut) : encadré, pour une réponse posée au fil d'un article.
    * `lead` : sans cadre, titre à gauche et réponse à droite, quand le bloc
    * ouvre une section et n'a donc rien à se détacher de.
+   * `stack` : sans cadre, question puis réponse en pleine largeur, en chapô de
+   * grand corps.
    */
-  variant?: "card" | "lead";
+  variant?: "card" | "lead" | "stack";
 }
 const { question, as = "h2", variant = "card" } = Astro.props;
 const Heading = as;
@@ -59,7 +61,18 @@ const Heading = as;
   }
   .answer.lead .answer-body :global(p) { font-size: 18px; line-height: 1.75; }
 
+  /* Variante empilée : la question tient lieu de titre de section, la réponse
+     suit en pleine largeur, en chapô de grand corps. */
+  .answer.stack { background: none; border: 0; padding: 0; margin: 0; }
+  .answer.stack .answer-q { font-size: clamp(28px, 3.4vw, 42px); font-weight: 700; letter-spacing: -.02em; margin: 14px 0 0; }
+  .answer.stack .answer-body { margin-top: 24px; }
+  .answer.stack .answer-body :global(p) { font-size: clamp(19px, 1.9vw, 23px); line-height: 1.6; color: var(--on, var(--body)); text-wrap: pretty; }
+  .answer.stack .answer-body :global(b) { color: var(--on-strong, var(--ink)); font-weight: 600; }
+
   @media (max-width: 900px) {
     .answer.lead { grid-template-columns: 1fr; gap: 18px; }
+  }
+  @media (max-width: 640px) {
+    .answer.stack .answer-body { margin-top: 18px; }
   }
 </style>

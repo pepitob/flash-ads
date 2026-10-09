@@ -1,0 +1,107 @@
+---
+/**
+ * En-tête des pages ChatGPT Ads (page service et landing page).
+ * Le sous-titre passe par le slot par défaut : chaque page parle à son public,
+ * le reste (H1, visuel, note Google) est commun.
+ */
+import GooglePartnerBadge from "../GooglePartnerBadge.astro";
+import GoogleRating from "../GoogleRating.astro";
+import { cta } from "../../data/chatgpt-ads";
+
+interface Props {
+  eyebrow: string;
+  /** Lien secondaire à côté du bouton. */
+  link: { href: string; label: string };
+  /** Fil d'Ariane et date de mise à jour : page indexée seulement. */
+  crumbs?: boolean;
+  updated?: { iso: string; label: string };
+  /** Puces de réassurance sous la note Google. */
+  points?: string[];
+}
+const { eyebrow, link, crumbs = false, updated, points = [] } = Astro.props;
+---
+
+<section class="page-hero band band--tint">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      {crumbs && (
+        <nav class="crumbs mono" aria-label="Fil d'Ariane">
+          <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité ChatGPT</span>
+        </nav>
+      )}
+      <span class="eyebrow"><span class="live-dot" aria-hidden="true"></span>{eyebrow}</span>
+      <h1 class="display">Agence <span class="flash-word">ChatGPT Ads</span> en Suisse romande</h1>
+
+      <p class="hero-lead"><slot /></p>
+
+      <div class="hero-cta">
+        <a href="#contact" class="btn btn-primary">{cta.label} <span class="arrow" aria-hidden="true">→</span></a>
+        <a href={link.href} class="hero-link">{link.label}</a>
+      </div>
+      <p class="hero-note">{cta.note}</p>
+
+      <div class="hero-trust">
+        <GooglePartnerBadge height={52} />
+        <GoogleRating />
+      </div>
+      {points.length > 0 && (
+        <ul class="hero-points">
+          {points.map((p) => <li>{p}</li>)}
+        </ul>
+      )}
+      {updated && <p class="updated">Mis à jour le <time datetime={updated.iso}>{updated.label}</time></p>}
+    </div>
+
+    <figure class="hero-visual">
+      <div class="phone-wrap">
+        <img
+          src="/images/chatgpt-ads/phone.webp"
+          width="492"
+          height="1043"
+          alt="Conversation ChatGPT sur la construction d'une clôture de jardin, suivie d'une annonce sponsorisée pour un panneau brise-vue en cèdre."
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+      <figcaption>Exemple d'annonce dans ChatGPT. Visuel : OpenAI.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .page-hero { padding: 56px 0 72px; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 64px; align-items: center; }
+  .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
+  .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
+  .crumbs a:hover { color: var(--accent-on, var(--accent)); }
+  .page-hero h1 { font-size: clamp(36px, 5vw, 60px); font-weight: 700; line-height: 1.04; letter-spacing: -.03em; margin: 16px 0 26px; max-width: 12em; }
+  .hero-cta { display: flex; align-items: center; gap: 14px 26px; margin-top: 28px; flex-wrap: wrap; }
+  .hero-link { font-family: var(--font-display); font-weight: 600; font-size: 15px; color: var(--on-strong, var(--ink)); text-underline-offset: 4px; }
+  .hero-link:hover { color: var(--accent-on, var(--accent)); }
+  .hero-note { font-size: 13.5px; color: var(--muted-on, var(--muted)); margin-top: 14px; }
+  .hero-lead { font-size: clamp(18px, 1.6vw, 21px); line-height: 1.5; color: var(--on, var(--body)); max-width: 26em; }
+  .hero-lead :global(b) { color: var(--on-strong, var(--ink)); font-weight: 600; white-space: nowrap; }
+  .hero-trust { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 20px; margin-top: 36px; }
+  /* Mêmes coches roses que la liste de la section contact. */
+  .hero-points { list-style: none; margin-top: 22px; display: grid; gap: 4px; }
+  .hero-points li { font-size: 15px; color: var(--on-strong, var(--ink)); padding: 4px 0 4px 28px; position: relative; }
+  .hero-points li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 12px; height: 7px; border-left: 2px solid var(--fa-pink); border-bottom: 2px solid var(--fa-pink); transform: rotate(-45deg); }
+  .updated { font-size: 12px; color: var(--muted-on, var(--muted)); margin-top: 18px; }
+
+  .hero-visual { display: flex; flex-direction: column; align-items: center; }
+  .phone-wrap { position: relative; width: min(100%, 330px); }
+  /* Objet héros : le trait est dans l'image, l'ombre décalée nette suit sa
+     silhouette (drop-shadow sans flou), dans la couleur --edge de la bande. */
+  .phone-wrap img { display: block; width: 100%; height: auto; filter: drop-shadow(7px 7px 0 var(--edge)); }
+  .hero-visual figcaption { font-size: 12px; color: var(--muted-on, var(--muted)); margin-top: 18px; }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+    .phone-wrap { width: min(100%, 280px); }
+  }
+  @media (max-width: 640px) {
+    .page-hero { padding-top: 40px; }
+    .hero-visual { padding-left: 0; }
+    .phone-wrap { width: min(100%, 250px); }
+  }
+</style>

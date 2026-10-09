@@ -1,19 +1,54 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import AnswerBlock from "../../components/AnswerBlock.astro";
+import AdPreview from "../../components/AdPreview.astro";
 import PricingGrid from "../../components/PricingGrid.astro";
-import CaseStudyCard from "../../components/CaseStudyCard.astro";
+import ResultCases from "../../components/ResultCases.astro";
+import Testimonials from "../../components/Testimonials.astro";
 import SectionHead from "../../components/SectionHead.astro";
 import GooglePartnerBadge from "../../components/GooglePartnerBadge.astro";
+import GoogleRating from "../../components/GoogleRating.astro";
 import FAQ from "../../components/FAQ.astro";
-import CTA from "../../components/CTA.astro";
-import { ui } from "../../i18n/fr";
+import LeadSection from "../../components/LeadSection.astro";
+import { googleReviews } from "../../data/temoignages";
 import { serviceSchema, breadcrumbSchema, type FaqItem } from "../../lib/schema";
 
-const title = "Gestion de campagnes Google Ads en Suisse romande | Flash Ads";
+/* Mot-clé principal : « gestion google ads » (l'accueil garde « agence google ads »). */
+const title = "Gestion Google Ads pour PME en Suisse romande | Flash Ads";
 const description =
-  "Flash Ads gère vos campagnes Google Ads pour vous amener plus de clients : packs fixes et publics dès 390.-/mois, 0% de commission sur votre budget. Google Partner en Suisse romande.";
+  "Gestion Google Ads pour PME en Suisse romande : prix affichés dès 390.-/mois, 0 % de commission sur votre budget. Agence Google Partner. Audit gratuit.";
 const path = "/services/google-ads";
+/** Identifiant de page : champ caché `page` du formulaire et paramètre `page` du dataLayer. */
+const trackPage = "service_google_ads";
+
+/** Ce que nous gérons : cinq blocs, icône + titre + deux phrases. */
+const managed = [
+  {
+    title: "Annonces sur la recherche Google (Search)",
+    text: "Vos annonces s'affichent quand quelqu'un cherche votre service, par exemple « menuisier Sion » ou « dentiste Lausanne ». C'est le canal le plus direct : la personne cherche déjà ce que vous offrez.",
+    icon: '<circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" />',
+  },
+  {
+    title: "Shopping et Merchant Center",
+    text: "Vos produits apparaissent avec photo et prix dans Google. On configure votre flux produits et on pilote les campagnes selon vos marges.",
+    icon: '<path d="M6 7h12l-1 13H7L6 7z" /><path d="M9 7a3 3 0 016 0" />',
+  },
+  {
+    title: "Performance Max",
+    text: "Une campagne qui diffuse sur tout Google (recherche, YouTube, Gmail, Maps) à partir de vos visuels et textes. Utile quand le suivi des conversions est solide, risquée sans.",
+    icon: '<path d="M12 3l9 5-9 5-9-5 9-5z" /><path d="M3 13l9 5 9-5" />',
+  },
+  {
+    title: "Display et remarketing",
+    text: "Des bannières pour rappeler votre entreprise aux personnes qui ont déjà visité votre site. Un complément, rarement un point de départ.",
+    icon: '<rect x="3" y="4" width="18" height="13" rx="1" /><path d="M8 21h8M12 17v4" />',
+  },
+  {
+    title: "Suivi des conversions",
+    text: "Appels, formulaires, demandes de devis : on installe de quoi savoir ce que chaque franc rapporte. Sans ça, impossible de piloter.",
+    icon: '<path d="M4 19V5m4 14V9m4 10V7m4 12v-6m4 6V11" />',
+    link: { href: "/services/tracking-analytics", label: "En savoir plus sur le tracking" },
+  },
+];
 
 const faqItems: FaqItem[] = [
   {
@@ -27,11 +62,6 @@ const faqItems: FaqItem[] = [
       "Il y a deux montants distincts. D'abord votre budget publicitaire, versé directement à Google avec votre carte (500 CHF/mois minimum pour que ça vaille la peine). Ensuite nos frais de gestion, fixes et affichés : de 390.- à 1190.- par mois selon votre budget, sur mesure au-delà de 15 000.- de budget. On ne prend aucune commission sur ce que vous dépensez chez Google.",
   },
   {
-    question: "Que veut dire Search, Display et Shopping ?",
-    answer:
-      "Search : vos annonces apparaissent dans les résultats de recherche Google quand quelqu'un cherche vos services (« plombier Sion », « dentiste Lausanne ») : le canal le plus direct, la personne cherche déjà ce que vous offrez. Display : des bannières visuelles diffusées sur des sites et applications partenaires de Google, utiles pour la notoriété et pour rappeler votre marque aux visiteurs de votre site. Shopping : vos produits apparaissent avec photo et prix directement dans Google, réservé aux e-commerces, avec un catalogue produits (d'où le setup Shopping). Il existe aussi Performance Max (PMax), un format automatisé de Google qui diffuse sur tous les canaux à la fois, utilisable dès le pack Croissance.",
-  },
-  {
     question: "Comment mon pack est-il déterminé ?",
     answer:
       "Uniquement par votre budget publicitaire mensuel : de 500 à 1200.- c'est Starter, de 1200 à 5000.- Croissance, de 5000 à 15000.- Performance, et au-delà sur mesure. Pas de grille par secteur, par taille d'entreprise ou par nombre de mots-clés. Et si votre budget évolue, le changement de pack se fait au mois suivant, sans frais.",
@@ -42,9 +72,34 @@ const faqItems: FaqItem[] = [
       "Parce qu'en dessous de ce seuil, les campagnes ne génèrent pas assez de données pour être optimisées : les résultats sont aléatoires et vous paieriez des frais de gestion pour rien. Plutôt que d'encaisser en sachant que ça ne marchera pas, on préfère vous le dire d'entrée. Mieux vaut attendre d'avoir le budget que de tester trop petit.",
   },
   {
-    question: "Pourquoi le setup tracking est-il obligatoire ?",
+    question: "Que contient l'audit gratuit ?",
     answer:
-      "Sans suivi des conversions, impossible de savoir quelles annonces génèrent des appels, des formulaires ou des ventes, donc impossible d'optimiser. Gérer des campagnes sans tracking, c'est piloter à l'aveugle, et on refuse de le faire. Les 300.- couvrent l'installation complète sur WordPress : appels, clics e-mail, formulaires et actions clés. Les intégrations CRM font l'objet d'une option dédiée.",
+      "Un PDF de 1 à 2 pages. Si vous avez déjà un compte Google Ads, on le regarde et on vous dit ce qu'on changerait. Sinon, on regarde votre site et votre marché, et on vous dit si la publicité Google peut vous amener des clients, avec quel budget.",
+  },
+  {
+    question: "En combien de temps voit-on des résultats ?",
+    answer:
+      "Les premières demandes arrivent souvent dès les premières semaines. Mais Google a besoin de 6 à 8 semaines de données pour que l'optimisation donne des résultats fiables : c'est la raison de l'engagement initial de 3 mois.",
+  },
+  {
+    question: "Le compte Google Ads m'appartient-il ?",
+    answer:
+      "Oui. Le compte est à votre nom, payé avec votre carte. Nous y accédons comme gestionnaires. Si vous arrêtez, vous gardez le compte, son historique et vos campagnes.",
+  },
+  {
+    question: "Faut-il signer un long contrat ?",
+    answer:
+      "Non, juste un engagement initial de 3 mois, le temps que Google Ads accumule 6 à 8 semaines de données et que l'optimisation devienne fiable. Ensuite, vous pouvez résilier chaque mois, sans pénalité. Vous restez parce que ça marche, pas parce qu'un contrat vous retient.",
+  },
+  {
+    question: "Que veut dire Search, Display et Shopping ?",
+    answer:
+      "Search : vos annonces apparaissent dans les résultats de recherche Google quand quelqu'un cherche vos services (« plombier Sion », « dentiste Lausanne ») : le canal le plus direct, la personne cherche déjà ce que vous offrez. Display : des bannières visuelles diffusées sur des sites et applications partenaires de Google, utiles pour la notoriété et pour rappeler votre marque aux visiteurs de votre site. Shopping : vos produits apparaissent avec photo et prix directement dans Google, réservé aux e-commerces, avec un catalogue produits (d'où le setup Shopping). Il existe aussi Performance Max (PMax), un format automatisé de Google qui diffuse sur tous les canaux à la fois, utilisable dès le pack Croissance.",
+  },
+  {
+    question: "Pourquoi ne pas utiliser les campagnes automatiques de Google ?",
+    answer:
+      "Elles peuvent fonctionner, mais elles optimisent ce qu'on leur donne. Sans suivi des conversions fiable et sans exclusions, elles dépensent souvent sur des recherches qui ne rapportent rien. Notre travail est de leur donner les bons signaux et de couper ce qui coûte sans rapporter.",
   },
   {
     question: "Que sont les 2 canaux au choix du pack Croissance ?",
@@ -57,6 +112,11 @@ const faqItems: FaqItem[] = [
       "Une campagne ou un ajustement ponctuel lié à un événement : soldes, Black Friday, saison haute, lancement d'une promotion. C'est inclus selon votre pack (1, 3 ou 5 par an). Au-delà du quota, c'est facturable en supplément.",
   },
   {
+    question: "Pourquoi le setup tracking est-il obligatoire ?",
+    answer:
+      "Sans suivi des conversions, impossible de savoir quelles annonces génèrent des appels, des formulaires ou des ventes, donc impossible d'optimiser. Gérer des campagnes sans tracking, c'est piloter à l'aveugle, et on refuse de le faire. Les 300.- couvrent l'installation complète sur WordPress : appels, clics e-mail, formulaires et actions clés. Les intégrations CRM font l'objet d'une option dédiée.",
+  },
+  {
     question: "Qu'est-ce que la connexion CRM / enhanced conversions ?",
     answer:
       "On relie votre CRM (ou vos données de vente) à Google Ads, pour que l'algorithme sache quels clics deviennent de vrais clients, pas seulement des formulaires remplis. Résultat : un ciblage qui s'améliore et un budget qui va vers ce qui rapporte vraiment. Incluse dans le pack Performance, en option à +200.-/mois sur Starter et Croissance.",
@@ -67,24 +127,33 @@ const faqItems: FaqItem[] = [
       "Oui. On peut reprendre votre compte actuel ou en créer un nouveau si besoin. Dans tous les cas, le compte vous appartient : vous gardez la main, et son historique aussi.",
   },
   {
-    question: "Faut-il signer un long contrat ?",
+    question: "Gérez-vous aussi la publicité dans ChatGPT ?",
     answer:
-      "Non, juste un engagement initial de 3 mois, le temps que Google Ads accumule 6 à 8 semaines de données et que l'optimisation devienne fiable. Ensuite, vous pouvez résilier chaque mois, sans pénalité. Vous restez parce que ça marche, pas parce qu'un contrat vous retient.",
+      "Oui, depuis son ouverture en Suisse le 24 août 2026. C'est un canal complémentaire, encore en test.",
+    link: { href: "/services/chatgpt-ads", label: "Voir l'offre ChatGPT Ads" },
   },
+];
+
+/** Cantons romands d'abord : c'est là que le service est vendu. FR et BE restent vrais. */
+const areaServed = [
+  ...["Genève", "Vaud", "Valais", "Fribourg", "Neuchâtel", "Jura"].map((name) => ({ "@type": "AdministrativeArea", name })),
+  "Suisse",
+  "France",
+  "Belgique",
 ];
 
 const jsonLd = [
   serviceSchema({
-    name: "Gestion de publicités Google Ads",
+    name: "Gestion Google Ads",
     description,
     url: path,
     serviceType: "Publicité en ligne (Google Ads)",
+    areaServed,
     withPricing: true, // offres tarifaires (émises seulement si pricingValidated)
   }),
   breadcrumbSchema([
     { name: "Accueil", url: "/" },
-    { name: "Services", url: path },
-    { name: "Publicité Google", url: path },
+    { name: "Gestion Google Ads", url: path },
   ]),
 ];
 ---
@@ -93,26 +162,34 @@ const jsonLd = [
   <section class="page-hero band band--tint">
     <div class="wrap">
       <nav class="crumbs mono" aria-label="Fil d'Ariane">
-        <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Publicité Google</span>
+        <a href="/">Accueil</a> <span aria-hidden="true">/</span> <span>Gestion Google Ads</span>
       </nav>
-      <span class="eyebrow">Publicité sur Google</span>
-      <h1 class="display">Vos annonces sur Google, <span class="flash-word">sans commission</span> sur votre budget.</h1>
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">Gestion Google Ads · Suisse romande</span>
+          <h1 class="display">Gestion <span class="flash-word">Google Ads</span> pour PME en Suisse romande.</h1>
+          <p class="hero-lead">
+            On crée et on pilote vos campagnes Google pour vous amener des demandes de clients. Dès
+            390.-/mois, 0 % de commission sur votre budget, que vous payez directement à Google.
+          </p>
 
-      <AnswerBlock>
-        <p>
-          <b>Flash Ads s'occupe de vos publicités sur Google</b> pour les PME en Suisse romande : on
-          crée vos annonces, on choisit les bons mots et on améliore tout en continu pour vous amener
-          plus de clients. Vous payez un <b>montant fixe chaque mois</b>, de 390.- à 1190.- selon
-          votre budget publicitaire. Aucune commission sur votre budget de pub, que vous versez
-          directement à Google. Le pack se choisit sur un seul critère : votre budget mensuel.
-        </p>
-      </AnswerBlock>
+          <div class="hero-cta">
+            <a href="#contact" class="btn btn-primary">Demander mon audit gratuit <span class="arrow" aria-hidden="true">→</span></a>
+            <a href="#tarifs" class="btn btn-ghost">Voir les 4 packs</a>
+          </div>
+          <p class="hero-note">Audit gratuit : un PDF de 1 à 2 pages sur votre compte, avec ce qu'on changerait.</p>
 
-      <div class="hero-cta">
-        <a href="/contact" class="btn btn-primary">{ui.cta.quote} <span class="arrow" aria-hidden="true">→</span></a>
-        <a href="#tarifs" class="btn btn-ghost">{ui.cta.seePricing}</a>
+          <div class="hero-proof">
+            <GooglePartnerBadge height={52} />
+            <div class="hero-proof-txt">
+              <GoogleRating />
+              <span>Plus de 50 PME romandes accompagnées</span>
+            </div>
+          </div>
+        </div>
+        <!-- Même aperçu d'annonce que le hero de l'accueil. -->
+        <AdPreview />
       </div>
-      <div class="hero-badge"><GooglePartnerBadge height={56} /><span class="mono">Agence certifiée Google Partner</span></div>
     </div>
   </section>
 
@@ -144,18 +221,43 @@ const jsonLd = [
     </div>
   </section>
 
+  <!-- CE QUE NOUS GÉRONS -->
+  <section class="band band--tint">
+    <div class="wrap">
+      <SectionHead
+        eyebrow="Ce que nous gérons"
+        title="Les campagnes Google qui amènent des clients, et le suivi qui le prouve."
+      />
+      <div class="cards3">
+        {managed.map((m) => (
+          <div class="card">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" set:html={m.icon} /></div>
+            <h3>{m.title}</h3>
+            <p>{m.text}</p>
+            {m.link && <a class="lnk" href={m.link.href}>{m.link.label} <span class="arrow" aria-hidden="true">→</span></a>}
+          </div>
+        ))}
+        <!-- Illustration générée (Codex), décorative : plusieurs canaux pilotés d'un seul endroit. Occupe la sixième case de la grille. -->
+        <img class="managed-visual" src="/images/google-ads/channels.webp" width="1200" height="816" alt="" loading="lazy" decoding="async" />
+      </div>
+      <p class="managed-more">
+        Vous voulez aussi tester la publicité dans ChatGPT ?
+        <a href="/services/chatgpt-ads">Découvrir ChatGPT Ads</a>
+      </p>
+    </div>
+  </section>
+
   <!-- COMMENT ON FAIT -->
   <section class="process band band--night">
     <div class="wrap process-grid">
       <div>
         <span class="eyebrow">Comment on fait</span>
-        <h2 class="display">On regarde, on installe, on lance, on améliore.</h2>
+        <h2 class="display">On regarde, on mesure, on lance, on améliore.</h2>
         <p class="muted">
           Chaque client suit le même déroulé clair : on regarde ce qui existe, on installe de quoi
-          mesurer les résultats, on crée vos annonces, puis on améliore en continu. Le détail complet
-          est sur la page Agence.
+          mesurer les résultats, on crée vos annonces, puis on améliore en continu. Le détail de notre
+          méthode est sur la <a href="/agence#methode">page Agence</a>.
         </p>
-        <a href="/agence#methode" class="btn btn-ghost process-link">{ui.cta.discoverAgency} <span class="arrow" aria-hidden="true">→</span></a>
       </div>
       <ul class="proc-list">
         <li><span class="mono no">01</span> On regarde votre situation, gratuitement</li>
@@ -174,7 +276,7 @@ const jsonLd = [
         title="Quatre packs, un prix fixe et affiché."
         text="Choisissez selon votre budget publicitaire mensuel : c'est le seul critère. 0% de commission sur votre budget."
       />
-      <PricingGrid ctaHref="/contact" />
+      <PricingGrid inPage />
       <p class="pricing-tool">
         Pour savoir dans quel pack vous tombez, commencez par estimer votre budget publicitaire avec
         notre <a href="/calculateur-budget">calculateur de budget Google Ads</a>.
@@ -182,7 +284,7 @@ const jsonLd = [
     </div>
   </section>
 
-  <!-- RÉSULTATS CLIENTS -->
+  <!-- RÉSULTATS ET AVIS CLIENTS : une seule bande, la preuve chiffrée puis la parole des clients. -->
   <section class="band band--tint">
     <div class="wrap">
       <SectionHead
@@ -190,33 +292,37 @@ const jsonLd = [
         title="Ce qu'on a obtenu pour des PME romandes."
         text="Résultats mesurés sur le compte du client, tracking des conversions en place avant et après."
       />
-      <div class="cases">
-        <CaseStudyCard
-          metric="+63%"
-          who="Chauffage sanitaire · Valais"
-          context="Annonces dispersées : le budget partait sur des recherches trop larges, sans intention d'achat."
-          action="On a resserré les campagnes sur les recherches de dépannage et écarté ce qui ne rapportait rien."
-        >
-          Deux tiers de demandes de devis en plus en six mois, à budget publicitaire constant.
-        </CaseStudyCard>
-        <CaseStudyCard
-          metric="−29%"
-          who="Cabinet dentaire · Lausanne"
-          context="Chaque nouveau patient coûtait cher, et le compte ne mesurait ni les appels ni les prises de rendez-vous."
-          action="On a remis le suivi des conversions d'aplomb, puis réécrit les annonces autour des soins recherchés."
-        >
-          Chaque nouveau patient coûte près d'un tiers de moins qu'avant, en trois mois.
-        </CaseStudyCard>
+      <ResultCases detailed />
+
+      <div class="reviews">
+        <h3 class="display">Ce que disent nos clients.</h3>
+        <Testimonials only={["Sportmax Nyon", "Abdullah Tariq"]} />
+        <a class="reviews-all" href={googleReviews.profileUrl} target="_blank" rel="noopener noreferrer">
+          Voir nos avis Google <span aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <FAQ items={faqItems} title="Vos questions sur la publicité Google" eyebrow="FAQ · Publicité Google" band="paper" />
+  <FAQ items={faqItems} title="Vos questions sur la gestion Google Ads" eyebrow="FAQ · Gestion Google Ads" band="paper">
+    <!-- Illustration générée (Codex), décorative : l'audit gratuit, un court rapport. -->
+    <img class="faq-visual" src="/images/google-ads/audit.webp" width="1200" height="786" alt="" loading="lazy" decoding="async" />
+  </FAQ>
 
-  <CTA
-    title="On regarde votre situation, gratuitement ?"
-    text="On vous dit franchement si la pub Google peut vous amener des clients, et combien ça coûterait. Sans jargon, prix publics."
+  <!-- FORMULAIRE : remplace la bande finale, la conversion se fait sur la page. -->
+  <LeadSection
+    band="tint"
+    eyebrow="Audit gratuit"
+    title="Recevez votre audit Google Ads gratuit."
+    text="Dites-nous où vous en êtes. Vous recevez un PDF de 1 à 2 pages : ce qui fonctionne, ce qu'on changerait, et le budget qui a du sens pour vous."
+    checks={[
+      "Réponse sous un jour ouvré.",
+      "Audit gratuit en PDF, sans engagement.",
+      "Si Google Ads n'est pas pour vous, on vous le dit.",
+    ]}
+    visual={{ src: "/images/contact/envoi.webp", width: 1200, height: 734 }}
+    form={{ offer: "google-ads", page: trackPage }}
   />
 </BaseLayout>
 
@@ -224,19 +330,28 @@ const jsonLd = [
   .pricing-tool { font-size: 14px; color: var(--muted-on, var(--muted)); text-align: center; margin-top: 22px; }
   .pricing-tool a { color: var(--accent-on, var(--accent)); text-decoration: none; font-weight: 500; }
   .pricing-tool a:hover { text-decoration: underline; }
-  .page-hero { padding: 72px 0 20px; }
+  .page-hero { padding: 72px 0 56px; }
   .crumbs { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-on, var(--muted)); margin-bottom: 22px; }
   .crumbs a { text-decoration: none; color: var(--muted-on, var(--muted)); }
   .crumbs a:hover { color: var(--accent-on, var(--accent)); }
-  .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 22px; max-width: 16em; }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; }
+  .page-hero h1 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 600; margin: 18px 0 0; max-width: 16em; }
+  .hero-lead { font-size: 19px; color: var(--on, var(--body)); max-width: 31em; margin-top: 20px; }
   .hero-cta { display: flex; gap: 14px; margin-top: 28px; flex-wrap: wrap; }
-  .hero-badge { display: flex; align-items: center; gap: 14px; margin-top: 28px; }
-  .hero-badge .mono { font-size: 12px; letter-spacing: .06em; color: var(--muted-on, var(--muted)); }
+  .hero-note { font-size: 14px; color: var(--muted-on, var(--muted)); margin-top: 14px; max-width: 34em; }
+  .hero-proof { display: flex; align-items: center; gap: 18px; margin-top: 26px; flex-wrap: wrap; }
+  .hero-proof-txt { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted-on, var(--muted)); }
+
+  .managed-visual { display: block; width: 100%; max-width: 340px; height: auto; align-self: center; justify-self: center; }
+  .faq-visual { display: block; width: 100%; max-width: 320px; height: auto; }
+  .managed-more { margin-top: 28px; font-size: 15px; color: var(--muted-on, var(--muted)); }
+  .managed-more a { color: var(--accent-on, var(--accent)); font-weight: 500; text-decoration: none; margin-left: 4px; }
+  .managed-more a:hover { text-decoration: underline; }
 
   .muted { color: var(--muted-on, var(--muted)); font-size: 16px; margin-top: 14px; max-width: 34em; }
+  .muted a { color: var(--accent-on, var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
   .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
   .process h2 { font-size: clamp(26px, 3vw, 38px); font-weight: 600; margin-top: 16px; }
-  .process-link { margin-top: 24px; }
   .proc-list { list-style: none; display: flex; flex-direction: column; }
   .proc-list li {
     display: flex; gap: 16px; align-items: baseline;
@@ -246,7 +361,24 @@ const jsonLd = [
   .proc-list li:last-child { border-bottom: 1px solid var(--rule, var(--hairline)); }
   .proc-list .no { color: var(--accent-on, var(--accent)); font-size: 13px; flex: 0 0 auto; }
 
+  .reviews { margin-top: 56px; padding-top: 44px; border-top: 1px solid var(--rule, var(--hairline)); }
+  .reviews h3 { font-size: clamp(22px, 2.4vw, 28px); font-weight: 600; margin-bottom: 20px; }
+  .reviews-all { display: inline-block; margin-top: 18px; font-size: 14px; font-weight: 500; color: var(--accent-on, var(--accent)); text-decoration: none; }
+  .reviews-all:hover { text-decoration: underline; }
+
   @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
     .process-grid { grid-template-columns: 1fr; gap: 36px; }
+    /* Une colonne : le décor s'intercalerait entre deux cartes ou avant les questions. */
+    .managed-visual, .faq-visual { display: none; }
+  }
+  /* Sur 390 x 844, le H1, le sous-titre et le bouton principal tiennent au
+     premier écran : on resserre le haut du hero et le sous-titre. */
+  @media (max-width: 640px) {
+    .page-hero { padding: 32px 0 40px; }
+    .crumbs { margin-bottom: 14px; }
+    .page-hero h1 { margin-top: 12px; }
+    .hero-lead { font-size: 17px; margin-top: 14px; }
+    .hero-cta { margin-top: 20px; gap: 10px; }
   }
 </style>

@@ -1,0 +1,101 @@
+---
+/**
+ * Offre ChatGPT Ads (carte Early Bird + détail de ce que l'on paie). Tous les
+ * montants viennent de `tarifs.ts` : changer un prix là le change ici, sur la
+ * page service comme sur la landing page.
+ */
+import HeadSplit from "./HeadSplit.astro";
+import { chatgptAds, chatgptBetaNote, chatgptPromoNote } from "../../data/tarifs";
+import { preuveDiffusion } from "../../data/chatgpt-secteurs";
+---
+
+<section id="offre" class="band band--paper">
+  <div class="wrap">
+    <HeadSplit eyebrow="Offre de lancement" title="Un seul pack, toute la gestion comprise.">
+      Nous ouvrons un nombre limité de comptes pour apprendre ce canal avec nos clients. D'où un
+      tarif de lancement, réduit de moitié jusqu'à la fin de l'année.
+    </HeadSplit>
+
+    <p class="live-proof">
+      <span class="live-dot" aria-hidden="true"></span>
+      Déjà en diffusion sur ChatGPT pour {preuveDiffusion}.
+    </p>
+
+    <div class="offer-grid">
+      <div class="price feat">
+        <span class="badge">Jusqu'au 31.12</span>
+        <span class="tier">{chatgptAds.name}</span>
+        <div class="amt">
+          {chatgptAds.price}<small> {chatgptAds.unit}</small>
+        </div>
+        <p class="was">
+          au lieu de <s>{chatgptAds.regularPrice}{chatgptAds.unit}</s> · setup {chatgptAds.setup}
+          au lieu de <s>{chatgptAds.regularSetup}</s>
+        </p>
+        <div class="rows">
+          {chatgptAds.attributes.map((a) => (
+            <div class="row">
+              <span class="k">{a.label}</span>
+              <span class="v">{a.value}</span>
+            </div>
+          ))}
+        </div>
+        <a href="#contact" class="btn btn-primary offer-cta">
+          {chatgptAds.ctaLabel} <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div class="offer-notes">
+        <h3>Ce que vous payez, en clair</h3>
+        <ol class="pay-list">
+          <li>
+            <span class="pay-amt">{chatgptAds.setup}</span>
+            <span class="pay-txt"><b>Une seule fois.</b> Ouverture du compte annonceur, tracking et première campagne. Au lieu de {chatgptAds.regularSetup}.</span>
+          </li>
+          <li>
+            <span class="pay-amt">{chatgptAds.price}<small>/mois</small></span>
+            <span class="pay-txt"><b>Frais de gestion</b>, jusqu'au {chatgptAds.promoEndsLabel}. Ensuite {chatgptAds.regularPrice} par mois.</span>
+          </li>
+          <li>
+            <span class="pay-amt">{chatgptAds.minBudgetDaily} CHF<small>/jour</small></span>
+            <span class="pay-txt"><b>Budget publicitaire minimum</b>, soit environ {chatgptAds.minBudgetMonthly} CHF par mois, payé directement à OpenAI sur votre propre compte. Aucune commission dessus.</span>
+          </li>
+        </ol>
+        <p class="promo-note">{chatgptPromoNote}</p>
+
+        <div class="beta-note">
+          <h3>Ce que nous ne promettons pas</h3>
+          <p>{chatgptBetaNote}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .live-proof { display: flex; align-items: baseline; font-size: 15px; color: var(--on-strong, var(--ink)); margin: -16px 0 28px; }
+  .offer-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 56px; align-items: start; }
+  .offer-grid .price { max-width: none; }
+  .was { font-size: 13px; color: var(--muted-on, var(--muted)); margin-bottom: 4px; }
+  .was s { color: var(--on-faint, var(--faint)); }
+  .offer-cta { justify-content: center; width: 100%; margin-top: auto; }
+  .offer-notes h3 { font-family: var(--font-display); font-weight: 600; font-size: 20px; }
+  .pay-list { list-style: none; margin-top: 18px; }
+  .pay-list li { display: grid; grid-template-columns: 9.5em 1fr; gap: 20px; padding: 18px 0; border-top: 1px solid var(--rule, var(--hairline)); }
+  .pay-amt { font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: -.02em; color: var(--accent-on, var(--accent)); white-space: nowrap; }
+  .pay-amt small { font-size: 13px; font-weight: 500; color: var(--muted-on, var(--muted)); margin-left: 2px; }
+  .pay-txt { font-size: 15px; color: var(--on, var(--body)); line-height: 1.55; }
+  .pay-txt b { color: var(--on-strong, var(--ink)); font-weight: 600; }
+  .promo-note { font-size: 13px; color: var(--muted-on, var(--muted)); line-height: 1.6; padding-top: 14px; border-top: 1px solid var(--rule, var(--hairline)); }
+  /* Mention obligatoire : elle doit se remarquer, pas se fondre. */
+  .beta-note { margin-top: 28px; padding: 4px 0 4px 20px; border-left: 3px solid var(--fa-pink); }
+  .beta-note h3 { font-size: 16px; }
+  .beta-note p { font-size: 14.5px; color: var(--on, var(--body)); line-height: 1.6; margin-top: 8px; }
+
+  @media (max-width: 900px) {
+    .offer-grid { grid-template-columns: 1fr; gap: 32px; }
+  }
+  @media (max-width: 640px) {
+    .pay-list li { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
