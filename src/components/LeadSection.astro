@@ -16,6 +16,7 @@ type FormProps = {
   budgetRequired?: boolean;
   siteRequired?: boolean;
   exitLinks?: boolean;
+  directContact?: boolean;
 };
 
 interface Props {
@@ -27,8 +28,10 @@ interface Props {
   visual?: { src: string; width: number; height: number };
   band?: "paper" | "tint";
   form: FormProps;
+  /** E-mail et téléphone sous les coches. Retirés sur la landing : le formulaire est la seule action. */
+  directContact?: boolean;
 }
-const { eyebrow, title, text, checks, visual, band = "paper", form } = Astro.props;
+const { eyebrow, title, text, checks, visual, band = "paper", form, directContact = true } = Astro.props;
 ---
 
 <section id="contact" class:list={["band", `band--${band}`]}>
@@ -41,11 +44,13 @@ const { eyebrow, title, text, checks, visual, band = "paper", form } = Astro.pro
       <ul class="ask-next">
         {checks.map((c) => <li>{c}</li>)}
       </ul>
-      <p class="ask-direct">
-        Vous préférez écrire ou appeler ?<br />
-        <a href={`mailto:${site.email}`}>{site.email}</a> ·
-        <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
-      </p>
+      {directContact && (
+        <p class="ask-direct">
+          Vous préférez écrire ou appeler ?<br />
+          <a href={`mailto:${site.email}`}>{site.email}</a> ·
+          <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+        </p>
+      )}
     </div>
     <div class:list={["ask-panel", band === "tint" ? "surface-paper" : "band--tint"]}>
       <LeadForm {...form} />

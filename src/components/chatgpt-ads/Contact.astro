@@ -13,8 +13,10 @@ interface Props {
   strict?: boolean;
   /** Liens vers le reste du site dans les messages du formulaire. */
   exitLinks?: boolean;
+  /** E-mail et téléphone à côté du formulaire et dans son message de succès. */
+  directContact?: boolean;
 }
-const { eyebrow, page, strict = false, exitLinks = true } = Astro.props;
+const { eyebrow, page, strict = false, exitLinks = true, directContact = true } = Astro.props;
 ---
 
 <LeadSection
@@ -27,5 +29,6 @@ const { eyebrow, page, strict = false, exitLinks = true } = Astro.props;
     "Si ChatGPT n'est pas pour vous, on vous le dit.",
   ]}
   visual={{ src: "/images/chatgpt-ads/eligibility.webp", width: 943, height: 849 }}
-  form={{ offer: "chatgpt-ads", page, budgetRequired: strict, siteRequired: strict, exitLinks }}
+  directContact={directContact}
+  form={{ offer: "chatgpt-ads", page, budgetRequired: strict, siteRequired: strict, exitLinks, directContact }}
 />
