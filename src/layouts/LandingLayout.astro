@@ -5,7 +5,7 @@
  * Même <head>, mêmes polices et même conteneur GTM que `BaseLayout`, mais sans
  * sortie : logo non cliquable, sans menu, un seul bouton dans l'en-tête (vers le
  * formulaire `#contact` de la page), pied de page réduit aux liens légaux et
- * aux coordonnées. Toujours `noindex, nofollow`,
+ * à l'adresse postale (ni e-mail ni téléphone : le formulaire est la seule action). Toujours `noindex, nofollow`,
  * sans aucun JSON-LD (pas même Organization), et exclu du sitemap
  * (`astro.config.mjs`) : la page indexée reste la page service.
  */
@@ -60,10 +60,10 @@ const year = new Date().getFullYear();
           <Brand href={null} light />
           <div class="lp-foot-badge"><GooglePartnerBadge height={56} /></div>
         </div>
-        <div class="lp-foot-links">
-          <a href={`mailto:${site.email}`}>{site.email}</a>
-          <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
-        </div>
+        <address class="lp-foot-address">
+          Rue de Morges 17<br />
+          1023 Crissier
+        </address>
         <div class="lp-foot-legal">
           <span>© {year} {site.name}.</span>
           {nav.legal.map((l) => <a href={l.href}>{l.label}</a>)}
@@ -109,9 +109,9 @@ const year = new Date().getFullYear();
   .lp-foot-badge { margin-top: 16px; }
   /* Comme dans le pied de page du site : pas de cadre ni d'ombre sur midnight. */
   .lp-foot-badge :global(.gp-badge) { border: 0; box-shadow: none; background: none; padding: 0; }
-  .lp-foot-links { display: flex; flex-direction: column; gap: 9px; font-size: 14px; }
-  .lp-foot-links a, .lp-foot-legal a { color: #fff; text-decoration: none; opacity: .8; }
-  .lp-foot-links a:hover, .lp-foot-legal a:hover { opacity: 1; text-decoration: underline; }
+  .lp-foot-address { font-style: normal; font-size: 14px; line-height: 1.7; color: var(--on-faint); }
+  .lp-foot-legal a { color: #fff; text-decoration: none; opacity: .8; }
+  .lp-foot-legal a:hover { opacity: 1; text-decoration: underline; }
   .lp-foot-legal {
     grid-column: 1 / -1;
     display: flex;

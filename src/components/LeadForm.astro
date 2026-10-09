@@ -41,8 +41,10 @@ interface Props {
   siteRequired?: boolean;
   /** ChatGPT Ads : lien vers la page Google Ads dans le message « pas possible ». */
   exitLinks?: boolean;
+  /** ChatGPT Ads : e-mail et téléphone dans le message de succès. */
+  directContact?: boolean;
 }
-const { offer, page, budgetRequired = false, siteRequired = false, exitLinks = true } = Astro.props;
+const { offer, page, budgetRequired = false, siteRequired = false, exitLinks = true, directContact = true } = Astro.props;
 
 const isGpt = offer === "chatgpt-ads";
 /** Préfixe des identifiants : `chatgpt-secteur` est visé par le sélecteur de secteurs. */
@@ -216,7 +218,11 @@ const comptes = [
     {isGpt ? (
       <Fragment>
         <strong>Merci.</strong> On vous recontacte sous un jour ouvré pour fixer l'échange de 15 minutes.
-        Une question d'ici là : <a href={`mailto:${site.email}`}>{site.email}</a> ou <a href={phoneHref}>{site.phone}</a>.
+        {directContact && (
+          <Fragment>
+            Une question d'ici là : <a href={`mailto:${site.email}`}>{site.email}</a> ou <a href={phoneHref}>{site.phone}</a>.
+          </Fragment>
+        )}
       </Fragment>
     ) : (
       <Fragment>

@@ -9,7 +9,7 @@
  * données) : un prix ou une règle qui change se corrige à la source et vaut
  * pour les deux pages. Aucune sortie hors pied de page légal et lien « packs
  * Google Ads » du message « pas possible ». Une seule conversion : le
- * formulaire `#contact` (`generate_lead`).
+ * formulaire `#contact` (`generate_lead`), ni e-mail ni téléphone affichés.
  */
 import LandingLayout from "../../layouts/LandingLayout.astro";
 import FAQ from "../../components/FAQ.astro";
@@ -97,7 +97,7 @@ const faq = faqById([
 
   <FAQ items={faq} title="Vos questions." eyebrow="FAQ" band="tint" schema={false} />
 
-  <Contact eyebrow="Audit gratuit" page="lp_chatgpt" strict exitLinks={false} />
+  <Contact eyebrow="Audit gratuit" page="lp_chatgpt" strict exitLinks={false} directContact={false} />
 
   <MobileCtaBar />
 </LandingLayout>
